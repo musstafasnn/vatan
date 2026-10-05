@@ -17,9 +17,12 @@ Pardus 25 için masaüstü oturumu. Üst bar yerine ekranın altında tek bir ad
 - **Gündem** — masaüstünde, pencerelerin altında TRT Haber son dakika başlıkları; tıklayınca haber tarayıcıda açılır. Komut'ta `gündem` yazarak kaldırılır ya da geri getirilir. Kaynak `org.vatan.shell news-feed` ayarıyla değişir (yalnızca https).
 - **NSosyal** — dock'ta ve Komut'ta tek tıkla NSosyal.
 - **VATAN Ayarları** — biçem, vurgu rengi, VATAN simgeleri, kabartma duvar kağıdı, Gündem kaynağı, döviz kuru isteği ve tanıtım turu tek yerde; sistem ayarlarına da buradan geçilir.
+- **Pencere yerleşimi** — pencereyi ekran kenarına sürükle: yarım ekran; köşeye: çeyrek ekran. Yarım ekrandaki pencerede `Super+↑`/`Super+↓` üst/alt çeyreğe alır.
+- **Hızlı Bakış** — Dosyalar'da bir dosyayı seçip boşluk tuşuna bas.
+- **Pano geçmişi** — Komut'a `pano` yaz; son kopyaladıkların çıkar (yalnızca bellekte tutulur, parola yöneticilerinin gizli kopyaları alınmaz).
+- **Zamanlı odak** — VATAN Ayarları → Odak: belirlediğin saatlerde bildirim balonları susar.
 - **Tanıtım turu** — ilk girişte dört sayfalık kısa tur; Komut'ta `tur` yazarak yeniden açılır.
 - **Uygulamalar** — adanın başındaki ızgara düğmesi bilgisayardaki tüm uygulamaları açar.
-- **Yerleştirme** — pencereyi ekran kenarına sürükle: yarım ekran; üst kenara: tam ekran.
 - **Görünüm** — Geist ve Instrument Serif yazı tipleri, kat kat yükselen kabartma Türkiye haritası duvar kağıdı (açık ve koyu), VATAN simge teması: sistem uygulamaları için sıfırdan çizilmiş, Selçuklu yıldızı, Orhun harfleri, İznik çinisi ve kilim motifleri taşıyan simgeler ve kırmızı klasörler. Kabuk, uygulamalar ve simgeler aynı kırmızıyı kullanır. Giriş doğrudan masaüstüne açılır.
 
 ## Kurulum
@@ -36,6 +39,16 @@ Gereken: Pardus 25 GNOME (amd64 ya da arm64).
 3. Oturumu kapat. Giriş ekranında kullanıcı adını seç, sağ alttaki dişli simgesinden **VATAN**'ı seç ve gir.
 
 GNOME'a dönmek için aynı menüden **GNOME**'u seçmen yeterli.
+
+### Açılış ekranı (isteğe bağlı)
+
+Paket VATAN açılış ekranını kurar ama etkinleştirmez; açılış ekranı bütün kullanıcılar için ortaktır:
+
+```sh
+sudo plymouth-set-default-theme -R vatan
+```
+
+Geri almak için aynı komutu önceki temanın adıyla çalıştır (`plymouth-set-default-theme --list`).
 
 ### Kaldırma
 

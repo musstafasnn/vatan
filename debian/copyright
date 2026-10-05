@@ -33,7 +33,7 @@ Files: tools/icons/recolor.mjs
 Copyright: 2026 Mustafa <musstafasnn@gmail.com>
 License: GPL-2+
 
-Files: data/icons/VATAN/apps/* tools/icons/apps/* settings/*
+Files: data/icons/VATAN/apps/* tools/icons/apps/* settings/* data/plymouth/* tools/plymouth/*
 Copyright: 2026 Mustafa <musstafasnn@gmail.com>
 License: GPL-2+
 

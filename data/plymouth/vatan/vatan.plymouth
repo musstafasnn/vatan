@@ -1,0 +1,8 @@
+[Plymouth Theme]
+Name=VATAN
+Description=VATAN boot splash: the relief map, a wordmark and a thin progress line
+ModuleName=script
+
+[script]
+ImageDir=/usr/share/plymouth/themes/vatan
+ScriptFile=/usr/share/plymouth/themes/vatan/vatan.script
