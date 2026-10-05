@@ -65,6 +65,11 @@ function isHttpsUrl(text) {
     return /^https:\/\/[^\s]+$/.test(text);
 }
 
+function isClock(text) {
+    const match = /^(\d{1,2}):(\d{2})$/.exec(text);
+    return !!match && Number(match[1]) < 24 && Number(match[2]) < 60;
+}
+
 function readVersion() {
     try {
         const [, bytes] = GLib.file_get_contents(VERSION_FILE);
@@ -105,6 +110,7 @@ class VatanSettingsWindow extends Adw.ApplicationWindow {
             ['gorunum', 'Görünüm', 'applications-graphics-symbolic', this._appearancePage()],
             ['gundem', 'Gündem', 'x-office-document-symbolic', this._newsPage()],
             ['komut', 'Komut', 'system-search-symbolic', this._komutPage()],
+            ['odak', 'Odak', 'notifications-disabled-symbolic', this._focusPage()],
             ['hakkinda', 'Hakkında', 'help-about-symbolic', this._aboutPage()],
         ];
         pages.forEach(([name, title, , page]) => stack.add_titled(page, name, title));
@@ -373,6 +379,15 @@ class VatanSettingsWindow extends Adw.ApplicationWindow {
         network.add(rates);
         page.add(network);
 
+        const privacy = new Adw.PreferencesGroup({title: 'Pano'});
+        const clipboard = new Adw.SwitchRow({
+            title: 'Pano geçmişini tut',
+            subtitle: 'Komut\'a “pano” yazınca son kopyaladıkların çıkar. Yalnızca bellekte tutulur; parola yöneticilerinin gizli kopyaları alınmaz.',
+        });
+        this._vatan.bind('clipboard-history', clipboard, 'active', Gio.SettingsBindFlags.DEFAULT);
+        privacy.add(clipboard);
+        page.add(privacy);
+
         const examples = new Adw.PreferencesGroup({
             title: 'Komut\'a yazabileceklerin',
             description: 'Super tuşuna bas ve yaz.',
@@ -383,6 +398,43 @@ class VatanSettingsWindow extends Adw.ApplicationWindow {
             examples.add(row);
         }
         page.add(examples);
+        return page;
+    }
+
+    _focusPage() {
+        const page = new Adw.PreferencesPage();
+        const group = new Adw.PreferencesGroup({
+            title: 'Zamanlı odak',
+            description: 'Belirlediğin saatlerde bildirim balonları gösterilmez; bildirimler yine de listede birikir.',
+        });
+        const enabled = new Adw.SwitchRow({title: 'Zamanlı odak'});
+        this._vatan.bind('focus-schedule', enabled, 'active', Gio.SettingsBindFlags.DEFAULT);
+        group.add(enabled);
+
+        for (const [key, title] of [['focus-start', 'Başlangıç'], ['focus-end', 'Bitiş']]) {
+            const row = new Adw.EntryRow({title: `${title} (SS:DD)`, show_apply_button: true});
+            row.text = this._vatan.get_string(key);
+            row.connect('apply', () => {
+                const text = row.text.trim();
+                if (!isClock(text)) {
+                    this._toast('Saati 09:00 biçiminde yaz');
+                    row.text = this._vatan.get_string(key);
+                    return;
+                }
+                this._vatan.set_string(key, text.padStart(5, '0'));
+            });
+            this._vatan.bind('focus-schedule', row, 'sensitive', Gio.SettingsBindFlags.GET);
+            group.add(row);
+        }
+
+        const weekdays = new Adw.SwitchRow({
+            title: 'Yalnızca hafta içi',
+            subtitle: 'Gece yarısını geçen bir aralık başladığı günün sayılır',
+        });
+        this._vatan.bind('focus-weekdays-only', weekdays, 'active', Gio.SettingsBindFlags.DEFAULT);
+        this._vatan.bind('focus-schedule', weekdays, 'sensitive', Gio.SettingsBindFlags.GET);
+        group.add(weekdays);
+        page.add(group);
         return page;
     }
 

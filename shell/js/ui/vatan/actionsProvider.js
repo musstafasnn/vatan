@@ -8,7 +8,7 @@ import St from 'gi://St';
 import * as Main from '../main.js';
 import {getMixerControl} from '../status/volume.js';
 import {loadInterfaceXML} from '../../misc/fileUtils.js';
-import {parseLevelCommand} from '../../misc/turkishText.js';
+import {foldTurkish, parseLevelCommand} from '../../misc/turkishText.js';
 import {formatDuration, parseTimerCommand, secondsUntil} from '../../misc/vatanTimer.js';
 import {
     convertCurrency, convertUnits, formatAmount, isCurrency, parseConversion, parseTcmbRates, unitName,
@@ -26,6 +26,9 @@ const BrightnessProxy = Gio.DBusProxy.makeProxyWrapper(
 const LEVEL_PREFIX = 'level:';
 const TIMER_PREFIX = 'timer:';
 const CONVERT_PREFIX = 'convert:';
+const CLIP_PREFIX = 'clip:';
+const CLIP_KEYWORD = 'pano';
+const CLIP_PREVIEW_LENGTH = 80;
 
 // TCMB publishes one bulletin per working day; an hour-old copy is current.
 const RATES_URL = 'https://www.tcmb.gov.tr/kurlar/today.xml';
@@ -174,7 +177,21 @@ export class VatanActionsProvider {
         return ids;
     }
 
+    // "pano" lists recent clipboard text; "pano word" filters it.
+    _clipboardIds(terms) {
+        const history = Main.vatanClipboard;
+        if (!history?.enabled || foldTurkish(terms[0] ?? '') !== CLIP_KEYWORD)
+            return [];
+        const filter = foldTurkish(terms.slice(1).join(' '));
+        return history.entries
+            .filter(entry => !filter || foldTurkish(entry.text).includes(filter))
+            .map(entry => `${CLIP_PREFIX}${entry.id}`);
+    }
+
     async getInitialResultSet(terms, cancellable) {
+        const clips = this._clipboardIds(terms);
+        if (clips.length)
+            return clips;
         const ids = this._search(terms);
         const conversion = await this._convert(terms.join(' '), cancellable);
         if (conversion)
@@ -253,7 +270,16 @@ export class VatanActionsProvider {
         const metas = [];
         for (const id of ids) {
             let name, iconName, description = '', createIcon = null;
-            if (id.startsWith(CONVERT_PREFIX)) {
+            if (id.startsWith(CLIP_PREFIX)) {
+                const entry = Main.vatanClipboard?.find(Number(id.slice(CLIP_PREFIX.length)));
+                if (!entry)
+                    continue;
+                const oneLine = entry.text.replace(/\s+/g, ' ').trim();
+                name = oneLine.length > CLIP_PREVIEW_LENGTH
+                    ? `${oneLine.slice(0, CLIP_PREVIEW_LENGTH)}…` : oneLine;
+                description = _('Panodan · Enter yeniden kopyalar');
+                iconName = 'edit-paste-symbolic';
+            } else if (id.startsWith(CONVERT_PREFIX)) {
                 const {amount, from, to, result, date} = JSON.parse(id.slice(CONVERT_PREFIX.length));
                 const money = isCurrency(from);
                 name = `${formatAmount(amount, money)} ${unitName(from)} = ${formatAmount(result, money)} ${unitName(to)}`;
@@ -295,6 +321,12 @@ export class VatanActionsProvider {
     }
 
     activateResult(id) {
+        if (id.startsWith(CLIP_PREFIX)) {
+            const entry = Main.vatanClipboard?.find(Number(id.slice(CLIP_PREFIX.length)));
+            if (entry)
+                Main.vatanClipboard.copy(entry);
+            return;
+        }
         if (id.startsWith(CONVERT_PREFIX)) {
             const {result, from} = JSON.parse(id.slice(CONVERT_PREFIX.length));
             St.Clipboard.get_default().set_text(St.ClipboardType.CLIPBOARD,

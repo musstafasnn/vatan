@@ -47,6 +47,7 @@
     <file>misc/vatanActions.js</file>
     <file>misc/vatanConvert.js</file>
     <file>misc/vatanFeed.js</file>
+    <file>misc/vatanFocus.js</file>
     <file>misc/vatanTiling.js</file>
     <file>misc/vatanTimer.js</file>
     <file>misc/weather.js</file>
@@ -164,7 +165,9 @@
     <file>ui/status/thunderbolt.js</file>
     <file>ui/status/volume.js</file>
     <file>ui/vatan/actionsProvider.js</file>
+    <file>ui/vatan/clipboardHistory.js</file>
     <file>ui/vatan/dock.js</file>
+    <file>ui/vatan/focusSchedule.js</file>
     <file>ui/vatan/komut.js</file>
     <file>ui/vatan/komutButton.js</file>
     <file>ui/vatan/mediaIsland.js</file>

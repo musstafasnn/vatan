@@ -22,6 +22,31 @@
       <summary>How much slower than GNOME's timing VATAN animates</summary>
       <description>Multiplies every shell animation; 1.0 is GNOME's own pace.</description>
     </key>
+    <key name="clipboard-history" type="b">
+      <default>true</default>
+      <summary>Keep recent clipboard text for Komut</summary>
+      <description>Kept in memory only, never written to disk; items marked secret by password managers are skipped. Turning this off clears it.</description>
+    </key>
+    <key name="focus-schedule" type="b">
+      <default>false</default>
+      <summary>Silence notification banners on a schedule</summary>
+    </key>
+    <key name="focus-start" type="s">
+      <default>'09:00'</default>
+      <summary>Start of the focus window (HH:MM)</summary>
+    </key>
+    <key name="focus-end" type="s">
+      <default>'17:00'</default>
+      <summary>End of the focus window (HH:MM); earlier than the start means it runs past midnight</summary>
+    </key>
+    <key name="focus-weekdays-only" type="b">
+      <default>true</default>
+      <summary>Apply the focus window on weekdays only</summary>
+    </key>
+    <key name="focus-schedule-owns" type="b">
+      <default>false</default>
+      <summary>Internal: banners are off because of the schedule, not the user</summary>
+    </key>
     <key name="tour-shown" type="b">
       <default>false</default>
       <summary>Whether the first-login tour has been shown</summary>
