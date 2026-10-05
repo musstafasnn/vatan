@@ -11,12 +11,12 @@ font-name='Geist 11'
 document-font-name='Geist 11'
 
 [org.gnome.desktop.background:VATAN]
-picture-uri='file:///usr/share/backgrounds/vatan/vatan-light.svg'
-picture-uri-dark='file:///usr/share/backgrounds/vatan/vatan-dark.svg'
+picture-uri='file:///usr/share/backgrounds/vatan/vatan-light.png'
+picture-uri-dark='file:///usr/share/backgrounds/vatan/vatan-dark.png'
 picture-options='zoom'
 
 [org.gnome.desktop.screensaver:VATAN]
-picture-uri='file:///usr/share/backgrounds/vatan/vatan-light.svg'
+picture-uri='file:///usr/share/backgrounds/vatan/vatan-light.png'
 
 [org.gnome.shell:VATAN]
 favorite-apps=['firefox-esr.desktop', 'org.gnome.Nautilus.desktop', 'org.gnome.Console.desktop', 'libreoffice-writer.desktop', 'tr.org.pardus.software.desktop']

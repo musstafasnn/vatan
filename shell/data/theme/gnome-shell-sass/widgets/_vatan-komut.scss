@@ -4,15 +4,14 @@
 
 $komut_row_height: 48px;
 $komut_visible_rows: 7;
-$komut_shadow_color: if($variant == 'light', rgba(20, 24, 31, .28), rgba(0, 0, 0, .6));
-
 .vatan-komut {
-  padding: 8px;
-  border: 1px solid $borders_color;
-  border-radius: 14px;
-  background-color: $panel_bg_color;
+  padding: 10px;
+  border-radius: $ada_radius;
+  @include ada_surface();
+  // With a gradient St draws this tall surface's shadow as a hard rectangle.
+  background-gradient-direction: none;
+  background-color: mix($ada_surface_top, $ada_surface_bottom, 50%);
   color: $panel_fg_color;
-  box-shadow: 0 12px 32px -10px $komut_shadow_color;
 }
 
 .vatan-komut-content {
@@ -27,7 +26,7 @@ $komut_shadow_color: if($variant == 'light', rgba(20, 24, 31, .28), rgba(0, 0, 0
   min-height: 34px;
   padding: 8px 12px;
   border: none;
-  border-radius: 8px;
+  border-radius: $ada_control_radius;
   background-color: transparent;
   box-shadow: none;
   color: $fg_color;
@@ -60,7 +59,7 @@ $komut_shadow_color: if($variant == 'light', rgba(20, 24, 31, .28), rgba(0, 0, 0
   min-height: $komut_row_height;
   // Two-line rows (title plus description) need air above and below.
   padding: 6px 10px;
-  border-radius: 8px;
+  border-radius: $ada_control_radius;
 
   StBoxLayout {
     spacing: 12px;
@@ -77,9 +76,9 @@ $komut_shadow_color: if($variant == 'light', rgba(20, 24, 31, .28), rgba(0, 0, 0
 }
 
 .vatan-komut-row-icon {
-  width: 30px;
-  height: 30px;
-  border-radius: 8px;
+  width: 32px;
+  height: 32px;
+  border-radius: 9px;
   background-color: transparentize($fg_color, .95);
 }
 

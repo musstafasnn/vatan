@@ -3,8 +3,8 @@
 <wallpapers>
   <wallpaper deleted="false">
     <name>VATAN</name>
-    <filename>/usr/share/backgrounds/vatan/vatan-light.svg</filename>
-    <filename-dark>/usr/share/backgrounds/vatan/vatan-dark.svg</filename-dark>
+    <filename>/usr/share/backgrounds/vatan/vatan-light.png</filename>
+    <filename-dark>/usr/share/backgrounds/vatan/vatan-dark.png</filename-dark>
     <options>zoom</options>
     <shade_type>solid</shade_type>
     <pcolor>#E7E9EC</pcolor>

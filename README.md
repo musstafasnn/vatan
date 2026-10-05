@@ -9,9 +9,9 @@ Pardus 25 için masaüstü oturumu. Üst bar yerine ekranın altında tek bir ad
 | ![Komut](docs/ekran/komut.png) | ![Karanlık](docs/ekran/karanlik.png) | ![Kilit](docs/ekran/kilit.png) |
 
 - **Komut** — `Super` ile açılır. Uygulama, dosya, ayar ve hesap makinesi sonuçlarının yanında Türkçe eylemleri anlar: `karanlık`, `odak`, `gece ışığı`, `parlaklık 40`, `ses 30`, `yan yana diz`, `kilitle`.
-- **Ada** — sık kullanılan ve çalışan uygulamalar, alan düğmesi, hızlı ayarlar ve saat tek yerde. Menüler ve bildirimler adanın üstünde açılır.
+- **Ada** — sık kullanılan ve çalışan uygulamalar, alan düğmesi, hızlı ayarlar ve saat tek yerde. Üstten ışık alan bir yüzey: ikonlar üzerine gelince yükselir, açılan uygulama zıplar. Menüler ve bildirimler adanın üstünde açılır.
 - **Yerleştirme** — pencereyi ekran kenarına sürükle: yarım ekran; üst kenara: tam ekran.
-- **Görünüm** — Geist ve Instrument Serif yazı tipleri, açık ve koyu Türkiye kontur haritası duvar kağıdı, Al vurgu rengi.
+- **Görünüm** — Geist ve Instrument Serif yazı tipleri, kat kat yükselen kabartma Türkiye haritası duvar kağıdı (açık ve koyu), Al vurgu rengi. Giriş doğrudan masaüstüne açılır.
 
 ## Kurulum
 

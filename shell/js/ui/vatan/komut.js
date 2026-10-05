@@ -20,7 +20,7 @@ const MORPH_TIME = 460;
 const RESIZE_TIME = 200;
 const PANEL_FADE_TIME = 150;
 const SEARCH_DEBOUNCE_MS = 120;
-const ICON_SIZE = 16;
+const ICON_SIZE = 22;
 const ENTRY_ICON_SIZE = 18;
 
 const MAX_ACTION_RESULTS = 5;

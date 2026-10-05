@@ -2,27 +2,41 @@
 // The bottom island that replaces the top bar. Imported after _panel.scss so
 // these rules win over the upstream top bar styling.
 
-$ada_radius: 14px;
-$ada_control_radius: 8px;
+$ada_radius: 22px;
+$ada_control_radius: 12px;
 $ada_screen_gap: 14px;
 // Gap between maximized windows and the island; part of the panel box so
 // the bottom strut includes it.
 $ada_window_gap: 10px;
-$ada_shadow_color: if($variant == 'light', rgba(20, 24, 31, .28), rgba(0, 0, 0, .6));
+$ada_shadow_color: if($variant == 'light', rgba(20, 24, 31, .3), rgba(0, 0, 0, .75));
+// The surfaces are lit from above like the wallpaper relief: a lighter top
+// edge and a top-to-bottom falloff read as a slab, not a flat strip.
+$ada_surface_top: if($variant == 'light', #ffffff, #252a33);
+$ada_surface_bottom: if($variant == 'light', #eef0f3, #15181d);
+$ada_edge_color: if($variant == 'light', rgba(20, 24, 31, .1), rgba(255, 255, 255, .06));
+$ada_lit_edge_color: if($variant == 'light', #ffffff, rgba(255, 255, 255, .16));
+
+@mixin ada_surface() {
+  border: 1px solid $ada_edge_color;
+  border-top-color: $ada_lit_edge_color;
+  background-gradient-direction: vertical;
+  background-gradient-start: $ada_surface_top;
+  background-gradient-end: $ada_surface_bottom;
+  // A blur above 32px drew as an unblurred rectangle at 2x scale.
+  box-shadow: 0 16px 32px -10px $ada_shadow_color;
+}
 
 #panelBox {
   background-color: transparent;
 }
 
 #panel {
-  height: 40px;
-  padding: 6px;
+  height: 52px;
+  padding: 7px;
   margin-top: $ada_window_gap;
   margin-bottom: $ada_screen_gap;
-  border: 1px solid $borders_color;
   border-radius: $ada_radius;
-  background-color: $panel_bg_color;
-  box-shadow: 0 12px 32px -10px $ada_shadow_color;
+  @include ada_surface();
   font-weight: normal;
 
   .panel-button {
@@ -35,7 +49,7 @@ $ada_shadow_color: if($variant == 'light', rgba(20, 24, 31, .28), rgba(0, 0, 0, 
   &:overview,
   &.unlock-screen,
   &.login-screen {
-    background-color: $panel_bg_color;
+    @include ada_surface();
 
     .panel-button {
       @include panel_button();
@@ -56,8 +70,10 @@ $ada_shadow_color: if($variant == 'light', rgba(20, 24, 31, .28), rgba(0, 0, 0, 
   // translucent system surface with the always-light lock text instead.
   &.unlock-screen,
   &.login-screen {
+    background-gradient-direction: none;
     background-color: transparentize($system_base_color, .35);
     border-color: transparentize($system_fg_color, .9);
+    border-top-color: transparentize($system_fg_color, .8);
 
     .panel-button {
       @include panel_button($fg: $transparent_panel_fg_color);
@@ -123,25 +139,30 @@ $ada_shadow_color: if($variant == 'light', rgba(20, 24, 31, .28), rgba(0, 0, 0, 
 }
 
 .vatan-dock {
-  spacing: 4px;
+  spacing: 2px;
 }
 
+// Icons sit on the slab and cast their own shadow; hover lifts them (dock.js)
+// instead of painting a highlight box behind them.
 .vatan-dock-item {
-  width: 40px;
-  height: 40px;
+  width: 52px;
+  height: 52px;
   border-radius: $ada_control_radius;
 
-  &:hover,
+  StIcon {
+    icon-shadow: 0 3px 6px if($variant == 'light', rgba(20, 24, 31, .25), rgba(0, 0, 0, .5));
+  }
+
   &:focus {
     background-color: $hover_bg_color;
   }
 
   // Fixed width; dock.js scales it in x because St does not tween width.
   .vatan-dock-indicator {
-    height: 2px;
+    height: 4px;
     width: 14px;
-    margin-bottom: 3px;
-    border-radius: 1px;
+    margin-bottom: 0;
+    border-radius: 2px;
     background-color: -st-accent-color;
   }
 }
@@ -170,4 +191,22 @@ $ada_shadow_color: if($variant == 'light', rgba(20, 24, 31, .28), rgba(0, 0, 0, 
 
 .vatan-workspace-box {
   spacing: 6px;
+}
+
+// Menus grow out of the island, so they are the same lit slab and keep a
+// clear gap above it instead of sitting on its edge.
+// The rise counts from the button, which sits 8px inside the island.
+.popup-menu-boxpointer {
+  -arrow-rise: 8px + $ada_window_gap;
+}
+
+.popup-menu-content,
+.quick-settings {
+  border-radius: $ada_radius;
+  @include ada_surface();
+  // Inside a boxpointer a gradient turns the shadow into a hard rectangle,
+  // and a deep shadow is clipped a few pixels out; flat and shallow it is.
+  background-gradient-direction: none;
+  background-color: mix($ada_surface_top, $ada_surface_bottom, 50%);
+  box-shadow: 0 2px 8px -4px $ada_shadow_color;
 }

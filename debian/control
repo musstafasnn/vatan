@@ -54,8 +54,7 @@ Depends: ${shlibs:Depends},
          gnome-session,
          gnome-settings-daemon,
          gnome-shell (>= 48.7~),
-         gnome-shell (<< 49~),
-         librsvg2-common
+         gnome-shell (<< 49~)
 Description: VATAN desktop session for Pardus
  VATAN is a desktop session for Pardus 25 GNOME. It replaces the top bar
  with an island at the bottom of the screen that holds the dock, Komut

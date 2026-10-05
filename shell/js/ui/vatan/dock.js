@@ -8,8 +8,15 @@ import * as AppFavorites from '../appFavorites.js';
 import * as PanelMenu from '../panelMenu.js';
 
 const MAX_DOCK_ITEMS = 8;
-const DOCK_ICON_SIZE = 20;
+const DOCK_ICON_SIZE = 36;
 const INDICATOR_EASE_MS = 300;
+// Hover lifts the icon off the slab rather than scaling it: a scaled icon
+// texture goes soft, a translated one stays pixel sharp.
+const LIFT_PX = 5;
+const LIFT_EASE_MS = 220;
+const BOUNCE_PX = 14;
+const BOUNCE_UP_MS = 180;
+const BOUNCE_DOWN_MS = 520;
 // St does not tween width, so the indicator is a fixed 14px bar scaled in x.
 const INDICATOR_SCALE_RUNNING = 4 / 14;
 
@@ -72,12 +79,13 @@ class VatanDock extends PanelMenu.Button {
             scale_x: 0,
         });
 
-        const column = new St.BoxLayout({vertical: true});
-        column.add_child(new St.Bin({
+        const iconBin = new St.Bin({
             x_align: Clutter.ActorAlign.CENTER,
             y_expand: true,
             child: app.create_icon_texture(DOCK_ICON_SIZE),
-        }));
+        });
+        const column = new St.BoxLayout({vertical: true});
+        column.add_child(iconBin);
         column.add_child(indicator);
 
         const item = new St.Button({
@@ -87,8 +95,40 @@ class VatanDock extends PanelMenu.Button {
             child: column,
         });
         item._indicator = indicator;
-        item.connect('clicked', () => this._activate(app));
+        item._iconBin = iconBin;
+        item.connect('notify::hover', () => this._lift(item));
+        item.connect('clicked', () => this._activate(app, item));
         return item;
+    }
+
+    _lift(item) {
+        if (item._bouncing)
+            return;
+        item._iconBin.ease({
+            translation_y: item.hover ? -LIFT_PX : 0,
+            duration: LIFT_EASE_MS,
+            mode: item.hover
+                ? Clutter.AnimationMode.EASE_OUT_BACK
+                : Clutter.AnimationMode.EASE_OUT_QUAD,
+        });
+    }
+
+    _bounce(item) {
+        item._bouncing = true;
+        const bin = item._iconBin;
+        bin.ease({
+            translation_y: -BOUNCE_PX,
+            duration: BOUNCE_UP_MS,
+            mode: Clutter.AnimationMode.EASE_OUT_QUAD,
+            onComplete: () => bin.ease({
+                translation_y: item.hover ? -LIFT_PX : 0,
+                duration: BOUNCE_DOWN_MS,
+                mode: Clutter.AnimationMode.EASE_OUT_BOUNCE,
+                onStopped: () => {
+                    item._bouncing = false;
+                },
+            }),
+        });
     }
 
     _updateState(app, item) {
@@ -118,7 +158,10 @@ class VatanDock extends PanelMenu.Button {
         });
     }
 
-    _activate(app) {
+    _activate(app, item) {
+        if (app.state === Shell.AppState.STOPPED)
+            this._bounce(item);
+
         const workspace = global.workspace_manager.get_active_workspace();
         const windows = app.get_windows()
             .filter(win => win.located_on_workspace(workspace));
