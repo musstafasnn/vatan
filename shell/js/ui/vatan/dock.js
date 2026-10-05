@@ -1,5 +1,6 @@
 import Clutter from 'gi://Clutter';
 import GObject from 'gi://GObject';
+import Graphene from 'gi://Graphene';
 import Shell from 'gi://Shell';
 import St from 'gi://St';
 
@@ -8,6 +9,9 @@ import * as PanelMenu from '../panelMenu.js';
 
 const MAX_DOCK_ITEMS = 8;
 const DOCK_ICON_SIZE = 20;
+const INDICATOR_EASE_MS = 300;
+// St does not tween width, so the indicator is a fixed 14px bar scaled in x.
+const INDICATOR_SCALE_RUNNING = 4 / 14;
 
 export const VatanDock = GObject.registerClass(
 class VatanDock extends PanelMenu.Button {
@@ -19,15 +23,16 @@ class VatanDock extends PanelMenu.Button {
         this._box = new St.BoxLayout({style_class: 'vatan-dock'});
         this.add_child(this._box);
 
+        this._items = new Map();
         const appSystem = Shell.AppSystem.get_default();
         this._tracker = Shell.WindowTracker.get_default();
         this._favorites = AppFavorites.getAppFavorites();
 
-        this._favorites.connectObject('changed', () => this._rebuild(), this);
-        appSystem.connectObject('app-state-changed', () => this._rebuild(), this);
-        this._tracker.connectObject('notify::focus-app', () => this._rebuild(), this);
+        this._favorites.connectObject('changed', () => this._sync(), this);
+        appSystem.connectObject('app-state-changed', () => this._sync(), this);
+        this._tracker.connectObject('notify::focus-app', () => this._sync(), this);
 
-        this._rebuild();
+        this._sync();
     }
 
     _apps() {
@@ -37,44 +42,87 @@ class VatanDock extends PanelMenu.Button {
         return [...favorites, ...running].slice(0, MAX_DOCK_ITEMS);
     }
 
-    _rebuild() {
-        this._box.destroy_all_children();
-        for (const app of this._apps())
-            this._box.add_child(this._createItem(app));
+    _sync() {
+        const apps = this._apps();
+
+        for (const [app, item] of this._items) {
+            if (apps.includes(app))
+                continue;
+            item.destroy();
+            this._items.delete(app);
+        }
+
+        apps.forEach((app, index) => {
+            let item = this._items.get(app);
+            if (!item) {
+                item = this._createItem(app);
+                this._items.set(app, item);
+                this._box.add_child(item);
+            }
+            this._box.set_child_at_index(item, index);
+            this._updateState(app, item);
+        });
     }
 
     _createItem(app) {
+        const indicator = new St.Widget({
+            style_class: 'vatan-dock-indicator',
+            x_align: Clutter.ActorAlign.CENTER,
+            pivot_point: new Graphene.Point({x: 0.5, y: 0.5}),
+            scale_x: 0,
+        });
+
         const column = new St.BoxLayout({vertical: true});
         column.add_child(new St.Bin({
             x_align: Clutter.ActorAlign.CENTER,
             y_expand: true,
             child: app.create_icon_texture(DOCK_ICON_SIZE),
         }));
-        column.add_child(new St.Widget({
-            style_class: 'vatan-dock-indicator',
-            x_align: Clutter.ActorAlign.CENTER,
-        }));
+        column.add_child(indicator);
 
         const item = new St.Button({
             style_class: 'vatan-dock-item',
             accessible_name: app.get_name(),
+            can_focus: true,
             child: column,
         });
-
-        const focused = this._tracker.focus_app === app;
-        if (app.state === Shell.AppState.RUNNING)
-            item.add_style_pseudo_class('running');
-        if (focused)
-            item.add_style_pseudo_class('focused');
-
-        item.connect('clicked', () => this._activate(app, focused));
+        item._indicator = indicator;
+        item.connect('clicked', () => this._activate(app));
         return item;
     }
 
-    _activate(app, focused) {
+    _updateState(app, item) {
+        const running = app.state === Shell.AppState.RUNNING;
+        const focused = this._tracker.focus_app === app;
+
+        if (running)
+            item.add_style_pseudo_class('running');
+        else
+            item.remove_style_pseudo_class('running');
+
+        if (focused)
+            item.add_style_pseudo_class('focused');
+        else
+            item.remove_style_pseudo_class('focused');
+
+        let scale = 0;
+        if (focused)
+            scale = 1;
+        else if (running)
+            scale = INDICATOR_SCALE_RUNNING;
+
+        item._indicator.ease({
+            scale_x: scale,
+            duration: INDICATOR_EASE_MS,
+            mode: Clutter.AnimationMode.EASE_OUT_QUAD,
+        });
+    }
+
+    _activate(app) {
         const workspace = global.workspace_manager.get_active_workspace();
         const windows = app.get_windows()
             .filter(win => win.located_on_workspace(workspace));
+        const focused = this._tracker.focus_app === app;
 
         if (!focused || windows.length === 0) {
             app.activate();

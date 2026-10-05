@@ -69,28 +69,39 @@ $ada_shadow_color: if($variant == 'light', rgba(20, 24, 31, .28), rgba(0, 0, 0, 
 }
 
 // Section separators are borders on the section boxes so the layout stays
-// free of extra actors.
+// free of extra actors. Panel forces the boxes to the full content height,
+// so the line spans it. With the 8px SECTION_SPACING from panel.js and the
+// padding below, the line has 8px on each side.
 #panelCenter,
 #panelRight {
-  margin-left: 4px;
   padding-left: 8px;
   border-left: 1px solid $borders_color;
-  // A border spans the full box height; the island only wants 24px of it.
-  min-height: 24px;
-  max-height: 24px;
 }
 
 // Lock and login layouts leave the center empty; no orphan separator there.
 #panel.unlock-screen #panelCenter,
 #panel.login-screen #panelCenter {
-  margin-left: 0;
   padding-left: 0;
   border-left-width: 0;
 }
 
-.vatan-dock-host {
-  padding: 0;
+// The dock is a row of buttons of its own; the host must not draw panel
+// button chrome or the whole dock highlights as one button.
+#panel .panel-button.vatan-dock-host {
+  -natural-hpadding: 0;
+  -minimum-hpadding: 0;
+  border-width: 0;
+  box-shadow: none;
   background-color: transparent;
+
+  &:hover,
+  &:focus,
+  &:active,
+  &:checked {
+    border-width: 0;
+    box-shadow: none;
+    background-color: transparent;
+  }
 }
 
 .vatan-dock {
@@ -107,31 +118,27 @@ $ada_shadow_color: if($variant == 'light', rgba(20, 24, 31, .28), rgba(0, 0, 0, 
     background-color: $hover_bg_color;
   }
 
+  // Fixed width; dock.js scales it in x because St does not tween width.
   .vatan-dock-indicator {
     height: 2px;
-    width: 0;
+    width: 14px;
     margin-bottom: 3px;
     border-radius: 1px;
     background-color: -st-accent-color;
-    transition-duration: 300ms;
-  }
-
-  &.running .vatan-dock-indicator {
-    width: 4px;
-  }
-
-  &.focused .vatan-dock-indicator {
-    width: 14px;
   }
 }
 
-.vatan-komut-button {
-  min-width: 250px;
+#panel .panel-button.vatan-komut-button,
+#panel:overview .panel-button.vatan-komut-button,
+#panel.unlock-screen .panel-button.vatan-komut-button,
+#panel.login-screen .panel-button.vatan-komut-button {
   background-color: transparentize($fg_color, .95);
+}
 
-  .vatan-komut-box {
-    spacing: 8px;
-  }
+// ButtonBox ignores min-width on the host, so it sits on the content.
+.vatan-komut-box {
+  min-width: 250px;
+  spacing: 8px;
 
   .vatan-komut-label,
   .vatan-komut-hint {
