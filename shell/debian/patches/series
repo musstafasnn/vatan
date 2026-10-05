@@ -1,0 +1,7 @@
+build-Define-test-dependencies.patch
+extensions-app-Add-test-dependency-on-generated-desktop-f.patch
+debian/Revert-tests-Fail-on-warnings-too.patch
+shell-app-Warn-instead-of-crashing-if-disposed-before-sta.patch
+debian/data-Add-im-config.desktop-to-System-folder.patch
+Revert-main-Register-session-with-GDM-on-startup.patch
+Use-pardus-software-for-application-details.patch

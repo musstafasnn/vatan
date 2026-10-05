@@ -1,0 +1,12 @@
+Tests: build-and-test
+Depends: @builddeps@
+Restrictions: allow-stderr
+
+Tests: shell-tests
+Classes: desktop
+# FIXME: We only actually depend on fewer components, but
+# until upstream does not support properly installed tests, we need
+# to generate few tools first.
+Depends: @builddeps@,
+         gnome-shell,
+Restrictions: allow-stderr skippable

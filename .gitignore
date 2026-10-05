@@ -1,0 +1,5 @@
+/shell/_build/
+/shell/debian/.debhelper/
+/shell/obj-*/
+*.deb
+.DS_Store

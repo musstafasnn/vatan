@@ -1,0 +1,60 @@
+#!/bin/bash
+# autopkgtest check: Run the to verify gnome-shell works correctly
+# (C) 2025 Canonical Ltd.
+# Author: Marco Trevisan <marco.trevisan@canonical.com>
+
+set -eu
+
+XDG_RUNTIME_DIR="$AUTOPKGTEST_TMP/runtime-dir"
+mkdir -m 700 "$XDG_RUNTIME_DIR"
+export XDG_RUNTIME_DIR
+
+build_dir=$AUTOPKGTEST_TMP/build_dir
+meson "$build_dir" --prefix=/usr
+ninja -C "$build_dir" src/gnome-shell-perf-helper
+
+export G_DEBUG="fatal-criticals"
+export META_DBUS_RUNNER_DISABLE_LOGIND_PASSTHROUGH=1
+export G_MESSAGES_DEBUG="GNOME Shell"
+export GNOME_SHELL_BUILDDIR="$build_dir/src"
+export SHELL_BACKGROUND_IMAGE="$PWD/data/background.png"
+
+if grep -qFw ID=ubuntu /etc/os-release; then
+	export GNOME_SHELL_SESSION_MODE="user"
+else
+	export GNOME_SHELL_SESSION_MODE="ubuntu"
+fi
+
+patch -d "${GNOME_SHELL_BUILDDIR}" -p1 --merge <<"EOF"
+--- a/gnome-shell-test-tool	2025-09-12 01:59:13.539304200 +0200
++++ b/gnome-shell-test-tool	2025-09-12 01:59:40.329774473 +0200
+@@ -42,7 +42,7 @@
+     args = []
+     if wrap:
+         args += wrap.split(' ')
+-    args.append(os.path.join(self_dir, 'gnome-shell'))
++    args.append('/usr/bin/gnome-shell')
+ 
+     args.append('--automation-script')
+     args.append(options.script)
+EOF
+
+printf "Running as: "; id
+echo "Environment:"
+env | LC_ALL=C sort -u
+
+declare -A tests
+tests[basic]=""
+tests[closeWithActiveWindows]=""
+tests[headlessStart]="--hotplug"
+tests[fittsy]=""
+
+for i in "${!tests[@]}"; do
+	echo "##### Running test $i"
+	dbus-run-session \
+	xvfb-run -a \
+	"${GNOME_SHELL_BUILDDIR}/gnome-shell-test-tool" \
+	--headless \
+	"$PWD/tests/shell/$i.js" \
+	${tests[$i]}
+done
