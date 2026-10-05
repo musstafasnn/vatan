@@ -22,7 +22,7 @@ $app_folder_size: 720px;
   @include tile_button($bg:$system_base_color);
 
   // override the %tile style
-  border-radius: $base_border_radius*3;
+  border-radius: $base_border_radius;
   padding: $base_padding * 2;
 
   // the icon itself
@@ -60,7 +60,7 @@ $app_folder_size: 720px;
   width: $app_folder_size;
   height: $app_folder_size;
 
-  border-radius: $modal_radius * 4;
+  border-radius: $modal_radius;
   background-color: $system_overlay_bg_color;
   color: $system_fg_color;
 
@@ -157,7 +157,7 @@ $page_indicator_size: 10px;
     background-gradient-start: rgba(255, 255, 255, 0.05);
     background-gradient-end: transparent;
     background-gradient-direction: horizontal;
-    border-radius: $modal_radius * 1.5 0px 0px $modal_radius * 1.5;
+    border-radius: $modal_radius 0px 0px $modal_radius;
   }
 
   &.previous:ltr,
@@ -165,7 +165,7 @@ $page_indicator_size: 10px;
     background-gradient-start: transparent;
     background-gradient-end: rgba(255, 255, 255, 0.05);
     background-gradient-direction: horizontal;
-    border-radius: 0px $modal_radius * 1.5 $modal_radius * 1.5 0px;
+    border-radius: 0px $modal_radius $modal_radius 0px;
   }
 }
 
