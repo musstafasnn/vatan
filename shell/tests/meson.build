@@ -44,6 +44,7 @@ unit_tests = {
     # run in UTC
     'env': { 'TZ': 'UTC' },
   },
+  'turkishText': {},
   'url': {},
   'versionCompare': {},
 }
