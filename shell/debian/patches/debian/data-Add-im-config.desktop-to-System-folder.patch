@@ -1,0 +1,29 @@
+From: Simon McVittie <smcv@debian.org>
+Date: Tue, 10 Jun 2025 11:42:17 +0100
+Subject: data: Add im-config.desktop to System folder
+MIME-Version: 1.0
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
+
+Debian installs this by default, but most users will only need to run
+it once, or perhaps not at all.
+
+Thanks: Jeremy Bícha
+Helps: #1099579
+Forwarded: not-needed, Debian-specific
+---
+ data/default-apps/system-folder.txt | 1 +
+ 1 file changed, 1 insertion(+)
+
+diff --git a/data/default-apps/system-folder.txt b/data/default-apps/system-folder.txt
+index 2cda554..62cf6ba 100644
+--- a/data/default-apps/system-folder.txt
++++ b/data/default-apps/system-folder.txt
+@@ -2,6 +2,7 @@ nm-connection-editor.desktop              # Advanced Network Configuration
+ org.gnome.DejaDup.desktop                 # Backups
+ org.gnome.baobab.desktop                  # Disk Usage Analyzer
+ org.gnome.DiskUtility.desktop             # Disks
++im-config.desktop                         # Input Method
+ org.gnome.Logs.desktop                    # Logs
+ org.freedesktop.MalcontentControl.desktop # Parental Controls
+ org.freedesktop.GnomeAbrt.desktop         # Problem Reporting

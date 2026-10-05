@@ -1,0 +1,34 @@
+#!/usr/bin/env -S gjs -m
+
+/* global jasmineImporter */
+
+import GLib from 'gi://GLib';
+import System from 'system';
+
+const pkgdatadir = GLib.getenv('TEST_PKGDATADIR') ?? '@pkgdatadir@';
+const jasmineMod = GLib.getenv('TEST_JASMINE_MOD') ?? '@jasmine_mod@';
+
+// Create a separate GJS importer object for Jasmine modules, so that Jasmine's
+// modules are not exposed to test code (e.g. client code might have its own
+// Utils module.)
+// This means that all imports within Jasmine must use jasmineImporter rather
+// than imports. That includes imports of Jasmine modules in the tests. It would
+// be better to test a separate copy of Jasmine code, but importing most modules
+// registers a GType, and we cannot register two GTypes with the same name in
+// the same process.
+
+const oldSearchPath = imports.searchPath.slice();  // make a copy
+imports.searchPath.unshift(GLib.path_get_dirname(pkgdatadir));
+globalThis.jasmineImporter = imports[jasmineMod];
+imports.searchPath = oldSearchPath;
+
+const base = `file://${pkgdatadir}`;
+
+const Command = await import(`${base}/command.js`);
+const JasmineBoot = await import(`${base}/jasmineBoot.js`);
+
+// Do not conflict with global "jasmine" object
+const _jasmine = new JasmineBoot.Jasmine();
+_jasmine.installAPI(globalThis);
+
+System.exit(await Command.run(_jasmine, ARGV, 10));

@@ -1,0 +1,12 @@
+#!/usr/bin/make -f
+# -*- makefile -*-
+
+# Uncomment this to turn on verbose mode.
+#export DH_VERBOSE=1
+
+%:
+	dh $@
+
+# Print out test log on failure, so that we can diagnose failures on OBS
+override_dh_auto_test:
+	dh_auto_test || (find . -name testlog.txt | xargs cat ; exit 1)

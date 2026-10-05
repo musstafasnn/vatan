@@ -1,0 +1,35 @@
+#!/usr/bin/env -S gjs -m
+
+import GLib from 'gi://GLib';
+import System from 'system';
+
+const pkglibexecdir = GLib.getenv('TEST_PKGLIBEXECDIR') ?? '@pkglibexecdir@';
+const pkgdatadir = GLib.getenv('TEST_PKGDATADIR') ?? '@pkgdatadir@';
+
+const runnerPath = `${pkglibexecdir}/jasmine-runner`;
+const base = `file://${pkgdatadir}`;
+
+const Config = await import(`${base}/config.js`);
+const Options = await import(`${base}/options.js`);
+
+const [files, options] = Options.parseOptions(ARGV);
+
+if (options.version) {
+    print('Jasmine @PACKAGE_VERSION@');
+    System.exit(0);
+}
+
+const config = Config.loadConfig(options);
+
+// Launch Jasmine in a subprocess so we can control the environment
+const launcher = Config.prepareLauncher(config, options);
+let args = Config.configToArgs(config, files, options);
+args.unshift(runnerPath);  // argv[0]
+args = Config.wrapArgs(args, config, options);
+const process = launcher.spawnv(args);
+process.wait(null);
+
+if (process.get_if_exited())
+    System.exit(process.get_exit_status());
+
+System.exit(1);
