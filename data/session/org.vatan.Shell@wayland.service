@@ -1,0 +1,27 @@
+[Unit]
+Description=VATAN Shell on Wayland
+# Same failure handling as GNOME Shell: on Wayland the session cannot
+# outlive its compositor.
+OnFailure=org.gnome.Shell-disable-extensions.service gnome-session-shutdown.target
+OnFailureJobMode=replace-irreversibly
+CollectMode=inactive-or-failed
+RefuseManualStart=on
+RefuseManualStop=on
+
+After=gnome-session-manager.target
+
+Requisite=gnome-session-initialized.target
+PartOf=gnome-session-initialized.target
+Before=gnome-session-initialized.target
+
+ConditionEnvironment=XDG_SESSION_TYPE=%I
+
+[Service]
+Slice=session.slice
+Type=notify
+ExecStart=/usr/lib/vatan-shell/bin/gnome-shell
+SuccessExitStatus=1
+ExecStopPost=-/bin/sh -c 'test "$SERVICE_RESULT" != "exec-condition" && systemctl --user unset-environment GNOME_SETUP_DISPLAY WAYLAND_DISPLAY DISPLAY XAUTHORITY'
+Restart=no
+TimeoutStopSec=5
+OOMScoreAdjust=-1000

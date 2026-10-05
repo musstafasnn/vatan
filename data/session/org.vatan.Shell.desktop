@@ -1,0 +1,13 @@
+[Desktop Entry]
+Type=Application
+Name=VATAN Shell
+Comment=Window management and application launching
+Exec=/usr/lib/vatan-shell/bin/gnome-shell
+Categories=GNOME;GTK;Core;
+OnlyShowIn=VATAN;
+NoDisplay=true
+X-GNOME-Autostart-Phase=DisplayServer
+X-GNOME-Provides=panel;windowmanager;
+X-GNOME-Autostart-Notify=true
+X-GNOME-AutoRestart=false
+X-GNOME-HiddenUnderSystemd=true
