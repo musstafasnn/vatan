@@ -414,7 +414,7 @@ class Komut extends St.Widget {
                 if (!cancellable.is_cancelled())
                     logError(e, 'Komut search provider failed');
                 settle(null);
-            });
+            }).catch(e => logError(e, 'Komut failed to render results'));
         });
     }
 
