@@ -30,6 +30,7 @@ import {Komut} from './vatan/komut.js';
 import {VatanTimers} from './vatan/timerIsland.js';
 import {VatanNewsWidget} from './vatan/newsWidget.js';
 import {maybeShowTour} from './vatan/tour.js';
+import {VatanQuarterTiling} from './vatan/quarterTiling.js';
 import * as RunDialog from './runDialog.js';
 import * as WelcomeDialog from './welcomeDialog.js';
 import * as Layout from './layout.js';
@@ -66,6 +67,7 @@ export let panel = null;
 export let vatanKomut = null;
 export let vatanTimers = null;
 export let vatanNews = null;
+export let vatanQuarterTiling = null;
 let _vatanSettings = null;
 export let overview = null;
 export let runDialog = null;
@@ -262,6 +264,7 @@ async function _initializeUI() {
     if (sessionMode.hasOverview) {
         vatanKomut = new Komut();
         vatanNews = new VatanNewsWidget();
+        vatanQuarterTiling = new VatanQuarterTiling();
     }
     keyboard = new Keyboard.KeyboardManager();
     notificationDaemon = new NotificationDaemon.NotificationDaemon();

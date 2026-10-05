@@ -1658,12 +1658,24 @@ export class WindowManager {
     }
 
     _showTilePreview(shellwm, window, tileRect, monitorIndex) {
+        if (Main.vatanQuarterTiling?.ownsPreview)
+            return;
+        this.showVatanTilePreview(window, tileRect, monitorIndex);
+    }
+
+    _hideTilePreview() {
+        if (Main.vatanQuarterTiling?.ownsPreview)
+            return;
+        this.hideVatanTilePreview();
+    }
+
+    showVatanTilePreview(window, tileRect, monitorIndex) {
         if (!this._tilePreview)
             this._tilePreview = new TilePreview();
         this._tilePreview.open(window, tileRect, monitorIndex);
     }
 
-    _hideTilePreview() {
+    hideVatanTilePreview() {
         if (!this._tilePreview)
             return;
         this._tilePreview.close();

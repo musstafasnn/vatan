@@ -49,6 +49,7 @@ unit_tests = {
   'vatanActions': {},
   'vatanConvert': {},
   'vatanFeed': {},
+  'vatanTiling': {},
   'vatanTimer': {},
   'versionCompare': {},
 }
