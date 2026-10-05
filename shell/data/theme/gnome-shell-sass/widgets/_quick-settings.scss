@@ -13,7 +13,7 @@
 }
 
 .quick-toggle, .quick-toggle-has-menu {
-  border-radius: $forced_circular_radius;
+  border-radius: $base_border_radius;
   min-width: 12em;
   max-width: 12em;
   min-height: $scalable_icon_size * 3; // use icon size so the button scales
@@ -66,27 +66,27 @@ $quick_toggle_checked_active_bg_color: mix($fg_color, $bg_color, 76%);
     max-width: auto;
 
     &:ltr {
-      border-radius: $forced_circular_radius 0 0 $forced_circular_radius;
+      border-radius: $base_border_radius 0 0 $base_border_radius;
       > StBoxLayout { padding-right: $scaled_padding * 1.5; }
     }
 
     &:rtl {
-      border-radius: 0 $forced_circular_radius $forced_circular_radius 0;
+      border-radius: 0 $base_border_radius $base_border_radius 0;
       > StBoxLayout { padding-left: $scaled_padding * 1.5; }
     }
 
-    &:ltr:last-child { border-radius: $forced_circular_radius; }
-    &:rtl:last-child { border-radius: $forced_circular_radius; }
+    &:ltr:last-child { border-radius: $base_border_radius; }
+    &:rtl:last-child { border-radius: $base_border_radius; }
   }
 
   & .quick-toggle-menu-button {
     padding: $scaled_padding $scaled_padding * 1.75;
 
     &:ltr {
-      border-radius: 0 $forced_circular_radius $forced_circular_radius 0;
+      border-radius: 0 $base_border_radius $base_border_radius 0;
     }
     &:rtl {
-      border-radius: $forced_circular_radius 0 0 $forced_circular_radius;
+      border-radius: $base_border_radius 0 0 $base_border_radius;
     }
   }
 
