@@ -49,6 +49,9 @@ const N_QUICK_SETTINGS_COLUMNS = 2;
 
 const INACTIVE_WORKSPACE_DOT_SCALE = 0.75;
 
+const SECTION_SPACING = 8;
+const ISLAND_SCREEN_MARGIN = 12;
+
 /**
  * AppMenuButton:
  *
@@ -646,6 +649,7 @@ class Panel extends St.Widget {
         super._init({
             name: 'panel',
             reactive: true,
+            x_align: Clutter.ActorAlign.CENTER,
         });
 
         this.set_offscreen_redirect(Clutter.OffscreenRedirect.ALWAYS);
@@ -688,71 +692,47 @@ class Panel extends St.Widget {
         this._updatePanel();
     }
 
-    vfunc_get_preferred_width(_forHeight) {
-        let primaryMonitor = Main.layoutManager.primaryMonitor;
+    _occupiedBoxes() {
+        return [this._leftBox, this._centerBox, this._rightBox]
+            .filter(box => box.get_preferred_width(-1)[1] > 0);
+    }
 
-        if (primaryMonitor)
-            return [0, primaryMonitor.width];
+    vfunc_get_preferred_width(forHeight) {
+        const boxes = this._occupiedBoxes();
+        let width = boxes.reduce(
+            (sum, box) => sum + box.get_preferred_width(forHeight)[1], 0);
+        width += SECTION_SPACING * Math.max(0, boxes.length - 1);
 
-        return [0,  0];
+        const monitor = Main.layoutManager.primaryMonitor;
+        if (monitor)
+            width = Math.min(width, monitor.width - 2 * ISLAND_SCREEN_MARGIN);
+
+        return this.get_theme_node().adjust_preferred_width(width, width);
     }
 
     vfunc_allocate(box) {
         this.set_allocation(box);
 
-        let allocWidth = box.x2 - box.x1;
-        let allocHeight = box.y2 - box.y1;
+        const content = this.get_theme_node().get_content_box(box);
+        const boxes = this._occupiedBoxes();
+        if (this.get_text_direction() === Clutter.TextDirection.RTL)
+            boxes.reverse();
 
-        let [, leftNaturalWidth] = this._leftBox.get_preferred_width(-1);
-        let [, centerNaturalWidth] = this._centerBox.get_preferred_width(-1);
-        let [, rightNaturalWidth] = this._rightBox.get_preferred_width(-1);
-
-        let sideWidth, centerWidth;
-        centerWidth = centerNaturalWidth;
-
-        // get workspace area and center date entry relative to it
-        let monitor = Main.layoutManager.findMonitorForActor(this);
-        let centerOffset = 0;
-        if (monitor) {
-            let workArea = Main.layoutManager.getWorkAreaForMonitor(monitor.index);
-            centerOffset = 2 * (workArea.x - monitor.x) + workArea.width - monitor.width;
+        const childBox = new Clutter.ActorBox();
+        for (const empty of [this._leftBox, this._centerBox, this._rightBox]) {
+            if (!boxes.includes(empty))
+                empty.allocate(childBox);
         }
 
-        sideWidth = Math.max(0, (allocWidth - centerWidth + centerOffset) / 2);
-
-        let childBox = new Clutter.ActorBox();
-
-        childBox.y1 = 0;
-        childBox.y2 = allocHeight;
-        if (this.get_text_direction() === Clutter.TextDirection.RTL) {
-            childBox.x1 = Math.max(
-                allocWidth - Math.min(Math.floor(sideWidth), leftNaturalWidth),
-                0);
-            childBox.x2 = allocWidth;
-        } else {
-            childBox.x1 = 0;
-            childBox.x2 = Math.min(Math.floor(sideWidth), leftNaturalWidth);
+        let x = content.x1;
+        for (const sectionBox of boxes) {
+            const [, natural] = sectionBox.get_preferred_width(content.get_height());
+            const width = Math.max(0, Math.min(natural, content.x2 - x));
+            childBox.set_origin(x, content.y1);
+            childBox.set_size(width, content.get_height());
+            sectionBox.allocate(childBox);
+            x += width + SECTION_SPACING;
         }
-        this._leftBox.allocate(childBox);
-
-        childBox.x1 = Math.ceil(sideWidth);
-        childBox.y1 = 0;
-        childBox.x2 = childBox.x1 + centerWidth;
-        childBox.y2 = allocHeight;
-        this._centerBox.allocate(childBox);
-
-        childBox.y1 = 0;
-        childBox.y2 = allocHeight;
-        if (this.get_text_direction() === Clutter.TextDirection.RTL) {
-            childBox.x1 = 0;
-            childBox.x2 = Math.min(Math.floor(sideWidth), rightNaturalWidth);
-        } else {
-            childBox.x1 = Math.max(
-                allocWidth - Math.min(Math.floor(sideWidth), rightNaturalWidth),
-                0);
-            childBox.x2 = allocWidth;
-        }
-        this._rightBox.allocate(childBox);
     }
 
     _tryDragWindow(event) {

@@ -1,0 +1,46 @@
+/* Ada */
+// The bottom island that replaces the top bar. Imported after _panel.scss so
+// these rules win over the upstream top bar styling.
+
+$ada_radius: 14px;
+$ada_control_radius: 8px;
+$ada_screen_gap: 14px;
+$ada_shadow_color: if($variant == 'light', rgba(20, 24, 31, .28), rgba(0, 0, 0, .6));
+
+#panelBox {
+  background-color: transparent;
+}
+
+#panel {
+  height: 40px;
+  padding: 6px;
+  margin-bottom: $ada_screen_gap;
+  border: 1px solid $borders_color;
+  border-radius: $ada_radius;
+  background-color: $panel_bg_color;
+  box-shadow: 0 12px 32px -10px $ada_shadow_color;
+  font-weight: normal;
+
+  .panel-button {
+    border-radius: $ada_control_radius;
+    font-weight: normal;
+  }
+
+  // Upstream turns the top bar transparent over the overview, lock and login
+  // screens. The island keeps its surface so it never floats as bare icons.
+  &:overview,
+  &.unlock-screen,
+  &.login-screen {
+    background-color: $panel_bg_color;
+
+    .panel-button {
+      @include panel_button();
+      border-radius: $ada_control_radius;
+      font-weight: normal;
+
+      &.clock-display {
+        @include panel_button($highlighted_child: true, $child_class: '.clock');
+      }
+    }
+  }
+}
