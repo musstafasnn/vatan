@@ -11,6 +11,9 @@ enable-hot-corners=false
 font-name='Geist 11'
 document-font-name='Geist 11'
 
+[org.gnome.desktop.wm.preferences:VATAN]
+button-layout=':minimize,maximize,close'
+
 [org.gnome.desktop.background:VATAN]
 picture-uri='file:///usr/share/backgrounds/vatan/vatan-light.png'
 picture-uri-dark='file:///usr/share/backgrounds/vatan/vatan-dark.png'

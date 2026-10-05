@@ -267,6 +267,13 @@ class VatanSettingsWindow extends Adw.ApplicationWindow {
         });
         this._vatan.bind('desktop-icons', desktop, 'active', Gio.SettingsBindFlags.DEFAULT);
         look.add(desktop);
+
+        const apps = new Adw.SwitchRow({
+            title: 'Uygulamalarda VATAN görünümü',
+            subtitle: 'Pencere renkleri, köşeler, gölge ve pencere düğmeleri adayla aynı dilde olur. Yeni açılan pencerelere uygulanır.',
+        });
+        this._vatan.bind('app-style', apps, 'active', Gio.SettingsBindFlags.DEFAULT);
+        look.add(apps);
         page.add(look);
         return page;
     }

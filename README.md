@@ -21,6 +21,7 @@ Pardus 25 için masaüstü oturumu. Üst bar yerine ekranın altında tek bir ad
 - **Hızlı Bakış** — Dosyalar'da bir dosyayı seçip boşluk tuşuna bas.
 - **Pano geçmişi** — Komut'a `pano` yaz; son kopyaladıkların çıkar (yalnızca bellekte tutulur, parola yöneticilerinin gizli kopyaları alınmaz).
 - **Zamanlı odak** — VATAN Ayarları → Odak: belirlediğin saatlerde bildirim balonları susar.
+- **Uygulama görünümü** — VATAN oturumunda uygulama pencereleri adayla aynı dili konuşur: renkler, 12 px köşeler, derin gölge, iki gri ve bir kırmızı noktadan oluşan pencere düğmeleri. `~/.config/gtk-3.0/gtk.css` ve `gtk-4.0/gtk.css` dosyalarına tek bir içe aktarma bloğu eklenir; VATAN Ayarları'ndan kapatınca blok silinir. GNOME oturumunda uygulamalar kendi görünümünde kalır.
 - **Tanıtım turu** — ilk girişte dört sayfalık kısa tur; Komut'ta `tur` yazarak yeniden açılır.
 - **Uygulamalar** — adanın başındaki ızgara düğmesi bilgisayardaki tüm uygulamaları açar.
 - **Görünüm** — Geist ve Instrument Serif yazı tipleri, kat kat yükselen kabartma Türkiye haritası duvar kağıdı (açık ve koyu), VATAN simge teması: sistem uygulamaları için sıfırdan çizilmiş, Selçuklu yıldızı, Orhun harfleri, İznik çinisi ve kilim motifleri taşıyan simgeler ve kırmızı klasörler. Kabuk, uygulamalar ve simgeler aynı kırmızıyı kullanır. Giriş doğrudan masaüstüne açılır.

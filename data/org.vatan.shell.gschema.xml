@@ -47,6 +47,11 @@
       <default>false</default>
       <summary>Internal: banners are off because of the schedule, not the user</summary>
     </key>
+    <key name="app-style" type="b">
+      <default>true</default>
+      <summary>Give applications the VATAN window look in the VATAN session</summary>
+      <description>Adds one import block to ~/.config/gtk-3.0/gtk.css and gtk-4.0/gtk.css that points into the session's runtime directory; turning it off removes the block.</description>
+    </key>
     <key name="desktop-icons" type="b">
       <default>true</default>
       <summary>Show files and folders on the desktop, with the desktop right-click menu</summary>

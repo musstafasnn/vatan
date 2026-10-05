@@ -33,6 +33,7 @@ import {maybeShowTour} from './vatan/tour.js';
 import {VatanQuarterTiling} from './vatan/quarterTiling.js';
 import {VatanClipboardHistory} from './vatan/clipboardHistory.js';
 import {VatanFocusSchedule} from './vatan/focusSchedule.js';
+import {VatanAppStyle} from './vatan/appStyle.js';
 import * as RunDialog from './runDialog.js';
 import * as WelcomeDialog from './welcomeDialog.js';
 import * as Layout from './layout.js';
@@ -72,6 +73,7 @@ export let vatanNews = null;
 export let vatanQuarterTiling = null;
 export let vatanClipboard = null;
 export let vatanFocus = null;
+export let vatanAppStyle = null;
 let _vatanSettings = null;
 export let overview = null;
 export let runDialog = null;
@@ -271,6 +273,7 @@ async function _initializeUI() {
         vatanQuarterTiling = new VatanQuarterTiling();
         vatanClipboard = new VatanClipboardHistory();
         vatanFocus = new VatanFocusSchedule();
+        vatanAppStyle = new VatanAppStyle();
     }
     keyboard = new Keyboard.KeyboardManager();
     notificationDaemon = new NotificationDaemon.NotificationDaemon();

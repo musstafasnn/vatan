@@ -31,6 +31,9 @@ const VATAN_INCOMPATIBLE_EXTENSIONS = new Set([
     'blur-my-shell@aunetx',
     'dash-to-dock@micxgx.gmail.com',
     'dash-to-panel@jderose9.github.com',
+    // GTK 3 vurgu rengini VATAN uygulama görünümü yazar; bu eklenti aynı
+    // gtk.css dosyasını baştan yazıp görünümün içe aktarma satırını siler.
+    'gtk3-accent-sync@pardus.org.tr',
     'date-menu-formatter@marcinjakubowski.github.com',
     'just-perfection-desktop@just-perfection',
     'start-overlay-in-application-view@Hex_cz',
