@@ -719,16 +719,16 @@ export const LayoutManager = GObject.registerClass({
 
             let monitor = this.primaryMonitor;
 
-            if (!Main.sessionMode.hasOverview) {
-                const x = monitor.x + monitor.width / 2.0;
-                const y = monitor.y + monitor.height / 2.0;
+            // Upstream logs in to the overview; VATAN logs in to the desktop,
+            // so the session always takes the zoom-in path.
+            const x = monitor.x + monitor.width / 2.0;
+            const y = monitor.y + monitor.height / 2.0;
 
-                this.uiGroup.set_pivot_point(
-                    x / global.screen_width,
-                    y / global.screen_height);
-                this.uiGroup.scale_x = this.uiGroup.scale_y = 0.75;
-                this.uiGroup.opacity = 0;
-            }
+            this.uiGroup.set_pivot_point(
+                x / global.screen_width,
+                y / global.screen_height);
+            this.uiGroup.scale_x = this.uiGroup.scale_y = 0.75;
+            this.uiGroup.opacity = 0;
 
             global.window_group.set_clip(monitor.x, monitor.y, monitor.width, monitor.height);
 
@@ -770,20 +770,16 @@ export const LayoutManager = GObject.registerClass({
     }
 
     async _startupAnimationSession() {
-        if (Main.sessionMode.hasOverview) {
-            await Main.overview.runStartupAnimation();
-        } else {
-            await new Promise(resolve => {
-                this.uiGroup.ease({
-                    scale_x: 1,
-                    scale_y: 1,
-                    opacity: 255,
-                    duration: STARTUP_ANIMATION_TIME,
-                    mode: Clutter.AnimationMode.EASE_OUT_QUAD,
-                    onStopped: () => resolve(),
-                });
+        await new Promise(resolve => {
+            this.uiGroup.ease({
+                scale_x: 1,
+                scale_y: 1,
+                opacity: 255,
+                duration: STARTUP_ANIMATION_TIME,
+                mode: Clutter.AnimationMode.EASE_OUT_QUAD,
+                onStopped: () => resolve(),
             });
-        }
+        });
     }
 
     _startupAnimationComplete() {
