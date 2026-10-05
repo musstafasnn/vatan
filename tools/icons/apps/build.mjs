@@ -202,6 +202,26 @@ ICONS['org.gnome.Settings'] = ['slate', () => {
     `<path d="${hole}" fill="none" stroke="${RED_DEEP}" stroke-width="2.4" transform="translate(.8 .8)" opacity=".7"/>`;
 }];
 
+// VATAN's own settings: a smooth rotary knob over the island dock, so it
+// stays apart from the toothed GNOME gear at 32 px. The knob's cap is the
+// Seljuk star and its lit scale is the accent red.
+ICONS['org.vatan.Settings'] = ['slate', () => {
+  let scale = '';
+  for (let i = 0; i <= 12; i++) {
+    const a = 135 + i * 22.5, on = a <= 315;
+    scale += `<path d="${line([polar(64, 50, 27, a), polar(64, 50, i % 4 ? 31 : 33, a)])}" stroke="${on ? RED : IVORY}" stroke-width="2.6" stroke-linecap="round" opacity="${on ? 1 : .3}"/>`;
+  }
+  const apps = [34, 48, 62, 76].map((x, i) => `<path d="${rr(x, 88, 10, 10, 2.5)}" fill="${i === 3 ? RED : SLATE}" opacity="${i === 3 ? 1 : .7}"/>`).join('');
+  return scale +
+    `<circle cx="64" cy="50" r="21" fill="url(#p-ivory)"/>` +
+    groove('M48 50A16 16 0 1 0 80 50A16 16 0 1 0 48 50', 1.1, 'rgba(27,31,39,.18)', 'rgba(255,255,255,.95)') +
+    `<path d="${star8(64, 50, 9)}" fill="url(#p-red)"/>` +
+    `<path d="${line([polar(64, 50, 12.5, 315), polar(64, 50, 18, 315)])}" stroke="${SLATE}" stroke-width="3" stroke-linecap="round"/>` +
+    `<path d="${rr(22, 82, 84, 22, 11)}" fill="url(#p-ivory)"/>` +
+    `<path d="M32 82.8H96" stroke="#fff" stroke-width="1.2" stroke-linecap="round"/>` +
+    `<path d="M91 93H96" stroke="${SLATE}" stroke-width="2" stroke-linecap="round" opacity=".4"/>` + apps;
+}];
+
 ICONS['org.gnome.Console'] = ['slate', () =>
   orkhon('O', 46, 38, 52, IVORY, 118) +
   `<path d="${rr(62, 81, 30, 9, 1.5)}" fill="url(#p-red)"/>`];

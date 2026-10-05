@@ -16,6 +16,7 @@ Pardus 25 için masaüstü oturumu. Üst bar yerine ekranın altında tek bir ad
 - **Canlı Ada** — müzik ya da video çalarken parça adada görünür; oynat/duraklat ve sonraki oradan. Komut'a `çay 3 dk`, `25 dakika odak`, `1 saat 30 dk` ya da `18:30 toplantı` yaz: ada geri sayımı ve kalan süreyi canlı gösterir, süre dolunca kırmızıya döner ve bildirim gönderir. Adadaki bölmeye tıklayınca kurulu zamanlayıcılar listelenir ve iptal edilebilir.
 - **Gündem** — masaüstünde, pencerelerin altında TRT Haber son dakika başlıkları; tıklayınca haber tarayıcıda açılır. Komut'ta `gündem` yazarak kaldırılır ya da geri getirilir. Kaynak `org.vatan.shell news-feed` ayarıyla değişir (yalnızca https).
 - **NSosyal** — dock'ta ve Komut'ta tek tıkla NSosyal.
+- **VATAN Ayarları** — biçem, vurgu rengi, VATAN simgeleri, kabartma duvar kağıdı, Gündem kaynağı, döviz kuru isteği ve tanıtım turu tek yerde; sistem ayarlarına da buradan geçilir.
 - **Tanıtım turu** — ilk girişte dört sayfalık kısa tur; Komut'ta `tur` yazarak yeniden açılır.
 - **Uygulamalar** — adanın başındaki ızgara düğmesi bilgisayardaki tüm uygulamaları açar.
 - **Yerleştirme** — pencereyi ekran kenarına sürükle: yarım ekran; üst kenara: tam ekran.

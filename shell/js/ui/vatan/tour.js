@@ -75,10 +75,16 @@ export function showTour() {
     new VatanTour().open();
 }
 
+let settings = null;
+
 // Shown once per user; marking it before opening means a crash mid-tour does
-// not trap anyone in a tour on every login.
+// not trap anyone in a tour on every login. VATAN Ayarları clears the flag to
+// ask for the tour again, which this picks up at once.
 export function maybeShowTour() {
-    const settings = new Gio.Settings({schema_id: 'org.vatan.shell'});
+    if (!settings) {
+        settings = new Gio.Settings({schema_id: 'org.vatan.shell'});
+        settings.connect('changed::tour-shown', () => maybeShowTour());
+    }
     if (settings.get_boolean('tour-shown'))
         return;
     settings.set_boolean('tour-shown', true);

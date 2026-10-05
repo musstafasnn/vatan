@@ -54,7 +54,9 @@ Depends: ${shlibs:Depends},
          gnome-session,
          gnome-settings-daemon,
          gnome-shell (>= 48.7~),
-         gnome-shell (<< 49~)
+         gnome-shell (<< 49~),
+         gjs,
+         gir1.2-adw-1 (>= 1.7)
 Recommends: pardus-gnome-icon-theme
 Description: VATAN desktop session for Pardus
  VATAN is a desktop session for Pardus 25 GNOME. It replaces the top bar

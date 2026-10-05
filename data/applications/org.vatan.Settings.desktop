@@ -1,0 +1,13 @@
+[Desktop Entry]
+Type=Application
+Name=VATAN Settings
+Name[tr]=VATAN Ayarları
+Comment=Appearance, the news card and Komut
+Comment[tr]=Görünüm, Gündem kartı ve Komut
+Exec=gjs -m /usr/share/vatan/settings/vatan-settings.js
+Icon=org.vatan.Settings
+Categories=Settings;DesktopSettings;
+Keywords=vatan;ayar;tema;vurgu;gündem;komut;
+StartupNotify=true
+DBusActivatable=false
+OnlyShowIn=VATAN;

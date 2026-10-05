@@ -11,6 +11,11 @@
       <summary>RSS feed of the news card</summary>
       <description>Must be an https URL; anything else is ignored.</description>
     </key>
+    <key name="currency-rates" type="b">
+      <default>true</default>
+      <summary>Let Komut fetch exchange rates from TCMB</summary>
+      <description>Off means no request goes to TCMB and Komut converts only units.</description>
+    </key>
     <key name="tour-shown" type="b">
       <default>false</default>
       <summary>Whether the first-login tour has been shown</summary>

@@ -194,6 +194,8 @@ export class VatanActionsProvider {
         const {amount, from, to} = request;
         if (!isCurrency(from))
             return {amount, from, to, result: convertUnits(amount, from, to)};
+        if (!this._vatanSettings.get_boolean('currency-rates'))
+            return null;
 
         const bulletin = await this._rates(cancellable);
         const result = bulletin && convertCurrency(amount, from, to, bulletin.rates);
