@@ -1,0 +1,22 @@
+# VATAN defaults. Every group is scoped with ":VATAN", so they apply only in
+# the VATAN session (XDG_CURRENT_DESKTOP contains VATAN) and leave the stock
+# GNOME session of Pardus untouched. The 90_ prefix sorts after Pardus's
+# 20_pardus-gnome-settings override.
+
+[org.gnome.desktop.interface:VATAN]
+accent-color='red'
+color-scheme='default'
+enable-hot-corners=false
+font-name='Geist 11'
+document-font-name='Geist 11'
+
+[org.gnome.desktop.background:VATAN]
+picture-uri='file:///usr/share/backgrounds/vatan/vatan-light.svg'
+picture-uri-dark='file:///usr/share/backgrounds/vatan/vatan-dark.svg'
+picture-options='zoom'
+
+[org.gnome.desktop.screensaver:VATAN]
+picture-uri='file:///usr/share/backgrounds/vatan/vatan-light.svg'
+
+[org.gnome.shell:VATAN]
+favorite-apps=['firefox-esr.desktop', 'org.gnome.Nautilus.desktop', 'org.gnome.Console.desktop', 'libreoffice-writer.desktop', 'tr.org.pardus.software.desktop']
