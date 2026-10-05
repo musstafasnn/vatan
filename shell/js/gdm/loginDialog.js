@@ -654,9 +654,9 @@ export const LoginDialog = GObject.registerClass({
         let centerX = dialogBox.x1 + (dialogBox.x2 - dialogBox.x1) / 2;
 
         actorBox.x1 = Math.floor(centerX - natWidth / 2);
+        actorBox.x2 = actorBox.x1 + natWidth;
         actorBox.y1 = bottomEdgeClearOfIsland(
             actorBox.x1, actorBox.x2, dialogBox.y2, 0) - natHeight;
-        actorBox.x2 = actorBox.x1 + natWidth;
         actorBox.y2 = actorBox.y1 + natHeight;
 
         return actorBox;

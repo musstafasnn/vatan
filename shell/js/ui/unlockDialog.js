@@ -35,10 +35,12 @@ export const CLOCK_SCREEN_MARGIN = 48;
 export function bottomEdgeClearOfIsland(x1, x2, screenBottom, margin) {
     const bottom = screenBottom - margin;
     const monitor = Main.layoutManager.primaryMonitor;
-    const [panelX, panelY] = Main.panel.get_transformed_position();
-    const [panelWidth] = Main.panel.get_transformed_size();
-    const islandX1 = panelX - monitor.x;
-    const islandTop = panelY - monitor.y;
+    // Untransformed: the greeter slides panelBox in with translation_y, which
+    // would otherwise read as an island below the screen.
+    const {panelBox} = Main.layoutManager;
+    const panelWidth = Main.panel.width;
+    const islandX1 = panelBox.x + Main.panel.x - monitor.x;
+    const islandTop = panelBox.y + Main.panel.y - monitor.y;
 
     if (panelWidth <= 0 || x2 <= islandX1 || x1 >= islandX1 + panelWidth)
         return bottom;
