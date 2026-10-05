@@ -19,7 +19,7 @@ Pardus 25 için masaüstü oturumu. Üst bar yerine ekranın altında tek bir ad
 - **Tanıtım turu** — ilk girişte dört sayfalık kısa tur; Komut'ta `tur` yazarak yeniden açılır.
 - **Uygulamalar** — adanın başındaki ızgara düğmesi bilgisayardaki tüm uygulamaları açar.
 - **Yerleştirme** — pencereyi ekran kenarına sürükle: yarım ekran; üst kenara: tam ekran.
-- **Görünüm** — Geist ve Instrument Serif yazı tipleri, kat kat yükselen kabartma Türkiye haritası duvar kağıdı (açık ve koyu), kırmızı klasörlü VATAN simge teması. Kabuk, uygulamalar ve simgeler aynı kırmızıyı kullanır. Giriş doğrudan masaüstüne açılır.
+- **Görünüm** — Geist ve Instrument Serif yazı tipleri, kat kat yükselen kabartma Türkiye haritası duvar kağıdı (açık ve koyu), VATAN simge teması: sistem uygulamaları için sıfırdan çizilmiş, Selçuklu yıldızı, Orhun harfleri, İznik çinisi ve kilim motifleri taşıyan simgeler ve kırmızı klasörler. Kabuk, uygulamalar ve simgeler aynı kırmızıyı kullanır. Giriş doğrudan masaüstüne açılır.
 
 ## Kurulum
 
@@ -77,7 +77,8 @@ Duvar kağıtları `tools/wallpaper/generate.mjs` ile üretilir (Node 20+): `nod
 | `data/session/` | Oturum ve systemd kullanıcı birimleri |
 | `data/90_vatan.gschema.override` | Yalnızca VATAN oturumunda geçerli varsayılanlar |
 | `data/fonts/`, `data/backgrounds/` | Yazı tipleri ve duvar kağıtları |
-| `data/icons/VATAN/` | Simge teması: Pardus klasörleri kırmızıya çevrilmiş hali (`tools/icons/recolor.mjs`) |
+| `data/icons/VATAN/apps/` | Sistem uygulaması simgeleri (`tools/icons/apps/build.mjs` üretir) |
+| `data/icons/VATAN/places/` | Pardus klasörlerinin kırmızıya çevrilmiş hali (`tools/icons/recolor.mjs`) |
 | `debian/` | `vatan` paketi |
 | `shell/debian/` | Pardus'un gnome-shell paketlemesi; çatalın kaynağını belgelemek için duruyor, `vatan` paketini derlemez |
 

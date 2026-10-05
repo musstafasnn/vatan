@@ -1,0 +1,54 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="128" height="128" viewBox="0 0 128 128">
+<defs>
+<linearGradient id="base" x1=".15" y1="0" x2=".85" y2="1">
+<stop offset="0" stop-color="#3288bd"/>
+<stop offset="1" stop-color="#15486a"/>
+</linearGradient>
+<linearGradient id="rim" x1="0" y1="0" x2="0" y2="1">
+<stop offset="0" stop-color="#fff" stop-opacity="0.5"/>
+<stop offset=".3" stop-color="#fff" stop-opacity="0"/>
+<stop offset=".72" stop-color="#000" stop-opacity="0"/>
+<stop offset="1" stop-color="#000" stop-opacity="0.32"/>
+</linearGradient>
+<radialGradient id="sheen" cx=".2" cy=".1" r=".9">
+<stop offset="0" stop-color="#fff" stop-opacity="0.12"/>
+<stop offset="1" stop-color="#fff" stop-opacity="0"/>
+</radialGradient>
+<clipPath id="inside">
+<path d="M50 8H78C112.44 8 120 15.56 120 50V78C120 112.44 112.44 120 78 120H50C15.56 120 8 112.44 8 78V50C8 15.56 15.56 8 50 8Z"/>
+</clipPath>
+<filter id="drop" x="-20%" y="-20%" width="140%" height="140%">
+<feGaussianBlur stdDeviation="2.4"/>
+</filter>
+<filter id="lift" x="-20%" y="-20%" width="140%" height="140%">
+<feGaussianBlur in="SourceAlpha" stdDeviation="1.3"/>
+<feOffset dx=".7" dy="1.8"/>
+<feComponentTransfer>
+<feFuncA type="linear" slope="0.38"/>
+</feComponentTransfer>
+<feMerge>
+<feMergeNode/>
+<feMergeNode in="SourceGraphic"/>
+</feMerge>
+</filter>
+<linearGradient id="p-ivory" x1="0" y1="0" x2="0" y2="1">
+<stop offset="0" stop-color="#fffdf8"/>
+<stop offset="1" stop-color="#e4dccb"/>
+</linearGradient>
+<linearGradient id="p-red" x1="0" y1="0" x2="0" y2="1">
+<stop offset="0" stop-color="#f04c60"/>
+<stop offset="1" stop-color="#c4223a"/>
+</linearGradient>
+</defs>
+<path d="M50 8H78C112.44 8 120 15.56 120 50V78C120 112.44 112.44 120 78 120H50C15.56 120 8 112.44 8 78V50C8 15.56 15.56 8 50 8Z" fill="#000" opacity=".3" transform="translate(0 2.6)" filter="url(#drop)"/>
+<path d="M50 8H78C112.44 8 120 15.56 120 50V78C120 112.44 112.44 120 78 120H50C15.56 120 8 112.44 8 78V50C8 15.56 15.56 8 50 8Z" fill="#000" opacity=".18" transform="translate(0 .8)"/>
+<path d="M50 8H78C112.44 8 120 15.56 120 50V78C120 112.44 112.44 120 78 120H50C15.56 120 8 112.44 8 78V50C8 15.56 15.56 8 50 8Z" fill="url(#base)"/>
+<path d="M50 8H78C112.44 8 120 15.56 120 50V78C120 112.44 112.44 120 78 120H50C15.56 120 8 112.44 8 78V50C8 15.56 15.56 8 50 8Z" fill="url(#sheen)"/>
+<g filter="url(#lift)">
+<circle cx="80" cy="44" r="18" fill="url(#p-red)"/>
+<circle cx="80" cy="44" r="23.5" fill="none" stroke="#c9a227" stroke-width="1.1"/>
+<path d="M103.5 44L108 44M103.14 48.08L105.61 48.51M102.08 52.04L104.43 52.89M100.35 55.75L104.25 58M98 59.11L99.92 60.71M95.11 62L96.71 63.92M91.75 64.35L94 68.25M88.04 66.08L88.89 68.43M84.08 67.14L84.51 69.61M80 67.5L80 72M75.92 67.14L75.49 69.61M71.96 66.08L71.11 68.43M68.25 64.35L66 68.25M64.89 62L63.29 63.92M62 59.11L60.08 60.71M59.65 55.75L55.75 58M57.92 52.04L55.57 52.89M56.86 48.08L54.39 48.51M56.5 44L52 44M56.86 39.92L54.39 39.49M57.92 35.96L55.57 35.11M59.65 32.25L55.75 30M62 28.89L60.08 27.29M64.89 26L63.29 24.08M68.25 23.65L66 19.75M71.96 21.92L71.11 19.57M75.92 20.86L75.49 18.39M80 20.5L80 16M84.08 20.86L84.51 18.39M88.04 21.92L88.89 19.57M91.75 23.65L94 19.75M95.11 26L96.71 24.08M98 28.89L99.92 27.29M100.35 32.25L104.25 30M102.08 35.96L104.43 35.11M103.14 39.92L105.61 39.49" stroke="#c9a227" stroke-width="1.1"/>
+<path d="M36 96A16 16 0 0 1 32.5 64.4A22 22 0 0 1 74 55A19 19 0 0 1 92 96Z" fill="url(#p-ivory)"/>
+</g>
+<path d="M50 8H78C112.44 8 120 15.56 120 50V78C120 112.44 112.44 120 78 120H50C15.56 120 8 112.44 8 78V50C8 15.56 15.56 8 50 8Z" fill="none" stroke="url(#rim)" stroke-width="2.4" clip-path="url(#inside)"/>
+</svg>

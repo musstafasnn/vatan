@@ -1,9 +1,16 @@
 [Icon Theme]
 Name=VATAN
-Comment=Pardus icons with VATAN red folders
-Comment[tr]=VATAN kırmızısı klasörlerle Pardus simgeleri
+Comment=VATAN system app icons and red folders over the Pardus icons
+Comment[tr]=VATAN sistem uygulaması simgeleri ve kırmızı klasörler, Pardus simgeleri üzerine
 Inherits=pardus-gnome,Adwaita,hicolor
-Directories=places
+Directories=apps,places
+
+[apps]
+Context=Applications
+Size=128
+MinSize=16
+MaxSize=512
+Type=Scalable
 
 [places]
 Context=Places

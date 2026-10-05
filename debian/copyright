@@ -33,7 +33,11 @@ Files: tools/icons/recolor.mjs
 Copyright: 2026 Mustafa <musstafasnn@gmail.com>
 License: GPL-2+
 
-Files: data/icons/VATAN/*
+Files: data/icons/VATAN/apps/* tools/icons/apps/*
+Copyright: 2026 Mustafa <musstafasnn@gmail.com>
+License: GPL-2+
+
+Files: data/icons/VATAN/places/*
 Copyright: 2025 Pardus <dev@pardus.org.tr>
 Comment: Folder icons of pardus-gnome-icon-theme (https://github.com/pardus/pardus-gnome-icon-theme),
  recolored to the VATAN red by tools/icons/recolor.mjs.
