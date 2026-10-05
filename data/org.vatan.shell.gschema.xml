@@ -47,6 +47,10 @@
       <default>false</default>
       <summary>Internal: banners are off because of the schedule, not the user</summary>
     </key>
+    <key name="desktop-icons" type="b">
+      <default>true</default>
+      <summary>Show files and folders on the desktop, with the desktop right-click menu</summary>
+    </key>
     <key name="tour-shown" type="b">
       <default>false</default>
       <summary>Whether the first-login tour has been shown</summary>

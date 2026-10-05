@@ -260,6 +260,13 @@ class VatanSettingsWindow extends Adw.ApplicationWindow {
         });
         wallpaper.add_suffix(restore);
         look.add(wallpaper);
+
+        const desktop = new Adw.SwitchRow({
+            title: 'Masaüstü simgeleri',
+            subtitle: 'Masaüstünde dosya ve klasörler; sağ tıkla yeni klasör, yapıştır, uçbirimde aç',
+        });
+        this._vatan.bind('desktop-icons', desktop, 'active', Gio.SettingsBindFlags.DEFAULT);
+        look.add(desktop);
         page.add(look);
         return page;
     }
