@@ -91,7 +91,6 @@ class Komut extends St.Widget {
         super._init({
             style_class: 'vatan-komut',
             reactive: true,
-            clip_to_allocation: true,
             visible: false,
             layout_manager: new Clutter.BinLayout(),
         });
@@ -113,11 +112,14 @@ class Komut extends St.Widget {
         Shell.AppSystem.get_default().connectObject('installed-changed',
             () => this._reloadRemoteProviders(), this);
 
+        // Clip the content, not the widget, so the island's shadow survives
+        // while the content is cut during the morph.
         this._content = new St.BoxLayout({
             style_class: 'vatan-komut-content',
             orientation: Clutter.Orientation.VERTICAL,
             x_expand: true,
             y_align: Clutter.ActorAlign.START,
+            clip_to_allocation: true,
         });
         this.add_child(this._content);
 
@@ -187,8 +189,12 @@ class Komut extends St.Widget {
             return;
         }
         this._grab = grab;
+        this.reactive = true;
 
+        // Clearing the entry queues a debounced search; drop it so the
+        // suggestions are built once.
         this._entry.text = '';
+        this._cancelSearch();
         this._showSuggestions().catch(e => logError(e, 'Komut suggestions failed'));
 
         // The island morph: start exactly over the panel, then grow to the
@@ -222,6 +228,7 @@ class Komut extends St.Widget {
         this._cancelSearch();
         Main.popModal(this._grab);
         this._grab = null;
+        this.reactive = false;
 
         const [panelX, panelY] = Main.panel.get_transformed_position();
         this._content.ease({
@@ -236,7 +243,10 @@ class Komut extends St.Widget {
             height: Main.panel.height,
             duration: MORPH_TIME * 0.6,
             mode: Clutter.AnimationMode.EASE_OUT_QUINT,
-            onComplete: () => this.hide(),
+            onComplete: () => {
+                this.hide();
+                this._clearRows();
+            },
         });
         Main.panel.ease({
             opacity: 255,
@@ -274,8 +284,16 @@ class Komut extends St.Widget {
     }
 
     _relayout() {
-        if (this.isOpen)
-            this._morphTo(this._targetGeometry(), RESIZE_TIME);
+        if (!this.isOpen)
+            return;
+
+        // Results usually land while the opening morph is still running;
+        // keep its remaining time instead of cutting it short.
+        const transition = this.get_transition('height');
+        const remaining = transition
+            ? transition.get_duration() - transition.get_elapsed_time()
+            : 0;
+        this._morphTo(this._targetGeometry(), Math.max(RESIZE_TIME, remaining));
     }
 
     _onOutsideClick(event) {
@@ -298,8 +316,6 @@ class Komut extends St.Widget {
         const symbol = event.get_key_symbol();
         switch (symbol) {
         case Clutter.KEY_Escape:
-        case Clutter.KEY_Super_L:
-        case Clutter.KEY_Super_R:
             this.close();
             return Clutter.EVENT_STOP;
         case Clutter.KEY_Down:
@@ -356,7 +372,7 @@ class Komut extends St.Widget {
     async _search(text) {
         const terms = termsFor(text);
         if (terms.length === 0) {
-            this._showSuggestions();
+            await this._showSuggestions();
             return;
         }
 
@@ -396,6 +412,12 @@ class Komut extends St.Widget {
         if (cancellable.is_cancelled() || !this.isOpen)
             return;
         this._setRows(entries, [], _('Öneriler'));
+    }
+
+    _clearRows() {
+        this._list.destroy_all_children();
+        this._rows = [];
+        this._selected = -1;
     }
 
     _setRows(entries, terms, header) {

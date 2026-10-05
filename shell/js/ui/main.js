@@ -118,8 +118,10 @@ function _sessionUpdated() {
     if (sessionMode.isPrimary)
         _loadDefaultStylesheet();
 
+    // POPUP is allowed so Super can close Komut, which runs as a popup;
+    // the overlay-key handler ignores it for every other popup.
     wm.allowKeybinding('overlay-key',
-        Shell.ActionMode.NORMAL | Shell.ActionMode.OVERVIEW);
+        Shell.ActionMode.NORMAL | Shell.ActionMode.OVERVIEW | Shell.ActionMode.POPUP);
 
     wm.allowKeybinding('locate-pointer-key', Shell.ActionMode.ALL);
 

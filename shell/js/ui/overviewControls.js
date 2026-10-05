@@ -430,6 +430,12 @@ class ControlsManager extends St.Widget {
             if (this._a11ySettings.get_boolean('stickykeys-enable'))
                 return;
 
+            if (Main.actionMode === Shell.ActionMode.POPUP) {
+                if (Main.vatanKomut?.isOpen)
+                    Main.vatanKomut.close();
+                return;
+            }
+
             const {initialState, finalState, transitioning} =
                 this._stateAdjustment.getStateTransitionParams();
 
