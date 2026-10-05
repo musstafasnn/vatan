@@ -37,7 +37,7 @@ $base_border_radius: 8px;   // radii on all elements
 $forced_circular_radius: 999px;
 
 // radii of things that display over other things, e.g. popovers
-$modal_radius: $base_border_radius * 2;
+$modal_radius: 14px;
 
 // radii of dialogs
 $alert_radius: 18px;
