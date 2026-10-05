@@ -45,6 +45,7 @@ const _FADE_ANIMATION_TIME = 250;
 const _SCROLL_ANIMATION_TIME = 500;
 const _TIMED_LOGIN_IDLE_THRESHOLD = 5.0;
 const _CONFLICTING_SESSION_DIALOG_TIMEOUT = 60;
+const GREETER_SCREEN_MARGIN = 48;
 
 Gio._promisify(Gio.File.prototype, 'load_contents_async');
 
@@ -639,7 +640,7 @@ export const LoginDialog = GObject.registerClass({
         let centerX = dialogBox.x1 + (dialogBox.x2 - dialogBox.x1) / 2;
 
         actorBox.x1 = Math.floor(centerX - natWidth / 2);
-        actorBox.y1 = dialogBox.y1 + Main.layoutManager.panelBox.height;
+        actorBox.y1 = dialogBox.y1;
         actorBox.x2 = actorBox.x1 + natWidth;
         actorBox.y2 = actorBox.y1 + natHeight;
 
@@ -681,14 +682,20 @@ export const LoginDialog = GObject.registerClass({
         let actorBox = new Clutter.ActorBox();
 
         let [, , natWidth, natHeight] = actor.get_preferred_size();
-        let centerX = dialogBox.x1 + (dialogBox.x2 - dialogBox.x1) / 2;
-        let centerY = dialogBox.y1 + (dialogBox.y2 - dialogBox.y1) / 2;
 
-        natWidth = Math.min(natWidth, dialogBox.x2 - dialogBox.x1);
-        natHeight = Math.min(natHeight, dialogBox.y2 - dialogBox.y1);
+        // Same margin as the lock screen clock so both screens share one edge
+        const {scaleFactor} = St.ThemeContext.get_for_stage(global.stage);
+        const margin = GREETER_SCREEN_MARGIN * scaleFactor;
+        const bottom = dialogBox.y2 - Main.layoutManager.panelBox.height - margin;
 
-        actorBox.x1 = Math.floor(centerX - natWidth / 2);
-        actorBox.y1 = Math.floor(centerY - natHeight / 2);
+        natWidth = Math.min(natWidth, dialogBox.x2 - dialogBox.x1 - margin * 2);
+        natHeight = Math.min(natHeight, bottom - dialogBox.y1);
+
+        if (this.get_text_direction() === Clutter.TextDirection.RTL)
+            actorBox.x1 = Math.floor(dialogBox.x2 - margin - natWidth);
+        else
+            actorBox.x1 = Math.floor(dialogBox.x1 + margin);
+        actorBox.y1 = Math.floor(bottom - natHeight);
         actorBox.x2 = actorBox.x1 + natWidth;
         actorBox.y2 = actorBox.y1 + natHeight;
 
@@ -720,11 +727,8 @@ export const LoginDialog = GObject.registerClass({
         }
 
         let userSelectionAllocation = null;
-        let userSelectionHeight = 0;
-        if (this._userSelectionBox.visible) {
+        if (this._userSelectionBox.visible)
             userSelectionAllocation = this._getCenterActorAllocation(dialogBox, this._userSelectionBox);
-            userSelectionHeight = userSelectionAllocation.y2 - userSelectionAllocation.y1;
-        }
 
         let logoAllocation = null;
         let logoHeight = 0;
@@ -809,17 +813,6 @@ export const LoginDialog = GObject.registerClass({
                     // Then give all of that space to the banner
                     bannerAllocation.y2 = bannerAllocation.y1 + availableTopSpace;
                 }
-            }
-        } else if (userSelectionAllocation) {
-            // Grow the user list to fill the space
-            let leftOverYSpace = dialogHeight - userSelectionHeight - logoHeight;
-
-            if (leftOverYSpace > 0) {
-                let topExpansion = Math.floor(leftOverYSpace / 2);
-                let bottomExpansion = topExpansion;
-
-                userSelectionAllocation.y1 -= topExpansion;
-                userSelectionAllocation.y2 += bottomExpansion;
             }
         }
 

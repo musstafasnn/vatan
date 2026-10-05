@@ -85,12 +85,6 @@ $_gdm_dialog_width: 25em;
   min-height: 2.75em;
 }
 
-.login-dialog-user-selection-box {
-  // padding to ensure the box doesn't overlap the panel
-  padding-top: 4em;
-  padding-bottom: 8em;
-}
-
 .login-dialog-not-listed-label {
   @extend %heading;
   padding: $base_padding;
