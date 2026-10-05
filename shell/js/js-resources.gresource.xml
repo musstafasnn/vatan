@@ -44,6 +44,7 @@
     <file>misc/turkishText.js</file>
     <file>misc/timeLimitsManager.js</file>
     <file>misc/util.js</file>
+    <file>misc/vatanActions.js</file>
     <file>misc/weather.js</file>
 
     <file>ui/accessDialog.js</file>
@@ -158,5 +159,8 @@
     <file>ui/status/system.js</file>
     <file>ui/status/thunderbolt.js</file>
     <file>ui/status/volume.js</file>
+  </gresource>
+  <gresource prefix="/org/gnome/shell">
+    <file>ui/vatan/actionsProvider.js</file>
   </gresource>
 </gresources>

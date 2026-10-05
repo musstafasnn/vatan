@@ -46,6 +46,7 @@ unit_tests = {
   },
   'turkishText': {},
   'url': {},
+  'vatanActions': {},
   'versionCompare': {},
 }
 
