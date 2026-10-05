@@ -266,3 +266,48 @@ $ada_lit_edge_color: if($variant == 'light', #ffffff, rgba(255, 255, 255, .16));
     color: -st-accent-fg-color;
   }
 }
+
+/* Gündem: the news card on the desktop */
+.vatan-news {
+  width: 340px;
+  padding: 14px 8px 8px;
+  border-radius: $ada_radius;
+  @include ada_surface();
+  background-gradient-direction: none;
+  background-color: transparentize(mix($ada_surface_top, $ada_surface_bottom, 50%), .08);
+  color: $fg_color;
+}
+
+.vatan-news-header {
+  padding: 0 10px 8px;
+}
+
+.vatan-news-title {
+  font-weight: 600;
+}
+
+.vatan-news-source,
+.vatan-news-time,
+.vatan-news-empty {
+  color: $insensitive_fg_color;
+  font-size: 9pt;
+}
+
+.vatan-news-empty {
+  padding: 4px 10px 8px;
+}
+
+.vatan-news-row {
+  padding: 8px 10px;
+  border-radius: $ada_control_radius;
+  text-align: left;
+
+  &:hover,
+  &:focus {
+    background-color: transparentize($fg_color, .94);
+  }
+}
+
+.vatan-news-headline {
+  padding-bottom: 2px;
+}

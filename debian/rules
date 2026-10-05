@@ -57,6 +57,8 @@ override_dh_install:
 		data/session/org.vatan.Shell@wayland.service \
 		data/session/org.vatan.Shell@x11.service
 	install -Dm644 data/90_vatan.gschema.override $(pkgroot)/usr/share/glib-2.0/schemas/90_vatan.gschema.override
+	install -Dm644 data/org.vatan.shell.gschema.xml $(pkgroot)/usr/share/glib-2.0/schemas/org.vatan.shell.gschema.xml
+	install -Dm644 data/applications/vatan-nsosyal.desktop $(pkgroot)/usr/share/applications/vatan-nsosyal.desktop
 	install -Dm644 -t $(pkgroot)/usr/share/fonts/truetype/vatan data/fonts/*.ttf
 	install -Dm644 -t $(pkgroot)/usr/share/backgrounds/vatan data/backgrounds/*.png
 	install -Dm644 data/backgrounds/vatan.xml $(pkgroot)/usr/share/gnome-background-properties/vatan.xml

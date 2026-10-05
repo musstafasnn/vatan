@@ -37,6 +37,7 @@ export class VatanActionsProvider {
         this._interfaceSettings = new Gio.Settings({schema_id: 'org.gnome.desktop.interface'});
         this._notificationSettings = new Gio.Settings({schema_id: 'org.gnome.desktop.notifications'});
         this._colorSettings = new Gio.Settings({schema_id: 'org.gnome.settings-daemon.plugins.color'});
+        this._vatanSettings = new Gio.Settings({schema_id: 'org.vatan.shell'});
         this._brightnessProxy = null;
 
         // Titles depend on current settings, so the table is rebuilt per query.
@@ -64,6 +65,14 @@ export class VatanActionsProvider {
                 keywords: 'mavi ışık göz sıcak',
                 icon: 'night-light-symbolic',
                 run: () => this._toggleBoolean(this._colorSettings, 'night-light-enabled'),
+            },
+            {
+                id: 'news',
+                title: this._vatanSettings.get_boolean('show-news')
+                    ? _('Gündemi masaüstünden kaldır') : _('Gündemi masaüstünde göster'),
+                keywords: 'haber gündem son dakika trt',
+                icon: 'x-office-document-symbolic',
+                run: () => this._toggleBoolean(this._vatanSettings, 'show-news'),
             },
             {
                 id: 'tile',

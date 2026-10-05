@@ -20,4 +20,4 @@ picture-options='zoom'
 picture-uri='file:///usr/share/backgrounds/vatan/vatan-light.png'
 
 [org.gnome.shell:VATAN]
-favorite-apps=['firefox-esr.desktop', 'org.gnome.Nautilus.desktop', 'org.gnome.Console.desktop', 'libreoffice-writer.desktop', 'tr.org.pardus.software.desktop']
+favorite-apps=['firefox-esr.desktop', 'org.gnome.Nautilus.desktop', 'org.gnome.Console.desktop', 'libreoffice-writer.desktop', 'tr.org.pardus.software.desktop', 'vatan-nsosyal.desktop']
