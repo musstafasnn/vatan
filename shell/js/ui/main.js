@@ -130,8 +130,8 @@ function _sessionUpdated() {
     if (sessionMode.isPrimary)
         _loadDefaultStylesheet();
 
-    // POPUP is allowed so Super can close Komut, which runs as a popup;
-    // the overlay-key handler ignores it for every other popup.
+    // POPUP'a izin verilir ki Super, popup olarak çalışan Komut'u kapatabilsin;
+    // overlay-key handler'ı diğer her popup için onu yok sayar.
     wm.allowKeybinding('overlay-key',
         Shell.ActionMode.NORMAL | Shell.ActionMode.OVERVIEW | Shell.ActionMode.POPUP);
 
@@ -262,7 +262,7 @@ async function _initializeUI() {
     messageTray = new MessageTray.MessageTray();
     _syncAnimationPace();
 
-    // Before the panel: its timer item reads the timers when it is built.
+    // Panelden önce: zamanlayıcı öğesi oluşturulurken zamanlayıcıları okur.
     vatanTimers = new VatanTimers();
     panel = new Panel.Panel();
     if (sessionMode.hasOverview) {
@@ -448,8 +448,8 @@ async function _handleLockScreenWarning() {
     }
 }
 
-// The pace is a user choice in VATAN Ayarları; GNOME_SHELL_SLOWDOWN_FACTOR
-// stays the developer override and wins when it is set.
+// Tempo VATAN Ayarları'nda kullanıcı seçimidir; GNOME_SHELL_SLOWDOWN_FACTOR
+// geliştirici override'ı olarak kalır ve ayarlıysa kazanır.
 function _syncAnimationPace() {
     if (GLib.getenv('GNOME_SHELL_SLOWDOWN_FACTOR'))
         return;

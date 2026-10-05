@@ -13,14 +13,15 @@ const MAX_DOCK_ITEMS = 8;
 const DOCK_ICON_SIZE = 36;
 const APPS_ICON_SIZE = 20;
 const INDICATOR_EASE_MS = 300;
-// Hover lifts the icon off the slab rather than scaling it: a scaled icon
-// texture goes soft, a translated one stays pixel sharp.
+// Hover, ikonu ölçeklemek yerine plakadan kaldırır: ölçeklenmiş bir ikon
+// dokusu yumuşar, ötelenmiş olan piksel keskin kalır.
 const LIFT_PX = 5;
 const LIFT_EASE_MS = 220;
 const BOUNCE_PX = 14;
 const BOUNCE_UP_MS = 180;
 const BOUNCE_DOWN_MS = 520;
-// St does not tween width, so the indicator is a fixed 14px bar scaled in x.
+// St genişliği tween etmez, bu yüzden gösterge x ekseninde ölçeklenen sabit
+// 14px'lik bir çubuktur.
 const INDICATOR_SCALE_RUNNING = 4 / 14;
 
 export const VatanDock = GObject.registerClass(
@@ -70,7 +71,7 @@ class VatanDock extends PanelMenu.Button {
                 this._items.set(app, item);
                 this._box.add_child(item);
             }
-            // Index 0 is the apps button.
+            // 0. indeks uygulamalar düğmesidir.
             this._box.set_child_at_index(item, index + 1);
             this._updateState(app, item);
         });
@@ -125,8 +126,8 @@ class VatanDock extends PanelMenu.Button {
         });
         item._indicator = indicator;
         item._iconBin = iconBin;
-        // Tell the window manager where this app lives in the dock so its
-        // windows minimize into the icon and come back out of it.
+        // Pencere yöneticisine bu uygulamanın dock'ta nerede durduğunu bildir, böylece
+        // pencereleri ikona doğru küçülür ve ikondan geri çıkar.
         item.connect('notify::allocation', () => this._updateIconGeometry(app, item));
         app.connectObject('windows-changed', () => this._updateIconGeometry(app, item), item);
         item.connect('notify::hover', () => this._lift(item));

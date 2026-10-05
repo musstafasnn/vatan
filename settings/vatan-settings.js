@@ -17,8 +17,8 @@ const FEEDS = [
 ];
 const CUSTOM_FEED_LABEL = 'Başka bir adres';
 
-// Page entrance: each preference group rises a little and fades in, one
-// after another, so a page reads as arriving rather than being swapped.
+// Sayfa girişi: her tercih grubu sırayla biraz yukarı kayarak belirir, böylece
+// sayfa değiştirilmiş gibi değil, gelmiş gibi okunur.
 const ENTRANCE_MS = 320;
 const ENTRANCE_STAGGER_MS = 50;
 const ENTRANCE_RISE_PX = 14;
@@ -30,7 +30,8 @@ const PACES = [
     {name: 'calm', label: 'Sakin', factor: 1.7},
 ];
 
-// GNOME's accent names; the swatches show the colours the shell and the apps use.
+// GNOME'un vurgu renk adları; örnek kutuları kabuğun ve uygulamaların
+// kullandığı renkleri gösterir.
 const ACCENTS = [
     ['red', 'Kırmızı', '#e62d42'], ['blue', 'Mavi', '#3584e4'], ['teal', 'Turkuaz', '#2190a4'],
     ['green', 'Yeşil', '#3a944a'], ['yellow', 'Sarı', '#c88800'], ['orange', 'Turuncu', '#ed5b00'],
@@ -100,7 +101,7 @@ class VatanSettingsWindow extends Adw.ApplicationWindow {
 
         this._toasts = new Adw.ToastOverlay();
         const stack = new Gtk.Stack({transition_type: Gtk.StackTransitionType.CROSSFADE});
-        // The app keeps the shell's pace so its pages move like the desktop.
+        // Uygulama kabuğun temposuna uyar, böylece sayfaları masaüstü gibi hareket eder.
         const syncPace = () => {
             stack.transition_duration = Math.round(STACK_FADE_MS * this._pace());
         };
@@ -169,7 +170,7 @@ class VatanSettingsWindow extends Adw.ApplicationWindow {
     _playEntrance(page) {
         let child = page.get_first_child();
         const groups = [];
-        // PreferencesPage nests its groups in a scrolled window and a box.
+        // PreferencesPage gruplarını kaydırmalı bir pencere ve bir box içine yerleştirir.
         while (child && !(child instanceof Adw.PreferencesGroup)) {
             const next = child.get_first_child();
             if (!next)
@@ -236,9 +237,9 @@ class VatanSettingsWindow extends Adw.ApplicationWindow {
             subtitle: 'Kapalıyken Pardus simgeleri kullanılır',
             active: this._interface.get_string('icon-theme') === VATAN_ICON_THEME,
         });
-        // Resetting instead of writing "VATAN" keeps the choice inside this
-        // session: the VATAN default is scoped to it, a written value would
-        // leak into the GNOME session through the shared dconf database.
+        // "VATAN" yazmak yerine sıfırlamak seçimi bu oturumun içinde tutar:
+        // VATAN varsayılanı oturuma özgüdür, yazılmış bir değer ise paylaşılan
+        // dconf veritabanı üzerinden GNOME oturumuna sızardı.
         icons.connect('notify::active', () => {
             if (icons.active)
                 this._interface.reset('icon-theme');
@@ -271,7 +272,8 @@ class VatanSettingsWindow extends Adw.ApplicationWindow {
         const group = new Adw.ToggleGroup({valign: Gtk.Align.CENTER});
         for (const {name, label} of PACES)
             group.add(new Adw.Toggle({name, label}));
-        // Snap to the nearest preset so a hand-set value still selects one.
+        // En yakın ön ayara yuvarla ki elle girilmiş bir değer de yine bir ön ayarı
+        // seçsin.
         const sync = () => {
             const pace = this._pace();
             const nearest = PACES.reduce((a, b) =>

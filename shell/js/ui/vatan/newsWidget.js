@@ -14,12 +14,12 @@ Gio._promisify(Soup.Session.prototype, 'send_and_read_async');
 const MAX_ITEMS = 5;
 const REFRESH_SECONDS = 15 * 60;
 const REQUEST_TIMEOUT_SECONDS = 15;
-// A feed is a few dozen kilobytes; anything far larger is not one.
+// Bir feed birkaç düzine kilobayttır; çok daha büyük olan bir feed değildir.
 const MAX_FEED_BYTES = 2 * 1024 * 1024;
 const SCREEN_MARGIN = 32;
 
-// The card sits in the background group: above the wallpaper, below every
-// window, so it behaves like part of the desktop rather than a floating panel.
+// Kart arka plan grubunda durur: duvar kâğıdının üstünde, her pencerenin altında;
+// böylece yüzen bir panel gibi değil masaüstünün parçası gibi davranır.
 export const VatanNewsWidget = GObject.registerClass(
 class VatanNewsWidget extends St.BoxLayout {
     _init() {
@@ -123,7 +123,7 @@ class VatanNewsWidget extends St.BoxLayout {
         } catch (e) {
             if (e.matches?.(Gio.IOErrorEnum, Gio.IOErrorEnum.CANCELLED))
                 return;
-            // Keep showing the last headlines; the next refresh retries.
+            // Son manşetleri göstermeye devam et; sonraki yenileme yeniden dener.
             console.warn(`VATAN news: ${url}: ${e.message}`);
         }
         if (this._cancellable === cancellable)
@@ -184,7 +184,8 @@ class VatanNewsWidget extends St.BoxLayout {
         const monitor = Main.layoutManager.primaryMonitor;
         if (!monitor)
             return;
-        // Background managers re-add their actors on monitor changes; stay on top of them.
+        // Arka plan yöneticileri monitör değişikliklerinde actor'larını yeniden ekler;
+        // onların üstünde kal.
         this.get_parent()?.set_child_above_sibling(this, null);
         this.set_position(
             monitor.x + monitor.width - this.width - SCREEN_MARGIN,

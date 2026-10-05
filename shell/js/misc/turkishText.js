@@ -4,8 +4,9 @@ const LEVEL_TARGETS = new Map([
     ['ses', 'volume'],
 ]);
 
-// Lowercasing with the 'tr' locale maps I→ı and İ→i; folding ı→i afterwards
-// lets "isik" find "ışık" while "İzmir" still folds to "izmir".
+// 'tr' locale ile küçük harfe çevirmek I→ı ve İ→i eşler; ardından ı→i katlamak
+// "isik" aramasının "ışık"ı bulmasını sağlarken "İzmir"in yine "izmir"e
+// katlanmasını sağlar.
 export function foldTurkish(text) {
     return text.toLocaleLowerCase('tr')
         .replaceAll('ı', 'i')

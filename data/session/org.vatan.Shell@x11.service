@@ -1,7 +1,7 @@
 [Unit]
 Description=VATAN Shell on X11
-# Same handling as GNOME Shell on X11: show the session-failed screen and
-# allow restarts, which X11 survives.
+# X11'de GNOME Shell ile aynı yönetim: oturum-başarısız ekranını göster ve
+# yeniden başlatmalara izin ver; X11 bunlardan sağ çıkar.
 OnFailure=org.gnome.Shell-disable-extensions.service gnome-session-failed.target
 OnFailureJobMode=replace
 CollectMode=inactive-or-failed

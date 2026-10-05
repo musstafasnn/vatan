@@ -27,8 +27,9 @@ import * as Main from './main.js';
 
 export const SHELL_KEYBINDINGS_SCHEMA = 'org.gnome.shell.keybindings';
 
-// VATAN: windows grow in place and minimize into their dock icon. Ease in
-// and out so the window visibly travels to the dock rather than snapping.
+// VATAN: pencereler yerinde büyür ve dock ikonlarına küçülür. Girişte ve çıkışta
+// yavaşla (ease), böylece pencere dock'a oturmak yerine görünür biçimde dock'a
+// doğru yol alır.
 const MINIMIZE_WINDOW_ANIMATION_TIME = 420;
 const MINIMIZE_WINDOW_ANIMATION_MODE = Clutter.AnimationMode.EASE_IN_OUT_QUINT;
 const SHOW_WINDOW_ANIMATION_TIME = 260;

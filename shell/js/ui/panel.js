@@ -817,8 +817,8 @@ class Panel extends St.Widget {
         this._updateBox(panel.center, this._centerBox);
         this._updateBox(panel.right, this._rightBox);
 
-        // Banners rise above the island, which is centered whatever side
-        // the clock sits on.
+        // Bannerlar, saatin hangi tarafta durduğundan bağımsız olarak ortalı olan
+        // adanın üzerinden yükselir.
         Main.messageTray.bannerAlignment = Clutter.ActorAlign.CENTER;
 
         if (this._sessionStyle)
@@ -910,8 +910,8 @@ class Panel extends St.Widget {
         this.menuManager.addMenu(indicator.menu);
 
         indicator.menu._openChangedConnected = true;
-        // Every panel menu opens upward out of the island, right where
-        // banners appear, so any open menu holds banners back.
+        // Her panel menüsü adadan yukarı doğru, tam bannerların göründüğü yerde açılır;
+        // bu yüzden açık herhangi bir menü bannerları geri tutar.
         indicator.menu.connectObject('open-state-changed',
             (menu, isOpen) => (Main.messageTray.bannerBlocked = isOpen), this);
     }

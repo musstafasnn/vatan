@@ -343,8 +343,8 @@ class ControlsManager extends St.Widget {
             visible: false,
         });
 
-        // Other code reads Main.overview.dash, so the actor stays; VATAN
-        // launches apps from Ada and the command palette instead.
+        // Başka kod Main.overview.dash'i okur, bu yüzden actor kalır; VATAN
+        // uygulamaları bunun yerine Ada'dan ve komut paletinden başlatır.
         this.dash = new Dash.Dash();
         this.dash.visible = false;
 
@@ -447,8 +447,8 @@ class ControlsManager extends St.Widget {
                 ? transitioning && finalState > initialState
                 : Main.overview.visible && timeDiff < Overview.ANIMATION_TIME;
 
-            // Super opens Komut on the desktop; inside the overview it still
-            // leaves the overview so the key never traps the user there.
+            // Masaüstünde Super Komut'u açar; overview içinde yine de overview'dan
+            // çıkar, böylece tuş kullanıcıyı orada hapsetmez.
             if (shouldShift)
                 this._shiftState(Meta.MotionDirection.UP);
             else if (Main.overview.visible || !Main.vatanKomut)

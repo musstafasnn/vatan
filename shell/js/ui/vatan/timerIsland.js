@@ -13,13 +13,14 @@ import {formatCountdown, formatDuration} from '../../misc/vatanTimer.js';
 
 const TICK_MS = 1000;
 const MAX_TIMERS = 10;
-// How long the island keeps showing a finished timer before it folds away.
+// Adanın biten bir zamanlayıcıyı katlanıp kaybolmadan önce ne kadar süre göstereceği.
 const DONE_LINGER_SECONDS = 10;
 const PULSE_MS = 220;
 const PULSE_COUNT = 3;
 
-// Timers live in memory only: a shell restart drops them, which is acceptable
-// for kitchen-timer lengths and keeps the user's files out of it.
+// Zamanlayıcılar yalnızca bellekte yaşar: kabuğu yeniden başlatmak onları düşürür;
+// bu, mutfak zamanlayıcısı süreleri için kabul edilebilirdir ve kullanıcının
+// dosyalarını işin dışında tutar.
 export class VatanTimers extends Signals.EventEmitter {
     constructor() {
         super();
@@ -61,8 +62,8 @@ export class VatanTimers extends Signals.EventEmitter {
         return Math.max(0, Math.ceil((timer.endMs - Date.now()) / 1000));
     }
 
-    // Wall-clock time on purpose: a reminder set for 18:30 must fire at
-    // 18:30 even when the machine slept in between.
+    // Bilerek duvar saati: 18:30'a kurulmuş bir hatırlatıcı, makine arada uyusa
+    // bile 18:30'da çalmalı.
     _tick() {
         const now = Date.now();
         const finished = this._timers.filter(t => t.endMs <= now);
@@ -118,8 +119,8 @@ class VatanTimerButton extends PanelMenu.Button {
         });
         box.add_child(this._name);
 
-        // A bar under the pill drains with the nearest timer. St does not
-        // tween width, so it is a full-width bar scaled in x.
+        // Hapın altındaki bir çubuk en yakın zamanlayıcıyla boşalır. St genişliği
+        // tween etmez, bu yüzden x ekseninde ölçeklenen tam genişlikte bir çubuktur.
         this._progress = new St.Widget({
             style_class: 'vatan-timer-progress',
             x_expand: true,
@@ -228,8 +229,8 @@ class VatanTimerButton extends PanelMenu.Button {
         this.opacity = 255;
     }
 
-    // While the island shows a finished timer, a click dismisses it instead
-    // of opening an empty menu.
+    // Ada biten bir zamanlayıcıyı gösterirken, tıklama boş bir menü açmak yerine
+    // onu kapatır.
     vfunc_event(event) {
         const release = event.type() === Clutter.EventType.BUTTON_RELEASE ||
             event.type() === Clutter.EventType.TOUCH_END;

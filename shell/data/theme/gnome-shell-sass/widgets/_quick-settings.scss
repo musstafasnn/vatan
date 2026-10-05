@@ -19,8 +19,9 @@
   min-height: $scalable_icon_size * 3; // use icon size so the button scales
 }
 
-// Checked toggles invert to ink-on-surface instead of using the accent; hover
-// and active step toward the surface color so both stay readable on either variant.
+// İşaretli toggle'lar vurgu rengi yerine yüzey üstünde mürekkep rengine döner;
+// hover ve aktif durum yüzey rengine doğru adım atar, böylece her iki varyantta
+// da okunaklı kalır.
 $quick_toggle_checked_hover_bg_color: mix($fg_color, $bg_color, 88%);
 $quick_toggle_checked_active_bg_color: mix($fg_color, $bg_color, 76%);
 

@@ -3,7 +3,7 @@ import {
     formatCountdown, formatDuration, parseTimerCommand,
 } from 'resource:///org/gnome/shell/misc/vatanTimer.js';
 
-// A fixed local "now" keeps clock-time cases independent of when tests run.
+// Sabit bir yerel "şimdi", saat zamanlı durumları testlerin ne zaman çalıştığından bağımsız kılar.
 const NOW = new Date(2026, 9, 5, 17, 0, 0);
 
 describe('parseTimerCommand()', () => {

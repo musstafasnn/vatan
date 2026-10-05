@@ -4,12 +4,12 @@ import St from 'gi://St';
 
 const MAX_ENTRIES = 25;
 const MAX_ENTRY_LENGTH = 4000;
-// Password managers (KeePassXC, KDE) tag secrets with this type so clipboard
-// tools leave them alone.
+// Parola yöneticileri (KeePassXC, KDE) sırları bu tiple işaretler ki pano
+// araçları onlara dokunmasın.
 const SECRET_HINT_TYPE = 'x-kde-passwordManagerHint';
 
-// Recent clipboard text for Komut. Kept in memory only: nothing copied ever
-// reaches the disk, and turning the setting off drops it at once.
+// Komut için son pano metinleri. Yalnızca bellekte tutulur: kopyalanan hiçbir şey
+// diske ulaşmaz ve ayarı kapatmak geçmişi hemen düşürür.
 export class VatanClipboardHistory {
     constructor() {
         this._entries = [];

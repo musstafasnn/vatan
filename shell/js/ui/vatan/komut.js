@@ -54,8 +54,8 @@ const KomutRow = GObject.registerClass({
             style_class: 'vatan-komut-row-icon',
             y_align: Clutter.ActorAlign.CENTER,
         });
-        // Remote providers may return metas without an icon; fall back to
-        // the provider's own app icon so every row keeps its tile.
+        // Uzak provider'lar ikonsuz meta döndürebilir; her satırın karosunu koruması
+        // için provider'ın kendi uygulama ikonuna geri düş.
         const icon = meta.createIcon(ICON_SIZE) ?? new St.Icon({
             gicon: result.provider.appInfo?.get_icon() ?? null,
             fallback_icon_name: 'system-search-symbolic',
@@ -124,8 +124,8 @@ class Komut extends St.Widget {
         Shell.AppSystem.get_default().connectObject('installed-changed',
             () => this._reloadRemoteProviders(), this);
 
-        // Clip the content, not the widget, so the island's shadow survives
-        // while the content is cut during the morph.
+        // Widget'ı değil içeriği kırp, böylece geçiş sırasında içerik kesilirken
+        // adanın gölgesi korunur.
         this._content = new St.BoxLayout({
             style_class: 'vatan-komut-content',
             orientation: Clutter.Orientation.VERTICAL,
@@ -206,14 +206,14 @@ class Komut extends St.Widget {
         this._grab = grab;
         this.reactive = true;
 
-        // Clearing the entry queues a debounced search; drop it so the
-        // suggestions are built once.
+        // Entry'yi temizlemek debounce'lu bir arama kuyruğa alır; onu düşür ki
+        // öneriler bir kez kurulsun.
         this._entry.text = '';
         this._cancelSearch();
         this._showSuggestions().catch(e => logError(e, 'Komut suggestions failed'));
 
-        // The island morph: start exactly over the panel, then grow to the
-        // command bar's size while the panel content fades out underneath.
+        // Ada geçişi: tam panelin üzerinde başla, ardından panel içeriği altta
+        // solarken komut çubuğunun boyutuna büyü.
         const [panelX, panelY] = Main.panel.get_transformed_position();
         this.set_position(panelX, panelY);
         this.set_size(Main.panel.width, Main.panel.height);
@@ -279,7 +279,7 @@ class Komut extends St.Widget {
             themeNode.adjust_for_width(width));
         const [, height] = themeNode.adjust_preferred_height(contentHeight, contentHeight);
 
-        // Bottom edge stays where the panel's bottom edge is.
+        // Alt kenar, panelin alt kenarının olduğu yerde kalır.
         const [, panelY] = Main.panel.get_transformed_position();
         const bottom = panelY + Main.panel.height;
         return {
@@ -302,8 +302,8 @@ class Komut extends St.Widget {
         if (!this.isOpen)
             return;
 
-        // Results usually land while the opening morph is still running;
-        // keep its remaining time instead of cutting it short.
+        // Sonuçlar genelde açılış geçişi hâlâ sürerken gelir; geçişi kısa kesmek
+        // yerine kalan süresini koru.
         const transition = this.get_transition('height');
         const remaining = transition
             ? transition.get_duration() - transition.get_elapsed_time()
@@ -391,9 +391,9 @@ class Komut extends St.Widget {
             return;
         }
 
-        // Each provider is shown as soon as it answers, in section order. A
-        // remote provider can sit on D-Bus activation for many seconds, so
-        // waiting for all of them would leave the list frozen.
+        // Her provider yanıtlar yanıtlamaz, bölüm sırasıyla gösterilir. Uzak bir
+        // provider D-Bus activation'da saniyelerce bekleyebilir; hepsini beklemek
+        // listeyi donmuş bırakırdı.
         const cancellable = this._cancellable;
         const sections = this._sections();
         const answered = new Array(sections.length).fill(null);
@@ -450,9 +450,9 @@ class Komut extends St.Widget {
     }
 
     _setRows(entries, terms, header, complete) {
-        // Results arrive provider by provider; within one query keep the row
-        // the user is on so a late answer cannot move a different item under
-        // Enter. A new query starts from the top result again.
+        // Sonuçlar provider provider gelir; tek bir sorgu içinde kullanıcının
+        // üzerinde olduğu satırı koru ki geç gelen bir yanıt Enter'ın altına başka
+        // bir öğe kaydırmasın. Yeni sorgu yine en üst sonuçtan başlar.
         const sameQuery = terms.join(' ') === this._rowsQuery;
         const previous = sameQuery ? this._rows[this._selected]?.result : null;
         this._rowsQuery = terms.join(' ');
@@ -472,8 +472,8 @@ class Komut extends St.Widget {
             return row;
         });
 
-        // The empty state waits for the slowest provider, otherwise it
-        // flashes while remote providers are still answering.
+        // Boş durum en yavaş provider'ı bekler, aksi halde uzak provider'lar hâlâ
+        // yanıtlarken yanıp söner.
         if (this._rows.length === 0 && terms.length > 0 && complete) {
             this._list.add_child(new St.Label({
                 style_class: 'vatan-komut-empty',
@@ -510,7 +510,7 @@ class Komut extends St.Widget {
             return;
 
         const {id, provider, terms} = row.result;
-        // Close first so the launched window, not the modal, receives focus.
+        // Önce kapat ki modal değil, başlatılan pencere odağı alsın.
         this.close();
 
         if (provider === this._appProvider) {

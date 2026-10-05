@@ -30,14 +30,15 @@ const CLIP_PREFIX = 'clip:';
 const CLIP_KEYWORD = 'pano';
 const CLIP_PREVIEW_LENGTH = 80;
 
-// TCMB publishes one bulletin per working day; an hour-old copy is current.
+// TCMB iş günü başına bir bülten yayımlar; bir saatlik kopya günceldir.
 const RATES_URL = 'https://www.tcmb.gov.tr/kurlar/today.xml';
 const RATES_TTL_MS = 60 * 60 * 1000;
 const RATES_TIMEOUT_SECONDS = 10;
 
 Gio._promisify(Soup.Session.prototype, 'send_and_read_async');
 
-// Pardus's own tools under the words people use for the job, not the app names.
+// Pardus'un kendi araçları, uygulama adlarıyla değil insanların iş için
+// kullandığı sözcüklerle listelenir.
 const PARDUS_TOOLS = [
     {id: 'tool-usb', appId: 'tr.org.pardus.usb-formatter.desktop',
         title: _('USB belleği biçimlendir'), keywords: 'usb biçimlendir format flash bellek sil'},
@@ -91,7 +92,7 @@ export class VatanActionsProvider {
         this._vatanSettings = new Gio.Settings({schema_id: 'org.vatan.shell'});
         this._brightnessProxy = null;
 
-        // Titles depend on current settings, so the table is rebuilt per query.
+        // Başlıklar güncel ayarlara bağlıdır, bu yüzden tablo her sorguda yeniden kurulur.
         this._actionTable = () => [
             {
                 id: 'theme',
@@ -177,7 +178,7 @@ export class VatanActionsProvider {
         return ids;
     }
 
-    // "pano" lists recent clipboard text; "pano word" filters it.
+    // "pano" son pano metinlerini listeler; "pano kelime" onları filtreler.
     _clipboardIds(terms) {
         const history = Main.vatanClipboard;
         if (!history?.enabled || foldTurkish(terms[0] ?? '') !== CLIP_KEYWORD)
@@ -220,8 +221,8 @@ export class VatanActionsProvider {
             ? null : {amount, from, to, result, date: bulletin.date};
     }
 
-    // Concurrent queries share one request; a failed refresh keeps serving
-    // the last bulletin rather than showing nothing.
+    // Eşzamanlı sorgular tek bir isteği paylaşır; başarısız bir yenileme, hiçbir
+    // şey göstermemek yerine son bülteni sunmaya devam eder.
     _rates(cancellable) {
         if (this._bulletin && Date.now() - this._bulletin.fetchedAt < RATES_TTL_MS)
             return Promise.resolve(this._bulletin);
@@ -345,8 +346,8 @@ export class VatanActionsProvider {
         this._actionTable().find(a => a.id === id)?.run();
     }
 
-    // A clock-time reminder is measured again on activation: the result may
-    // have sat in Komut for a while since it was parsed.
+    // Saat zamanlı bir hatırlatıcı etkinleştirilirken yeniden ölçülür: sonuç,
+    // ayrıştırıldığından beri Komut'ta bir süre beklemiş olabilir.
     _startTimer({seconds, label, at}) {
         if (at) {
             const [hours, minutes] = at.split(':').map(Number);
@@ -392,15 +393,15 @@ export class VatanActionsProvider {
         const sink = control.get_default_sink();
         if (!sink)
             return;
-        // Like the volume slider: asking for a level means wanting to hear it.
+        // Ses kaydırıcısı gibi: bir seviye istemek, onu duymak istemek demektir.
         if (percent > 0 && sink.is_muted)
             sink.change_is_muted(false);
         sink.volume = percent / 100 * control.get_vol_max_norm();
         sink.push_volume();
     }
 
-    // Meta.Window.tile() is not public API in Mutter 48, so place the two
-    // halves by hand.
+    // Meta.Window.tile() Mutter 48'de public API değildir, bu yüzden iki yarıyı
+    // elle yerleştir.
     _tileWindows() {
         const workspace = global.workspace_manager.get_active_workspace();
         const windows = global.display.get_tab_list(Meta.TabList.NORMAL, workspace).slice(0, 2);

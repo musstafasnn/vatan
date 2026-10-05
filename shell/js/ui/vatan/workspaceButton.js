@@ -59,8 +59,8 @@ class VatanWorkspaceButton extends PanelMenu.Button {
 
     _sync() {
         const index = global.workspace_manager.get_active_workspace_index();
-        // Meta.prefs_get_workspace_name invents "Workspace N" for unnamed
-        // workspaces, so the Turkish fallback needs the raw setting.
+        // Meta.prefs_get_workspace_name adsız çalışma alanları için "Workspace N"
+        // uydurur, bu yüzden Türkçe geri dönüş ham ayara ihtiyaç duyar.
         const names = this._settings.get_strv('workspace-names');
         this._label.text = names[index] || _('Alan %d').format(index + 1);
     }

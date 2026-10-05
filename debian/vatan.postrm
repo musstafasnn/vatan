@@ -1,8 +1,8 @@
 #!/bin/sh
 set -e
 
-# Without the VATAN shell an enabled login-screen override would make GDM
-# start a binary that no longer exists; drop it with the package.
+# VATAN kabuğu olmadan, etkin bir giriş ekranı override'ı GDM'in artık var
+# olmayan bir binary'yi başlatmasına yol açar; paketle birlikte kaldır.
 if [ "$1" = "remove" ] || [ "$1" = "purge" ]; then
     home=$(getent passwd Debian-gdm | cut -d: -f6 || true)
     override="$home/.local/share/applications/org.gnome.Shell.desktop"

@@ -5,9 +5,10 @@ import {inFocusWindow} from '../../misc/vatanFocus.js';
 
 const CHECK_SECONDS = 30;
 
-// Turns notification banners off inside the scheduled window and back on
-// after it. It only undoes what it did: "focus-schedule-owns" records that
-// the schedule (not the user) silenced banners, and survives a restart.
+// Bildirim bannerlarını zamanlanmış aralıkta kapatır ve sonrasında yeniden açar.
+// Yalnızca kendi yaptığını geri alır: "focus-schedule-owns", bannerları
+// kullanıcının değil zamanlamanın sustuğunu kaydeder ve yeniden başlatmadan
+// sağ çıkar.
 export class VatanFocusSchedule {
     constructor() {
         this._settings = new Gio.Settings({schema_id: 'org.vatan.shell'});
@@ -35,7 +36,7 @@ export class VatanFocusSchedule {
             this._notifications.set_boolean('show-banners', false);
             this._settings.set_boolean('focus-schedule-owns', true);
         } else if (!inside && owns) {
-            // The user may have turned banners back on by hand meanwhile.
+            // Kullanıcı bu arada bannerları elle yeniden açmış olabilir.
             if (!banners)
                 this._notifications.set_boolean('show-banners', true);
             this._settings.set_boolean('focus-schedule-owns', false);

@@ -22,12 +22,12 @@ const _modes = {
     'restrictive': {
         parentMode: null,
         stylesheetName: 'gnome-shell.css',
-        // VATAN follows the app color scheme: 'default' means light for the
-        // shell too, so the dark-mode toggle and Komut flip shell and apps
-        // together instead of leaving a dark shell over light apps. The lock
-        // and login screens inherit it on purpose: their core uses the
-        // always-dark system tokens, and forcing dark there would reload the
-        // stylesheet on every lock.
+        // VATAN uygulama renk şemasını izler: 'default' kabuk için de açık demektir;
+        // böylece koyu mod düğmesi ve Komut kabuğu ve uygulamaları birlikte çevirir,
+        // açık uygulamaların üzerinde koyu bir kabuk bırakmaz. Kilit ve giriş
+        // ekranları bunu bilerek devralır: çekirdekleri her zaman koyu sistem
+        // token'larını kullanır ve orada koyuyu zorlamak her kilitlemede
+        // stylesheet'i yeniden yüklerdi.
         colorScheme: 'prefer-light',
         themeResourceName: 'gnome-shell-theme.gresource',
         hasOverview: false,

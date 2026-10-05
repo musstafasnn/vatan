@@ -26,8 +26,8 @@ function tagText(item, tag) {
     return raw.replace(/<[^>]*>/g, '').replace(/\s+/g, ' ').trim();
 }
 
-// A feed is remote input: the title is bounded and the link must be https so
-// a crafted item cannot hand the launcher a file:// or custom-scheme URI.
+// Feed uzaktan gelen bir girdidir: başlık sınırlanır ve link https olmalıdır ki
+// hazırlanmış bir öğe launcher'a file:// ya da özel şemalı bir URI veremesin.
 export function parseRssItems(xml, max) {
     const items = [];
     for (const [item] of xml.matchAll(/<item[\s>][\s\S]*?<\/item>/gi)) {

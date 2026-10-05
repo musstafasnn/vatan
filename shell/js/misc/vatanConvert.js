@@ -1,6 +1,6 @@
 import {foldTurkish} from './turkishText.js';
 
-// Factors to the base unit of each kind: metre, kilogram, litre.
+// Her türün temel birimine çarpanlar: metre, kilogram, litre.
 const UNITS = new Map([
     ['km', {kind: 'length', factor: 1000, name: 'km'}],
     ['m', {kind: 'length', factor: 1, name: 'm'}],
@@ -29,7 +29,8 @@ const CURRENCY_NAMES = new Map([
     ['RUB', 'ruble'], ['CNY', 'yuan'],
 ]);
 
-// Folded spellings people type, mapped to unit or ISO currency codes.
+// İnsanların yazdığı katlanmış (folded) yazımlar; birim ya da ISO para birimi
+// koduna eşlenir.
 const ALIASES = new Map(Object.entries({
     km: 'km', kilometre: 'km', m: 'm', metre: 'm', cm: 'cm', santim: 'cm', santimetre: 'cm',
     mm: 'mm', milimetre: 'mm', mil: 'mi', mile: 'mi', yarda: 'yd', yd: 'yd',
@@ -55,8 +56,8 @@ export function unitName(code) {
     return CURRENCY_NAMES.get(code) ?? UNITS.get(code)?.name ?? code;
 }
 
-// "1.000" is a thousand in Turkish, "1,5" is one and a half; a lone dot
-// with other than three digits after it is read as a decimal point.
+// Türkçede "1.000" bin, "1,5" bir buçuktur; arkasında üç haneden farklı sayıda
+// rakam olan tek bir nokta ondalık ayraç olarak okunur.
 export function parseTurkishNumber(text) {
     let normalized = text;
     if (text.includes(','))
@@ -82,7 +83,7 @@ export function parseConversion(query) {
     if (tokens.length === 3 && !to)
         return null;
     if (!to) {
-        // A bare amount only makes sense for money: "100 dolar" means in lira.
+        // Yalın bir tutar yalnızca para için anlamlıdır: "100 dolar" lira karşılığı demektir.
         if (!isCurrency(from) || from === 'TRY')
             return null;
         to = 'TRY';
@@ -112,7 +113,7 @@ export function convertUnits(amount, from, to) {
     return amount * UNITS.get(from).factor / UNITS.get(to).factor;
 }
 
-// rates: lira per one unit of each currency; TRY is implicit.
+// rates: her para biriminin bir birimi için lira; TRY örtüktür.
 export function convertCurrency(amount, from, to, rates) {
     const rate = code => code === 'TRY' ? 1 : rates.get(code);
     if (!rate(from) || !rate(to))
@@ -120,7 +121,8 @@ export function convertCurrency(amount, from, to, rates) {
     return amount * rate(from) / rate(to);
 }
 
-// TCMB quotes some currencies per 100 (JPY); the Unit element says how many.
+// TCMB bazı para birimlerini 100 birim için kotalar (JPY); Unit elemanı kaç
+// olduğunu söyler.
 export function parseTcmbRates(xml) {
     const rates = new Map();
     for (const [block, code] of xml.matchAll(/<Currency\b[^>]*CurrencyCode="([A-Z]{3})"[^>]*>[\s\S]*?<\/Currency>/g)) {

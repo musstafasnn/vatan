@@ -1,7 +1,7 @@
 import 'resource:///org/gnome/shell/ui/environment.js';
 import {inFocusWindow, parseClock} from 'resource:///org/gnome/shell/misc/vatanFocus.js';
 
-// 5 Oct 2026 is a Monday.
+// 5 Ekim 2026 bir Pazartesi'dir.
 const at = (day, hours, minutes = 0) => new Date(2026, 9, day, hours, minutes);
 
 describe('parseClock()', () => {

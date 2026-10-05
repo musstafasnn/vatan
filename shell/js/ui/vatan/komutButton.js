@@ -54,8 +54,8 @@ class VatanKomutButton extends PanelMenu.Button {
     }
 
     _activate() {
-        // Komut exists only in session modes with an overview; elsewhere the
-        // button falls back to the overview itself.
+        // Komut yalnızca overview'u olan oturum modlarında vardır; başka yerde
+        // düğme overview'un kendisine döner.
         if (Main.vatanKomut)
             Main.vatanKomut.toggle();
         else

@@ -1,6 +1,6 @@
 /* Komut */
-// The command bar that grows out of Ada. Same surface, border and radius as
-// the island so the morph reads as one object changing shape.
+// Ada'dan büyüyen komut çubuğu. Ada ile aynı yüzey, kenarlık ve yarıçap, böylece
+// geçiş tek bir nesnenin şekil değiştirmesi gibi okunur.
 
 $komut_row_height: 48px;
 $komut_visible_rows: 7;
@@ -8,7 +8,7 @@ $komut_visible_rows: 7;
   padding: 10px;
   border-radius: $ada_radius;
   @include ada_surface();
-  // With a gradient St draws this tall surface's shadow as a hard rectangle.
+  // Gradient varken St bu uzun yüzeyin gölgesini sert bir dikdörtgen olarak çizer.
   background-gradient-direction: none;
   background-color: mix($ada_surface_top, $ada_surface_bottom, 50%);
   color: $panel_fg_color;
@@ -18,8 +18,9 @@ $komut_visible_rows: 7;
   spacing: 4px;
 }
 
-// Upstream StEntry rules (type plus pseudo class) outrank a bare class, so the
-// entry is scoped under the Komut surface to drop the field chrome.
+// Upstream StEntry kuralları (tip artı pseudo class) çıplak bir class'ı geçer;
+// bu yüzden entry, alan görünümünü kaldırmak için Komut yüzeyinin altında
+// kapsamlanır.
 .vatan-komut StEntry.vatan-komut-entry,
 .vatan-komut StEntry.vatan-komut-entry:hover,
 .vatan-komut StEntry.vatan-komut-entry:focus {
@@ -57,7 +58,7 @@ $komut_visible_rows: 7;
 
 .vatan-komut-row {
   min-height: $komut_row_height;
-  // Two-line rows (title plus description) need air above and below.
+  // İki satırlı satırlar (başlık artı açıklama) üstte ve altta nefes alanı ister.
   padding: 6px 10px;
   border-radius: $ada_control_radius;
 

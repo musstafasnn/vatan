@@ -1,16 +1,17 @@
 /* Ada */
-// The bottom island that replaces the top bar. Imported after _panel.scss so
-// these rules win over the upstream top bar styling.
+// Üst çubuğun yerini alan alt ada. _panel.scss'ten sonra import edilir, böylece
+// bu kurallar upstream üst çubuk stilinin önüne geçer.
 
 $ada_radius: 22px;
 $ada_control_radius: 12px;
 $ada_screen_gap: 14px;
-// Gap between maximized windows and the island; part of the panel box so
-// the bottom strut includes it.
+// Büyütülmüş pencerelerle ada arasındaki boşluk; panel kutusunun parçası olduğu
+// için alt strut'a dahildir.
 $ada_window_gap: 10px;
 $ada_shadow_color: if($variant == 'light', rgba(20, 24, 31, .3), rgba(0, 0, 0, .75));
-// The surfaces are lit from above like the wallpaper relief: a lighter top
-// edge and a top-to-bottom falloff read as a slab, not a flat strip.
+// Yüzeyler duvar kâğıdındaki kabartma gibi yukarıdan aydınlatılır: daha açık bir
+// üst kenar ve yukarıdan aşağıya sönümlenme, düz bir şerit yerine bir plaka
+// gibi okunur.
 $ada_surface_top: if($variant == 'light', #ffffff, #252a33);
 $ada_surface_bottom: if($variant == 'light', #eef0f3, #15181d);
 $ada_edge_color: if($variant == 'light', rgba(20, 24, 31, .1), rgba(255, 255, 255, .06));
@@ -22,7 +23,7 @@ $ada_lit_edge_color: if($variant == 'light', #ffffff, rgba(255, 255, 255, .16));
   background-gradient-direction: vertical;
   background-gradient-start: $ada_surface_top;
   background-gradient-end: $ada_surface_bottom;
-  // A blur above 32px drew as an unblurred rectangle at 2x scale.
+  // 32px üzerindeki bir blur, 2x ölçekte bulanıklaşmamış bir dikdörtgen olarak çizildi.
   box-shadow: 0 16px 32px -10px $ada_shadow_color;
 }
 
@@ -44,8 +45,8 @@ $ada_lit_edge_color: if($variant == 'light', #ffffff, rgba(255, 255, 255, .16));
     font-weight: normal;
   }
 
-  // Upstream turns the top bar transparent over the overview, lock and login
-  // screens. The island keeps its surface so it never floats as bare icons.
+  // Upstream, overview, kilit ve giriş ekranlarında üst çubuğu şeffaf yapar.
+  // Ada yüzeyini korur, böylece hiçbir zaman çıplak ikonlar gibi havada kalmaz.
   &:overview,
   &.unlock-screen,
   &.login-screen {
@@ -66,8 +67,8 @@ $ada_lit_edge_color: if($variant == 'light', #ffffff, rgba(255, 255, 255, .16));
     }
   }
 
-  // Over the dimmed lock and login wallpaper a light island glares; use a
-  // translucent system surface with the always-light lock text instead.
+  // Kararmış kilit ve giriş duvar kâğıdı üzerinde açık bir ada göz alır; bunun
+  // yerine, her zaman açık renkli kilit metniyle yarı saydam bir sistem yüzeyi kullan.
   &.unlock-screen,
   &.login-screen {
     background-gradient-direction: none;
@@ -87,8 +88,8 @@ $ada_lit_edge_color: if($variant == 'light', #ffffff, rgba(255, 255, 255, .16));
   }
 }
 
-// The pill radius upstream gives the clock and the sharing indicators would
-// be a second radius system inside the island.
+// Upstream'in saate ve paylaşım göstergelerine verdiği hap (pill) yarıçapı,
+// adanın içinde ikinci bir yarıçap sistemi olurdu.
 #panel,
 #panel:overview,
 #panel.unlock-screen,
@@ -102,25 +103,25 @@ $ada_lit_edge_color: if($variant == 'light', #ffffff, rgba(255, 255, 255, .16));
   }
 }
 
-// Section separators are borders on the section boxes so the layout stays
-// free of extra actors. Panel forces the boxes to the full content height,
-// so the line spans it. With the 8px SECTION_SPACING from panel.js and the
-// padding below, the line has 8px on each side.
+// Bölüm ayraçları, yerleşim fazladan actor'dan arınık kalsın diye bölüm
+// kutularının kenarlıklarıdır. Panel kutuları tam içerik yüksekliğine zorlar,
+// bu yüzden çizgi o yüksekliği kaplar. panel.js'teki 8px SECTION_SPACING ve
+// aşağıdaki padding ile çizginin her iki yanında 8px boşluk kalır.
 #panelCenter,
 #panelRight {
   padding-left: 8px;
   border-left: 1px solid $borders_color;
 }
 
-// Lock and login layouts leave the center empty; no orphan separator there.
+// Kilit ve giriş yerleşimlerinde orta bölüm boştur; orada artık ayraç kalmaz.
 #panel.unlock-screen #panelCenter,
 #panel.login-screen #panelCenter {
   padding-left: 0;
   border-left-width: 0;
 }
 
-// The dock is a row of buttons of its own; the host must not draw panel
-// button chrome or the whole dock highlights as one button.
+// Dock kendi başına bir düğme sırasıdır; host panel düğmesi görünümü çizmemeli,
+// yoksa dock'un tamamı tek bir düğme gibi vurgulanır.
 #panel .panel-button.vatan-dock-host {
   -natural-hpadding: 0;
   -minimum-hpadding: 0;
@@ -142,8 +143,8 @@ $ada_lit_edge_color: if($variant == 'light', #ffffff, rgba(255, 255, 255, .16));
   spacing: 2px;
 }
 
-// Icons sit on the slab and cast their own shadow; hover lifts them (dock.js)
-// instead of painting a highlight box behind them.
+// İkonlar plakanın üzerinde durur ve kendi gölgelerini düşürür; hover onları,
+// arkalarına vurgu kutusu çizmek yerine yukarı kaldırır (dock.js).
 .vatan-dock-item {
   width: 52px;
   height: 52px;
@@ -157,7 +158,8 @@ $ada_lit_edge_color: if($variant == 'light', #ffffff, rgba(255, 255, 255, .16));
     background-color: $hover_bg_color;
   }
 
-  // Fixed width; dock.js scales it in x because St does not tween width.
+  // Sabit genişlik; St genişliği tween etmediği için dock.js onu x ekseninde
+  // ölçekler.
   .vatan-dock-indicator {
     height: 4px;
     width: 14px;
@@ -174,7 +176,7 @@ $ada_lit_edge_color: if($variant == 'light', #ffffff, rgba(255, 255, 255, .16));
   background-color: transparentize($fg_color, .95);
 }
 
-// ButtonBox ignores min-width on the host, so it sits on the content.
+// ButtonBox host üzerindeki min-width'i yok sayar, bu yüzden içeriğin üzerinde durur.
 .vatan-komut-box {
   min-width: 250px;
   spacing: 8px;
@@ -193,9 +195,9 @@ $ada_lit_edge_color: if($variant == 'light', #ffffff, rgba(255, 255, 255, .16));
   spacing: 6px;
 }
 
-// Menus grow out of the island, so they are the same lit slab and keep a
-// clear gap above it instead of sitting on its edge.
-// The rise counts from the button, which sits 8px inside the island.
+// Menüler adadan dışarı büyür; bu yüzden aynı aydınlatılmış plakadır ve kenarına
+// oturmak yerine üzerinde net bir boşluk bırakır.
+// Yükselme, adanın 8px içinde duran düğmeden itibaren sayılır.
 .popup-menu-boxpointer {
   -arrow-rise: 8px + $ada_window_gap;
 }
@@ -204,15 +206,15 @@ $ada_lit_edge_color: if($variant == 'light', #ffffff, rgba(255, 255, 255, .16));
 .quick-settings {
   border-radius: $ada_radius;
   @include ada_surface();
-  // Inside a boxpointer a gradient turns the shadow into a hard rectangle,
-  // and a deep shadow is clipped a few pixels out; flat and shallow it is.
+  // Boxpointer içinde gradient gölgeyi sert bir dikdörtgene çevirir ve derin bir
+  // gölge birkaç piksel dışarıda kırpılır; bu yüzden düz ve sığ tutulur.
   background-gradient-direction: none;
   background-color: mix($ada_surface_top, $ada_surface_bottom, 50%);
   box-shadow: 0 2px 8px -4px $ada_shadow_color;
 }
 
-// Banners rise from the island too. Same flat slab as the menus: the banner
-// bin leaves only a few pixels of margin for the shadow.
+// Bannerlar da adadan yükselir. Menülerle aynı düz plaka: banner bin'i gölge
+// için yalnızca birkaç piksel kenar boşluğu bırakır.
 .notification-banner {
   border-radius: $ada_radius;
   border: 1px solid $ada_edge_color;
@@ -225,7 +227,7 @@ $ada_lit_edge_color: if($variant == 'light', #ffffff, rgba(255, 255, 255, .16));
   }
 }
 
-// Same footprint as an app icon so the row reads as one dock.
+// Bir uygulama ikonuyla aynı boyutta, böylece sıra tek bir dock gibi okunur.
 .vatan-dock-apps-tile {
   width: 36px;
   height: 36px;
@@ -236,7 +238,7 @@ $ada_lit_edge_color: if($variant == 'light', #ffffff, rgba(255, 255, 255, .16));
   color: $fg_color;
 }
 
-/* Canlı Ada: the timer section */
+/* Canlı Ada: zamanlayıcı bölümü */
 .vatan-timer-box {
   spacing: 8px;
 }
@@ -267,7 +269,7 @@ $ada_lit_edge_color: if($variant == 'light', #ffffff, rgba(255, 255, 255, .16));
   }
 }
 
-/* Gündem: the news card on the desktop */
+/* Gündem: masaüstündeki haber kartı */
 .vatan-news {
   width: 340px;
   padding: 14px 8px 8px;
@@ -312,7 +314,7 @@ $ada_lit_edge_color: if($variant == 'light', #ffffff, rgba(255, 255, 255, .16));
   padding-bottom: 2px;
 }
 
-/* Canlı Ada: the media section */
+/* Canlı Ada: medya bölümü */
 .vatan-media-box {
   spacing: 4px;
 }
@@ -332,7 +334,7 @@ $ada_lit_edge_color: if($variant == 'light', #ffffff, rgba(255, 255, 255, .16));
   padding: 0 4px;
 }
 
-/* First-login tour */
+/* İlk giriş turu */
 .vatan-tour .modal-dialog-content-box {
   spacing: 18px;
 }
@@ -358,8 +360,8 @@ $ada_lit_edge_color: if($variant == 'light', #ffffff, rgba(255, 255, 255, .16));
   }
 }
 
-// The greeter (when VATAN draws the login screen) sits on the dark relief.
-// The unlock dialog paints its own blurred background over this group.
+// Greeter (giriş ekranını VATAN çizdiğinde) koyu kabartmanın üzerinde durur.
+// Kilit açma diyaloğu bu grubun üzerine kendi bulanık arka planını çizer.
 #lockDialogGroup {
   background: #07080b url("file:///usr/share/backgrounds/vatan/vatan-dark.png");
   background-size: cover;

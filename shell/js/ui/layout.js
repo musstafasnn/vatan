@@ -277,9 +277,9 @@ export const LayoutManager = GObject.registerClass({
             name: 'panelBox',
             orientation: Clutter.Orientation.VERTICAL,
         });
-        // The box spans the whole bottom edge only to reserve the strut; the
-        // island inside it tracks its own input region (see Panel), so on X11
-        // the empty strip beside the island still reaches the windows below.
+        // Kutu yalnızca strut'u ayırmak için alt kenarın tamamına yayılır;
+        // içindeki ada kendi giriş bölgesini izler (bkz. Panel), bu yüzden X11'de
+        // adanın yanındaki boş şerit hâlâ alttaki pencerelere ulaşır.
         this.addChrome(this.panelBox, {
             affectsStruts: true,
             affectsInputRegion: false,
@@ -562,8 +562,8 @@ export const LayoutManager = GObject.registerClass({
         if (!this.primaryMonitor)
             return;
 
-        // The panel box spans the bottom edge so Mutter reserves a bottom
-        // strut; the island itself is centered inside it.
+        // Panel kutusu, Mutter alt strut ayırsın diye alt kenara yayılır;
+        // ada kendisi bunun içinde ortalanmıştır.
         const {x, y, width, height} = this.primaryMonitor;
         this.panelBox.set_size(width, -1);
         this.panelBox.set_position(x, y + height - this.panelBox.height);
@@ -719,8 +719,8 @@ export const LayoutManager = GObject.registerClass({
 
             let monitor = this.primaryMonitor;
 
-            // Upstream logs in to the overview; VATAN logs in to the desktop,
-            // so the session always takes the zoom-in path.
+            // Upstream overview'a giriş yapar; VATAN masaüstüne giriş yapar, bu
+            // yüzden oturum her zaman yakınlaşma (zoom-in) yolunu izler.
             const x = monitor.x + monitor.width / 2.0;
             const y = monitor.y + monitor.height / 2.0;
 

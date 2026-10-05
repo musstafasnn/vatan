@@ -21,8 +21,8 @@ jobs:
           - arch: arm64
             runner: ubuntu-24.04-arm
     runs-on: ${{ matrix.runner }}
-    # Pardus 25 is built on Debian 13; building in a trixie container links
-    # against the same GNOME 48 libraries the package will meet at runtime.
+# Pardus 25, Debian 13 üzerine kuruludur; trixie konteynerinde derlemek, paketin
+# çalışma anında karşılaşacağı GNOME 48 kütüphanelerine bağlanmayı sağlar.
     container: debian:trixie
     timeout-minutes: 60
     steps:
@@ -43,8 +43,8 @@ jobs:
           mkdir -p out
           cp ../vatan_*.deb out/
 
-      # No amd64 Pardus machine is in the loop yet, so every build at least
-      # installs the package and boots the shell headless on its own arch.
+# Döngüde henüz amd64 Pardus makinesi yok; bu yüzden her derleme en azından
+# paketi kurar ve kabuğu kendi mimarisinde başsız (headless) açar.
       - name: Kabuğu ekransız çalıştır
         run: |
           apt-get install -y --no-install-recommends ./out/vatan_*.deb dbus

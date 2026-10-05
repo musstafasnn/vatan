@@ -77,9 +77,9 @@ export function showTour() {
 
 let settings = null;
 
-// Shown once per user; marking it before opening means a crash mid-tour does
-// not trap anyone in a tour on every login. VATAN Ayarları clears the flag to
-// ask for the tour again, which this picks up at once.
+// Kullanıcı başına bir kez gösterilir; açmadan önce işaretlemek, tur ortasında
+// yaşanan bir çökmenin kimseyi her girişte tura hapsetmemesi demektir. VATAN
+// Ayarları turu yeniden istemek için bayrağı temizler, bu da hemen fark edilir.
 export function maybeShowTour() {
     if (!settings) {
         settings = new Gio.Settings({schema_id: 'org.vatan.shell'});

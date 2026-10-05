@@ -22,11 +22,11 @@ const EXTENSION_DISABLE_VERSION_CHECK_KEY = 'disable-extension-version-validatio
 
 const UPDATE_CHECK_TIMEOUT = 24 * 60 * 60; // 1 day in seconds
 
-// These rebuild the panel, dock or overview that VATAN replaces with the
-// island; loaded on top of it they leave both half-drawn. Desktop icons go
-// too: the VATAN desktop is the wallpaper only, files are reached through
-// Komut and Files. Pardus enables several of these in the user's own
-// settings, which a schema default cannot override, so they are skipped here.
+// Bunlar VATAN'ın adayla değiştirdiği paneli, dock'u ya da overview'u yeniden
+// kurar; üstüne yüklenirlerse ikisini de yarım çizilmiş bırakırlar. Masaüstü
+// ikonları da gider: VATAN masaüstü yalnızca duvar kâğıdıdır, dosyalara Komut ve
+// Files ile ulaşılır. Pardus bunlardan birkaçını kullanıcının kendi ayarlarında
+// etkinleştirir; şema varsayılanı bunu geçersiz kılamaz, bu yüzden burada atlanırlar.
 const VATAN_INCOMPATIBLE_EXTENSIONS = new Set([
     'arcmenu@arcmenu.com',
     'blur-my-shell@aunetx',

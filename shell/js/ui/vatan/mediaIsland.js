@@ -5,9 +5,9 @@ import St from 'gi://St';
 import * as PanelMenu from '../panelMenu.js';
 import {MprisSource} from '../mpris.js';
 
-// The island's media section: whatever MPRIS player is playing (or, failing
-// that, the first one with a track) with play/pause and next. It hides when
-// no player has anything to show.
+// Adanın medya bölümü: çalmakta olan MPRIS oynatıcısı (yoksa parçası olan ilk
+// oynatıcı), oynat/duraklat ve sonraki düğmeleriyle. Gösterecek bir şeyi olan
+// oynatıcı yoksa gizlenir.
 export const VatanMediaButton = GObject.registerClass(
 class VatanMediaButton extends PanelMenu.Button {
     _init() {

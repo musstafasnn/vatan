@@ -29,14 +29,14 @@ const FADE_OUT_TRANSLATION = 200;
 const FADE_OUT_SCALE = 0.3;
 export const CLOCK_SCREEN_MARGIN = 48;
 
-// Lock clock and greeter column share one bottom edge: the screen bottom,
-// lifted above the island only where their x-span would run under it. All
-// arguments are in primary-monitor coordinates.
+// Kilit saati ve greeter sütunu tek bir alt kenarı paylaşır: ekranın altı,
+// yalnızca x aralıkları altından geçecekse adanın üstüne kaldırılır. Tüm
+// argümanlar birincil monitör koordinatlarındadır.
 export function bottomEdgeClearOfIsland(x1, x2, screenBottom, margin) {
     const bottom = screenBottom - margin;
     const monitor = Main.layoutManager.primaryMonitor;
-    // Untransformed: the greeter slides panelBox in with translation_y, which
-    // would otherwise read as an island below the screen.
+    // Dönüştürülmemiş: greeter panelBox'ı translation_y ile içeri kaydırır, bu da
+    // aksi halde ekranın altında bir ada gibi okunurdu.
     const {panelBox} = Main.layoutManager;
     const panelWidth = Main.panel.width;
     const islandX1 = panelBox.x + Main.panel.x - monitor.x;
@@ -47,10 +47,10 @@ export function bottomEdgeClearOfIsland(x1, x2, screenBottom, margin) {
     return Math.min(bottom, islandTop - margin);
 }
 
-// Effectively no blur, so the contour wallpaper stays sharp. Not 0: a zero
-// radius makes Shell.BlurEffect skip the brightness pass too. The dim is
-// strong enough for the light lock text to stay readable on the light
-// wallpaper variant.
+// Fiilen blur yok, böylece kontur duvar kâğıdı keskin kalır. 0 değil: sıfır
+// yarıçap Shell.BlurEffect'in parlaklık geçişini de atlamasına yol açar. Karartma,
+// açık kilit metninin duvar kâğıdının açık varyantında okunaklı kalacağı kadar
+// güçlüdür.
 const BLUR_BRIGHTNESS = 0.45;
 const BLUR_RADIUS = 1;
 
@@ -463,7 +463,7 @@ class UnlockDialogLayout extends Clutter.LayoutManager {
             notificationsHeight,
             height - tenthOfHeight - stackHeight);
 
-        // The centered column sits right over the island; keep it above.
+        // Ortalı sütun tam adanın üzerinde durur; üstünde tut.
         const notificationsBottom = bottomEdgeClearOfIsland(
             columnX1, columnX1 + columnWidth, height, 0);
         maxNotificationsHeight = Math.max(0, Math.min(
@@ -488,7 +488,7 @@ class UnlockDialogLayout extends Clutter.LayoutManager {
 
         this._stack.allocate(actorBox);
 
-        // Clock sits in the bottom-left corner, apart from the centered prompt.
+        // Saat sol alt köşede, ortalı istemden ayrı durur.
         const {scaleFactor} = St.ThemeContext.get_for_stage(global.stage);
         const clockMargin = CLOCK_SCREEN_MARGIN * scaleFactor;
         const [, , naturalClockWidth, clockHeight] = this._clock.get_preferred_size();
@@ -499,8 +499,8 @@ class UnlockDialogLayout extends Clutter.LayoutManager {
             actorBox.x1 = box.x1 + clockMargin;
         actorBox.x2 = actorBox.x1 + clockWidth;
 
-        // On narrow screens the corner clock reaches the centered
-        // notifications column; lift it above them instead of overlapping.
+        // Dar ekranlarda köşe saati ortalı bildirim sütununa ulaşır; üst üste binmek
+        // yerine onların üstüne kaldır.
         let clockBottom = bottomEdgeClearOfIsland(actorBox.x1, actorBox.x2, box.y2, clockMargin);
         const overlapsNotifications = maxNotificationsHeight > 0 &&
             actorBox.x1 < columnX1 + columnWidth && actorBox.x2 > columnX1;
@@ -620,7 +620,7 @@ export const UnlockDialog = GObject.registerClass({
         this._stack.add_child(this._promptBox);
 
         this._clock = new Clock();
-        // Scale toward the corner the clock is anchored to.
+        // Saatin sabitlendiği köşeye doğru ölçekle.
         this._clock.set_pivot_point(0, 1);
         this._showClock();
 
@@ -884,8 +884,8 @@ export const UnlockDialog = GObject.registerClass({
         this._ensureAuthPrompt();
 
         let progress = this._adjustment.value;
-        // The stack only holds the prompt now, which is hidden while the clock
-        // shows; a third of the screen keeps the swipe distance meaningful.
+        // Yığın artık yalnızca saat gösterilirken gizli olan istemi tutar; ekranın
+        // üçte biri kaydırma mesafesini anlamlı tutar.
         tracker.confirmSwipe(this.height / 3,
             [0, 1],
             progress,

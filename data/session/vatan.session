@@ -1,5 +1,5 @@
 [GNOME Session]
 Name=VATAN
-# Must stay in sync with gnome-session@vatan.target.d/vatan.session.conf;
-# the component list is GNOME's, with the shell swapped for VATAN's.
+# gnome-session@vatan.target.d/vatan.session.conf ile senkron kalmalı;
+# bileşen listesi GNOME'unkidir, yalnızca kabuğun yerine VATAN'ınki konmuştur.
 RequiredComponents=org.vatan.Shell;org.gnome.SettingsDaemon.A11ySettings;org.gnome.SettingsDaemon.Color;org.gnome.SettingsDaemon.Datetime;org.gnome.SettingsDaemon.Housekeeping;org.gnome.SettingsDaemon.Keyboard;org.gnome.SettingsDaemon.MediaKeys;org.gnome.SettingsDaemon.Power;org.gnome.SettingsDaemon.PrintNotifications;org.gnome.SettingsDaemon.Rfkill;org.gnome.SettingsDaemon.ScreensaverProxy;org.gnome.SettingsDaemon.Sharing;org.gnome.SettingsDaemon.Smartcard;org.gnome.SettingsDaemon.Sound;org.gnome.SettingsDaemon.UsbProtection;org.gnome.SettingsDaemon.Wacom;org.gnome.SettingsDaemon.XSettings;

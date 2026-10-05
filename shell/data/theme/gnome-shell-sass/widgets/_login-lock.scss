@@ -221,8 +221,8 @@ $_gdm_dialog_width: 25em;
   color: $_gdm_fg;
   spacing: 0;
 
-  // Instrument Serif ships with the VATAN fonts package; the generic serif
-  // fallback keeps the clock legible without it.
+  // Instrument Serif VATAN font paketiyle gelir; jenerik serif yedeği,
+  // o olmadan da saati okunaklı tutar.
   .unlock-dialog-clock-time {
     font-family: "Instrument Serif", serif;
     font-size: 150pt;

@@ -1,22 +1,22 @@
-// Builds the VATAN Plymouth theme into data/plymouth/vatan: PNG assets plus
-// vatan.script, whose layout numbers come from LAYOUT below so the preview
-// tool and the script can never disagree about where things go.
+// VATAN Plymouth temasını data/plymouth/vatan içine derler: PNG varlıkları ve
+// vatan.script; script'in yerleşim sayıları aşağıdaki LAYOUT'tan gelir, böylece
+// önizleme aracı ile script öğelerin nereye gideceği konusunda asla ayrışamaz.
 //
 //   node tools/plymouth/build.mjs
 //
-// The relief is not re-rendered. tools/wallpaper/generate.mjs has no exports
-// and rewrites data/backgrounds when imported, so this reads its shipped
-// output (vatan-dark.png) instead; the splash then always matches the
-// wallpaper the user will see a few seconds later.
+// Kabartma yeniden render edilmez. tools/wallpaper/generate.mjs hiçbir şey export
+// etmez ve import edildiğinde data/backgrounds'ı yeniden yazar; bu yüzden bu dosya
+// onun yayımlanmış çıktısını (vatan-dark.png) okur; böylece açılış ekranı her
+// zaman kullanıcının birkaç saniye sonra göreceği duvar kâğıdıyla eşleşir.
 //
-// Assets come in two sets: @1 drawn for a 1920x1080 reference and @2 for
-// 3840x2160. Plymouth's Image.Scale is point-sampled bilinear with no
-// prefilter (ply_pixel_buffer_resize), so shrinking far below 1:2 aliases the
-// terrace lines; the script picks the smallest set that is still >= the
-// screen and therefore only ever scales down, by at most 2:1.
+// Varlıklar iki sette gelir: 1920x1080 referans için çizilmiş @1 ve 3840x2160
+// için @2. Plymouth'un Image.Scale'i önfiltresiz nokta örneklemeli bilinear'dır
+// (ply_pixel_buffer_resize); bu yüzden 1:2'nin çok altına küçültmek teras
+// çizgilerini tırtıklar. Script, ekrandan küçük olmayan en küçük seti seçer ve
+// böylece yalnızca en fazla 2:1 oranında küçültür.
 //
-// Output is deterministic: no randomness, fixed PNG filter choice, fixed zlib
-// level.
+// Çıktı deterministiktir: rastgelelik yok, sabit PNG filtre seçimi, sabit zlib
+// seviyesi.
 import { mkdirSync, readFileSync, writeFileSync } from 'node:fs';
 import { deflateSync, inflateSync, crc32 } from 'node:zlib';
 import { dirname, resolve } from 'node:path';
@@ -30,19 +30,19 @@ const INK = [233, 236, 241];
 const MUTED = [138, 143, 152];
 const BG_CENTER = [21, 25, 33], BG_EDGE = [7, 8, 11];
 
-// Positions are fractions of the screen or lengths in 1920x1080 reference
-// pixels; the script multiplies the latter by its scale k.
+// Konumlar ekranın kesirleri ya da 1920x1080 referans pikselinde uzunluklardır;
+// script ikincisini k ölçeğiyle çarpar.
 export const LAYOUT = {
-  mapCenterY: .40,        // of screen height, like the wallpaper's relief
-  mapWidth: 820,          // reference px
-  mapAlpha: .34,          // brightest terrace, so the map stays a silhouette
-  wordGap: 34,            // map bottom -> wordmark top
-  wordCap: 17,            // wordmark cap height
-  barGap: 92,             // wordmark bottom -> progress line
+  mapCenterY: .40,        // ekran yüksekliğinin oranı, duvar kâğıdının kabartması gibi
+  mapWidth: 820,          // referans px
+  mapAlpha: .34,          // en parlak teras, böylece harita bir siluet olarak kalır
+  wordGap: 34,            // harita altı -> wordmark üstü
+  wordCap: 17,            // wordmark büyük harf yüksekliği
+  barGap: 92,             // wordmark altı -> ilerleme çizgisi
   barWidth: 260, barHeight: 2,
   fieldWidth: 380, fieldHeight: 44, labelGap: 14, labelCap: 11,
   bullet: 8, bulletPitch: 18,
-  messageGap: 40,         // progress line -> boot message
+  messageGap: 40,         // ilerleme çizgisi -> açılış mesajı
 };
 
 const clamp = (v, a, b) => Math.min(Math.max(v, a), b);
@@ -74,8 +74,8 @@ function filterRow(type, row, prev, bpp) {
   return out;
 }
 
-// channels: 3 (RGB) or 4 (RGBA). Per row, the filter with the smallest sum of
-// signed residuals wins: the usual libpng heuristic, and deterministic.
+// channels: 3 (RGB) ya da 4 (RGBA). Satır başına, işaretli kalıntıların toplamı
+// en küçük olan filtre kazanır: olağan libpng sezgiseli ve deterministik.
 export function encodePng(w, h, channels, px) {
   const stride = w * channels, parts = [];
   for (let y = 0; y < h; y++) {
@@ -100,7 +100,7 @@ export function encodePng(w, h, channels, px) {
   ]);
 }
 
-// Only what our own files use: 8-bit RGB/RGBA, not interlaced.
+// Yalnızca kendi dosyalarımızın kullandığı: 8-bit RGB/RGBA, interlaced değil.
 export function decodePng(buf) {
   let o = 8, w = 0, h = 0, channels = 0;
   const idat = [];
@@ -129,9 +129,9 @@ export function decodePng(buf) {
 
 // ---------------------------------------------------------------- Geist
 
-// A minimal TrueType reader: cmap format 4, hmtx, loca/glyf with simple and
-// composite glyphs. Enough to set a wordmark; hinting and kerning are not
-// needed because the text is wide-tracked caps rasterised at a fixed size.
+// Minimal bir TrueType okuyucu: cmap format 4, hmtx, basit ve bileşik glifli
+// loca/glyf. Bir wordmark dizmeye yeter; hinting ve kerning gerekmez çünkü metin
+// sabit boyutta rasterize edilmiş geniş aralıklı büyük harflerdir.
 function readFont(file) {
   const b = readFileSync(file), tables = {};
   for (let i = 0, n = b.readUInt16BE(4); i < n; i++) {
@@ -164,7 +164,7 @@ function readFont(file) {
   };
   const advance = g => b.readUInt16BE(tables.hmtx + Math.min(g, numH - 1) * 4);
 
-  // Contours as arrays of {x, y, on}.
+  // Konturlar {x, y, on} dizileri olarak.
   function contours(g) {
     const o = tables.glyf + loca(g);
     if (loca(g + 1) === loca(g)) return [];
@@ -217,7 +217,7 @@ function readFont(file) {
   return { glyphIndex, advance, contours };
 }
 
-// Quadratic contours to polygons, with implied on-curve midpoints.
+// Kuadratik konturlar çokgenlere, örtük eğri-üstü orta noktalarla.
 function flatten(contour, map) {
   const n = contour.length, pts = [];
   let s = contour.findIndex(q => q.on);
@@ -241,8 +241,8 @@ function flatten(contour, map) {
   return pts;
 }
 
-// Non-zero winding coverage, 16 sub-scanlines per pixel with exact
-// horizontal span coverage: crisp stems without hinting.
+// Sıfır olmayan sarım (non-zero winding) kapsaması, piksel başına 16 alt tarama
+// satırı ve kesin yatay aralık kapsamasıyla: hinting olmadan net gövdeler.
 function fillPolygons(polys, w, h) {
   const cov = new Float32Array(w * h), SUB = 16;
   const edges = [];
@@ -283,8 +283,8 @@ function setText(font, text, cap, tracking) {
   return { w, h, cov: fillPolygons(polys, w, h) };
 }
 
-// Constant colour, information in alpha: compresses to almost nothing and
-// lets Plymouth blend it over whatever is behind.
+// Sabit renk, bilgi alfada: neredeyse hiçbir şeye sıkışır ve Plymouth'un onu
+// arkasındaki her şeyin üzerine harmanlamasını sağlar.
 function tinted(w, h, cov, [r, g, b], alpha = 1) {
   const px = Buffer.alloc(w * h * 4);
   for (let i = 0; i < w * h; i++) {
@@ -304,10 +304,10 @@ const pillSdf = (w, h, inset = 0) => (x, y) => {
   return Math.hypot(x - cx, y - h / 2) - r;
 };
 
-// ---------------------------------------------------------------- relief
+// ---------------------------------------------------------------- kabartma
 
-// Brightness of the dark wallpaper's land, read from green+blue only: the red
-// Ankara marker lives almost entirely in the red channel.
+// Koyu duvar kâğıdındaki karanın parlaklığı, yalnızca yeşil+maviden okunur:
+// kırmızı Ankara işareti neredeyse tamamen kırmızı kanalda yaşar.
 function reliefFromWallpaper() {
   const { w, h, px } = decodePng(readFileSync(resolve(root, 'data/backgrounds/vatan-dark.png')));
   const lum = new Float32Array(w * h);
@@ -317,10 +317,10 @@ function reliefFromWallpaper() {
     lum[i] = (g + bl) / 2;
     if (r - g > 40) { mx += i % w; my += (i / w) | 0; mn++; }
   }
-  // No marker on the splash: the boot screen has no "you are here". The dot
-  // and its ring are filled by relaxing towards the surrounding terrain
-  // (Laplace fill); a row-wise interpolation left a visible streak wherever
-  // a terrace edge touched the patch.
+  // Açılış ekranında işaret yok: boot ekranında "buradasınız" yoktur. Nokta
+  // ve halkası çevredeki araziye doğru gevşetilerek doldurulur (Laplace dolgusu);
+  // satır satır interpolasyon, bir teras kenarı yamaya değdiği her yerde
+  // görünür bir iz bırakıyordu.
   if (mn) {
     const cx = Math.round(mx / mn), cy = Math.round(my / mn), R = 38, hole = [];
     for (let y = cy - R; y <= cy + R; y++) for (let x = cx - R; x <= cx + R; x++)
@@ -329,8 +329,8 @@ function reliefFromWallpaper() {
     for (let it = 0; it < 1500; it++)
       for (const i of hole) lum[i] = (lum[i - 1] + lum[i + 1] + lum[i - w] + lum[i + w]) / 4;
   }
-  // Sea and the land's drop shadow sit below ~31; the sea's faint contour
-  // lines add ~3, so the floor keeps them out of the silhouette.
+  // Deniz ile karanın düşen gölgesi ~31'in altındadır; denizin soluk kontur
+  // çizgileri ~3 ekler, bu yüzden taban onları siluetin dışında tutar.
   const FLOOR = 31, SPAN = 75, alpha = new Float32Array(w * h);
   let x0 = w, x1 = 0, y0 = h, y1 = 0;
   for (let i = 0; i < w * h; i++) {
@@ -341,8 +341,8 @@ function reliefFromWallpaper() {
   return { w, alpha, box: [x0, y0, x1 + 1, y1 + 1] };
 }
 
-// Area-average resample of a crop: done here, at build time, so Plymouth's
-// own scaler only ever has a small step left.
+// Bir kırpmanın alan ortalamalı yeniden örneklenmesi: burada, derleme zamanında
+// yapılır, böylece Plymouth'un kendi ölçekleyicisine yalnızca küçük bir adım kalır.
 function resample(src, sw, [x0, y0, x1, y1], ow, oh) {
   const out = new Float32Array(ow * oh), fx = (x1 - x0) / ow, fy = (y1 - y0) / oh;
   for (let y = 0; y < oh; y++) for (let x = 0; x < ow; x++) {
@@ -360,9 +360,9 @@ function resample(src, sw, [x0, y0, x1, y1], ow, oh) {
   return out;
 }
 
-// Same vignette as the dark wallpaper's sea, centred where its relief is.
-// An ordered dither of half a level hides banding in the 14-step range
-// between the centre and edge colours.
+// Koyu duvar kâğıdının denizindekiyle aynı vinyet, kabartmasının olduğu yerde
+// ortalanmış. Yarım seviyelik sıralı dither, merkez ile kenar renkleri arasındaki
+// 14 adımlık aralıktaki bandlanmayı gizler.
 function background(w, h) {
   const px = Buffer.alloc(w * h * 3);
   for (let y = 0; y < h; y++) for (let x = 0; x < w; x++) {
@@ -377,16 +377,17 @@ function background(w, h) {
 
 function script() {
   const L = LAYOUT;
-  return `# VATAN boot splash. Generated by tools/plymouth/build.mjs from its LAYOUT
-# table; change the numbers there, not here.
+  return `# VATAN açılış ekranı. tools/plymouth/build.mjs tarafından LAYOUT tablosundan
+# üretilir; sayıları burada değil, orada değiştir.
 #
-# Lengths are in 1920x1080 reference units. Two asset sets exist, @1 (one
-# pixel per unit) and @2 (two). The set is the smallest one that covers the
-# screen, so every Image.Scale below shrinks, by at most 2:1: Plymouth's
-# scaler is point-sampled bilinear and aliases on larger steps.
+# Uzunluklar 1920x1080 referans biriminde verilir. İki varlık seti var: @1 (birim
+# başına bir piksel) ve @2 (iki piksel). Set, ekranı kapsayan en küçük settir;
+# bu yüzden aşağıdaki her Image.Scale en fazla 2:1 oranında küçültür: Plymouth'un
+# ölçekleyicisi nokta örneklemeli bilinear'dır ve daha büyük adımlarda tırtıklanır.
 #
-# Inside functions, plain assignment to an existing global modifies it and to
-# a new name creates a local; globals created at runtime use "global.".
+# Fonksiyonların içinde var olan bir globale düz atama onu değiştirir, yeni bir
+# isme atama ise yerel değişken oluşturur; çalışma anında oluşturulan globaller
+# "global." ile yazılır.
 
 Window.SetBackgroundTopColor(0.027, 0.031, 0.043);
 Window.SetBackgroundBottomColor(0.027, 0.031, 0.043);
@@ -415,8 +416,8 @@ fun centre_x(img) {
   return screen.x + Math.Int((screen.w - img.GetWidth()) / 2);
 }
 
-# The vignette is a smooth field with no detail, so it is the one image
-# that may be stretched to any aspect ratio.
+# Vinyet, ayrıntısı olmayan yumuşak bir alandır; bu yüzden herhangi bir en-boy
+# oranına gerilebilen tek görüntü odur.
 bg.image = Image("background" + set + ".png").Scale(screen.w, screen.h);
 bg.sprite = Sprite(bg.image);
 bg.sprite.SetPosition(screen.x, screen.y, -100);
@@ -442,8 +443,8 @@ bar.sprite = Sprite();
 bar.sprite.SetPosition(bar.x, bar.y, 2);
 prompting = 0;
 
-# Shutdown and update screens have no meaningful progress: the line stays
-# hidden there and the composition is map and wordmark only.
+# Kapatma ve güncelleme ekranlarında anlamlı bir ilerleme yoktur: çizgi orada
+# gizli kalır ve kompozisyon yalnızca harita ile wordmark'tan oluşur.
 if (Plymouth.GetMode() != "boot") {
   track.sprite.SetOpacity(0);
   bar.sprite.SetOpacity(0);
@@ -467,7 +468,7 @@ fun boot_progress_callback(duration, progress) {
 }
 Plymouth.SetBootProgressFunction(boot_progress_callback);
 
-# Password prompt. Built on first use, then only shown and hidden.
+# Parola istemi. İlk kullanımda kurulur, sonra yalnızca gösterilir ve gizlenir.
 fun prompt_setup() {
   local.p;
   p.field = asset("field");
@@ -480,8 +481,8 @@ fun prompt_setup() {
   p.label_sprite.SetPosition(centre_x(p.label), p.field_y - Math.Int(${L.labelGap} * unit) - p.label.GetHeight(), 10);
   p.bullet = asset("bullet");
   p.pitch = Math.Int(${L.bulletPitch} * unit);
-  # Bullets beyond the field's inner width are not drawn; the count still
-  # grows, it just stops being visible.
+  # Alanın iç genişliğini aşan noktalar çizilmez; sayaç yine de artar,
+  # yalnızca görünmez olur.
   p.max = Math.Int((p.field.GetWidth() - p.field.GetHeight()) / p.pitch);
   p.bullets = 0;
   global.prompt = p;
@@ -528,9 +529,9 @@ fun display_normal_callback() {
 }
 Plymouth.SetDisplayNormalFunction(display_normal_callback);
 
-# Boot messages (fsck, unlock hints) need Image.Text, i.e. Plymouth's label
-# plugin and a font in the initramfs. Without them Image.Text returns an
-# empty image and the message is simply not shown.
+# Açılış mesajları (fsck, kilit açma ipuçları) Image.Text gerektirir; yani
+# Plymouth'un label eklentisi ve initramfs içinde bir font. Bunlar yoksa
+# Image.Text boş bir görüntü döndürür ve mesaj sadece gösterilmez.
 message.sprite = Sprite();
 message.sprite.SetZ(20);
 
@@ -592,7 +593,7 @@ export function assets(S) {
   return out;
 }
 
-// Trims a text bitmap to its ink so the script can place it by its edges.
+// Bir metin bitmap'ini mürekkebine kırpar, böylece script onu kenarlarından yerleştirebilir.
 function cropText({ w, h, cov }) {
   let x0 = w, x1 = 0, y0 = h, y1 = 0;
   for (let y = 0; y < h; y++) for (let x = 0; x < w; x++)

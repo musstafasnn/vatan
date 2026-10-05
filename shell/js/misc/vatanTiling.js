@@ -1,4 +1,4 @@
-// Corners are named by the quarter of the work area they select.
+// Köşeler, seçtikleri çalışma alanı çeyreğinin adıyla anılır.
 export const Corner = {
     TOP_LEFT: 'top-left',
     TOP_RIGHT: 'top-right',
@@ -6,9 +6,9 @@ export const Corner = {
     BOTTOM_RIGHT: 'bottom-right',
 };
 
-// area: {x, y, width, height}; size: how far into the area a corner reaches.
-// The pointer may also be past the area (over the island or a screen edge),
-// so only the inner bound of each corner is checked.
+// area: {x, y, width, height}; size: köşenin alana ne kadar girdiği.
+// İşaretçi alanın dışında da olabilir (ada üzerinde ya da ekran kenarında),
+// bu yüzden her köşenin yalnızca iç sınırı kontrol edilir.
 export function cornerAt(px, py, area, size) {
     const left = px <= area.x + size;
     const right = px >= area.x + area.width - size;
@@ -25,8 +25,8 @@ export function cornerAt(px, py, area, size) {
     return null;
 }
 
-// Odd sizes give the extra pixel to the right/bottom quarter so the four
-// quarters cover the area exactly.
+// Tek sayılı boyutlarda fazladan piksel sağ/alt çeyreğe verilir, böylece dört
+// çeyrek alanı tam olarak kaplar.
 export function quarterRect(area, corner) {
     const leftWidth = Math.floor(area.width / 2);
     const topHeight = Math.floor(area.height / 2);
@@ -50,7 +50,8 @@ export function halfRect(area, side) {
     };
 }
 
-// Which half a frame fills, within a few pixels of client-side rounding.
+// Bir çerçevenin hangi yarıyı doldurduğu, istemci tarafı yuvarlamanın birkaç
+// piksellik toleransıyla.
 export function halfSideOf(frame, area, tolerance = 2) {
     const near = (a, b) => Math.abs(a - b) <= tolerance;
     for (const side of ['left', 'right']) {
@@ -62,9 +63,9 @@ export function halfSideOf(frame, area, tolerance = 2) {
     return null;
 }
 
-// Super+Up/Down from a given placement: half → quarter of that side, quarter
-// → back to the half (or out to maximize/minimize at the ends), like the
-// snapping keys people already know from Windows.
+// Verilen bir yerleşimden Super+Up/Down: yarı → o tarafın çeyreği, çeyrek
+// → yarıya geri (ya da uçlarda büyüt/küçült), insanların Windows'tan zaten
+// bildiği yerleştirme (snap) tuşları gibi.
 export function nextPlacement(current, up) {
     if (!current)
         return up ? {action: 'maximize'} : {action: 'unmaximize'};

@@ -349,7 +349,7 @@ export const SearchController = GObject.registerClass({
         this._searchResults._unregisterProvider(provider);
     }
 
-    // VATAN hides the entry bin; nothing may start a search through it.
+    // VATAN entry bin'i gizler; hiçbir şey onun üzerinden arama başlatmamalı.
     get searchAvailable() {
         return this._entry.get_parent().visible;
     }

@@ -1,7 +1,7 @@
-# VATAN defaults. Every group is scoped with ":VATAN", so they apply only in
-# the VATAN session (XDG_CURRENT_DESKTOP contains VATAN) and leave the stock
-# GNOME session of Pardus untouched. The 90_ prefix sorts after Pardus's
-# 20_pardus-gnome-settings override.
+# VATAN varsayılanları. Her grup ":VATAN" ile kapsamlanmıştır; bu yüzden
+# yalnızca VATAN oturumunda (XDG_CURRENT_DESKTOP içinde VATAN geçer) uygulanır
+# ve Pardus'un stok GNOME oturumuna dokunmaz. 90_ öneki, Pardus'un
+# 20_pardus-gnome-settings override dosyasından sonra sıralanır.
 
 [org.gnome.desktop.interface:VATAN]
 accent-color='red'

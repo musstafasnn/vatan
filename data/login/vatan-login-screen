@@ -1,16 +1,17 @@
 #!/bin/sh
-# Lets VATAN draw the GDM login screen, or gives it back to GNOME.
+# VATAN'ın GDM giriş ekranını çizmesini sağlar ya da ekranı GNOME'a geri verir.
 #
-# GDM starts its greeter shell from org.gnome.Shell.desktop, looked up in the
-# greeter user's own data directory first. Shadowing that file there switches
-# only the greeter; no GNOME file is touched and "disable" removes it again.
+# GDM, greeter kabuğunu org.gnome.Shell.desktop dosyasından başlatır ve bu dosyayı
+# önce greeter kullanıcısının kendi veri dizininde arar. O dizine bu dosyanın bir
+# gölgesini koymak yalnızca greeter'ı değiştirir; hiçbir GNOME dosyasına
+# dokunulmaz ve "disable" gölgeyi yeniden kaldırır.
 set -eu
 
 GDM_USER=Debian-gdm
 SHELL_BIN=/usr/lib/vatan-shell/bin/gnome-shell
 SYSTEM_DESKTOP=/usr/share/applications/org.gnome.Shell.desktop
 
-# The greeter's home is private to it, so even "status" needs root.
+# Greeter'ın ana dizini yalnızca ona açıktır; bu yüzden "status" bile root ister.
 [ "$(id -u)" -eq 0 ] || { echo "vatan-login-screen: run as root (sudo)" >&2; exit 1; }
 
 home=$(getent passwd "$GDM_USER" | cut -d: -f6)

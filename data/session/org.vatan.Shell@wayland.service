@@ -1,7 +1,7 @@
 [Unit]
 Description=VATAN Shell on Wayland
-# Same failure handling as GNOME Shell: on Wayland the session cannot
-# outlive its compositor.
+# GNOME Shell ile aynı hata yönetimi: Wayland'de oturum, compositor'ından
+# daha uzun yaşayamaz.
 OnFailure=org.gnome.Shell-disable-extensions.service gnome-session-shutdown.target
 OnFailureJobMode=replace-irreversibly
 CollectMode=inactive-or-failed

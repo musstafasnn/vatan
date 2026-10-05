@@ -3,7 +3,7 @@ import {
     Corner, cornerAt, halfRect, halfSideOf, nextPlacement, quarterRect,
 } from 'resource:///org/gnome/shell/misc/vatanTiling.js';
 
-// A 1280x800 screen with the island taking the bottom 80 px.
+// 1280x800 bir ekran; ada alttaki 80 px'i kaplıyor.
 const AREA = {x: 0, y: 0, width: 1281, height: 720};
 
 describe('cornerAt()', () => {

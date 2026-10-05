@@ -1,4 +1,4 @@
-// "HH:MM" → minutes after midnight, or null for anything else.
+// "HH:MM" → gece yarısından sonraki dakika, başka her şey için null.
 export function parseClock(text) {
     const match = /^(\d{1,2}):(\d{2})$/.exec(text.trim());
     if (!match)
@@ -7,8 +7,8 @@ export function parseClock(text) {
     return hours < 24 && minutes < 60 ? hours * 60 + minutes : null;
 }
 
-// A window like 22:00–07:00 runs past midnight; it belongs to the day it
-// started on, so "weekdays only" keeps Friday night but drops Saturday's.
+// 22:00–07:00 gibi bir aralık gece yarısını aşar; başladığı güne aittir, böylece
+// "yalnızca hafta içi" Cuma gecesini korur ama Cumartesi'ninkini düşürür.
 export function inFocusWindow(now, start, end, weekdaysOnly) {
     const from = parseClock(start);
     const to = parseClock(end);

@@ -9,7 +9,7 @@ const UNIT_SECONDS = new Map([
     ['sa', 3600],
     ['saat', 3600],
 ]);
-// Words that phrase a timer without naming it: "10 dk sonra", "çay için".
+// Bir zamanlayıcıyı adlandırmadan ifade eden sözcükler: "10 dk sonra", "çay için".
 const FILLER = new Set(['sonra', 'icin', 'icinde', 'zamanlayici', 'hatirlat', 'hatirlatici', 'sayac']);
 const MAX_SECONDS = 24 * 3600;
 
@@ -21,8 +21,8 @@ export function secondsUntil(hours, minutes, now) {
     return Math.round((target - now) / 1000);
 }
 
-// Reads "çay 3 dk", "1 saat 30 dk", "90sn", "18:30 toplantı". The label keeps
-// the user's own spelling; only the time words are folded for matching.
+// "çay 3 dk", "1 saat 30 dk", "90sn", "18:30 toplantı" okur. Etiket kullanıcının
+// kendi yazımını korur; yalnızca zaman sözcükleri eşleştirme için katlanır.
 export function parseTimerCommand(query, now = new Date()) {
     const tokens = query.trim().split(/\s+/).filter(Boolean);
     const label = [];
@@ -55,7 +55,7 @@ export function parseTimerCommand(query, now = new Date()) {
             label.push(tokens[i]);
     }
 
-    // "18:30 5 dk" names two different moments; refuse rather than guess.
+    // "18:30 5 dk" iki farklı anı adlandırır; tahmin etmek yerine reddet.
     if (at && seconds)
         return null;
     if (at)

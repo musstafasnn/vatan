@@ -1,12 +1,12 @@
-// Draws the VATAN application icons into data/icons/VATAN/apps. Every icon
-// shares one base, one light and one motif library, so they are generated
-// rather than hand-written: a change to the rim or the shadow lands on all of
-// them at once and the set cannot drift apart.
+// VATAN uygulama ikonlarını data/icons/VATAN/apps içine çizer. Her ikon tek bir
+// zemini, tek bir ışığı ve tek bir motif kitaplığını paylaşır; bu yüzden elle
+// yazılmak yerine üretilirler: kenardaki ya da gölgedeki bir değişiklik hepsine
+// birden yansır ve set birbirinden kopamaz.
 //
 //   node tools/icons/apps/build.mjs
 //
-// Output is byte-for-byte deterministic: no randomness, no dates, numbers are
-// rounded to two decimals and paint definitions are emitted in a fixed order.
+// Çıktı bayt bayt deterministiktir: rastgelelik yok, tarih yok, sayılar iki
+// ondalığa yuvarlanır ve paint tanımları sabit sırada yazılır.
 import { mkdirSync, writeFileSync } from 'node:fs';
 import { dirname, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
@@ -16,9 +16,9 @@ const outDir = resolve(dirname(fileURLToPath(import.meta.url)), '../../../data/i
 const RED = '#e62d42', RED_DEEP = '#9a1a2b', SLATE = '#1b1f27', IVORY = '#f3efe6';
 const GOLD = '#c9a227', BLUE = '#1f5f8b';
 
-// Base fills run from the lit top-left corner to the bottom-right; the end
-// stops are the brief's colours pushed lighter/darker so the flat colour sits
-// in the middle of the tile.
+// Zemin dolguları ışık alan sol üst köşeden sağ alta doğru gider; uç duraklar
+// brief'teki renklerin açılıp koyulaştırılmış halidir, böylece düz renk karonun
+// ortasında durur.
 const BASES = {
   red: ['#f2566a', '#b81e34'],
   slate: ['#434b5a', '#15181e'],
@@ -27,8 +27,8 @@ const BASES = {
   emerald: ['#23a780', '#0b573f'],
 };
 
-// Glyph paints are vertical only: light comes from above-left, and a vertical
-// ramp reads as "lit from the top" without fighting the base's diagonal.
+// Glif paint'leri yalnızca dikeydir: ışık sol üstten gelir ve dikey bir geçiş,
+// zeminin çaprazıyla çatışmadan "üstten aydınlatılmış" gibi okunur.
 const PAINTS = {
   ivory: ['#fffdf8', '#e4dccb'],
   ivoryDim: ['#ece5d6', '#d3c9b5'],
@@ -56,10 +56,10 @@ function rr(x, y, w, h, r) {
     `V${f(y + r)}A${f(r)} ${f(r)} 0 0 1 ${pt(x + r, y)}Z`;
 }
 
-// Continuous-curvature corner instead of a circular arc: the corner starts
-// bending R units before the edge ends, which is what makes a squircle look
-// "cut" rather than "rounded". R=42, c=.18 lands at the same visual radius as
-// a 27.6 arc (corner midpoint at R(1+3c)/8 from the corner).
+// Dairesel yay yerine sürekli eğrilikli köşe: köşe, kenar bitmeden R birim önce
+// bükülmeye başlar ve bir squircle'ı "yuvarlak" değil "kesilmiş" gösteren de budur.
+// R=42, c=.18, 27.6'lık bir yayla aynı görsel yarıçapa oturur (köşe orta noktası
+// köşeden R(1+3c)/8 uzaklıkta).
 function squircle(x, y, w, h, R = 42, c = .18) {
   const k = R * c;
   return `M${pt(x + R, y)}H${f(x + w - R)}C${pt(x + w - k, y)} ${pt(x + w, y + k)} ${pt(x + w, y + R)}` +
@@ -70,8 +70,8 @@ function squircle(x, y, w, h, R = 42, c = .18) {
 
 const BASE = squircle(8, 8, 112, 112);
 
-// Seljuk star: two squares at 45 degrees. Concave vertices sit at
-// cos45/cos22.5 of the radius, which is where the square edges cross.
+// Selçuklu yıldızı: 45 derecede iki kare. İç bükey köşeler yarıçapın
+// cos45/cos22.5 oranında durur; kare kenarlarının kesiştiği yer burasıdır.
 function star8(cx, cy, r, rot = 0) {
   const ri = r * Math.cos(rad(45)) / Math.cos(rad(22.5));
   const pts = [];
@@ -80,8 +80,8 @@ function star8(cx, cy, r, rot = 0) {
   return poly(pts);
 }
 
-// Compass rose as on Piri Reis's portolan: long cardinal and short
-// intercardinal spikes.
+// Piri Reis'in portolanındaki gibi pusula gülü: uzun ana yön ve kısa ara yön
+// sivri uçları.
 function rose(cx, cy, r) {
   const pts = [];
   for (let i = 0; i < 16; i++) {
@@ -99,10 +99,11 @@ function ringSegment(cx, cy, r1, r2, a0, a1) {
     `A${f(r1)} ${f(r1)} 0 ${large} 0 ${pt(x3, y3)}Z`;
 }
 
-// Old Turkic letters as stroke centrelines in the font-unit space of Noto Sans
-// Old Turkic (cap height 714, y up). The centrelines were taken from that
-// font's outlines, so each shape is the real Unicode letter, only re-stroked
-// at icon weight. cx is the glyph's horizontal centre in the same units.
+// Eski Türk harfleri, Noto Sans Old Turkic'in font-birim uzayında (büyük harf
+// yüksekliği 714, y yukarı) çizgi merkez hatları olarak. Merkez hatları o fontun
+// dış hatlarından alındı; bu yüzden her şekil gerçek Unicode harfidir, yalnızca
+// ikon kalınlığında yeniden çizgilenmiştir. cx, aynı birimlerde glifin yatay
+// merkezidir.
 const ORKHON = {
   A: { cp: 0x10C00, cx: 330, d: 'M612 490L324 690V0M324 30L45 216' },            // 𐰀
   O: { cp: 0x10C06, cx: 243, d: 'M145 0V60Q145 170 225 252Q290 315 321 357Q290 399 225 462Q145 544 145 654V714' }, // 𐰆
@@ -120,15 +121,15 @@ function orkhon(key, cx, top, h, color, weight = 105, extra = '') {
     `fill="none" stroke="${color}" stroke-width="${weight}" stroke-linejoin="miter" stroke-miterlimit="3"${extra}/>`;
 }
 
-// "Türk" as written on the Kül Tigin stele: 𐱅𐰇𐰼𐰜, right to left.
+// Kül Tigin yazıtında yazıldığı gibi "Türk": 𐱅𐰇𐰼𐰜, sağdan sola.
 function turkWord(right, top, h, color, weight = 110, extra = '') {
   const step = h * .78;
   return ['AET', 'OE', 'AER', 'OEK']
     .map((k, i) => orkhon(k, right - step * i - h * .32, top, h, color, weight, extra)).join('');
 }
 
-// Kilim "eli belinde" (hands on hips): diamond head, triangular arms closing
-// on the waist, skirt. s is the half height.
+// Kilim "eli belinde": baş eşkenar dörtgen, kollar belde kapanan üçgenler,
+// etek. s yarı yüksekliktir.
 function eliBelinde(cx, cy, s, fill) {
   const P = (x, y) => [cx + x * s, cy + y * s];
   const head = poly([P(0, -1), P(.24, -.76), P(0, -.52), P(-.24, -.76)]);
@@ -137,9 +138,9 @@ function eliBelinde(cx, cy, s, fill) {
   return `<path d="${head}${body}${arm(1)}${arm(-1)}" fill="${fill}"/>`;
 }
 
-// Kilim "koç boynuzu" (ram's horn), the weaver's sign for abundance. Drawn
-// with the loom's 45-degree diagonals rather than round curls: the rounded
-// version is the zodiac sign for Aries, the woven one is not.
+// Kilim "koç boynuzu", dokumacının bolluk işareti. Yuvarlak kıvrımlar yerine
+// tezgâhın 45 derecelik çaprazlarıyla çizilmiştir: yuvarlak versiyon Koç
+// burcunun işaretidir, dokunmuş olan değildir.
 function kocBoynuzu(cx, cy, s, color, w) {
   const P = (x, y) => pt(cx + x * s, cy + y * s);
   const horn = k => `M${P(0, 0)}L${P(k * .5, -.5)}L${P(k * .95, -.05)}L${P(k * .6, .3)}L${P(k * .38, .08)}`;
@@ -147,8 +148,8 @@ function kocBoynuzu(cx, cy, s, color, w) {
     `stroke-width="${w}" stroke-linecap="square" stroke-linejoin="miter"/>`;
 }
 
-// İznik tulip: three pointed petals, the side petals flaring outward.
-// (cx, cy) is the bottom of the bulb, s its height.
+// İznik lalesi: üç sivri taç yaprak, yan yapraklar dışa açılır.
+// (cx, cy) soğanın dibidir, s yüksekliği.
 function tulip(cx, cy, s, petal, leaf, withStem = true) {
   const P = (x, y) => pt(cx + x * s, cy + y * s);
   const bulb = `M${P(0, 0)}C${P(-.34, 0)} ${P(-.46, -.3)} ${P(-.42, -.66)}L${P(-.22, -.46)}` +
@@ -162,8 +163,8 @@ function tulip(cx, cy, s, petal, leaf, withStem = true) {
     `<path d="${leaves}" fill="${leaf}"/><path d="${bulb}" fill="${petal}"/>`;
 }
 
-// An incised line: dark on the upper-left wall, light on the lower-right,
-// because the light comes from the top left.
+// Oyulmuş bir çizgi: ışık sol üstten geldiği için sol üst duvarda koyu,
+// sağ alt duvarda açık.
 function groove(d, w, dark, light, extra = '') {
   return `<path d="${d}" fill="none" stroke="${light}" stroke-width="${w}" transform="translate(.6 .6)"${extra}/>` +
     `<path d="${d}" fill="none" stroke="${dark}" stroke-width="${w}"${extra}/>`;
@@ -172,7 +173,7 @@ function groove(d, w, dark, light, extra = '') {
 const ICONS = {};
 
 ICONS['org.gnome.Nautilus'] = ['ivory', () => {
-  // The tab steps down like the stair edge of a kilim diamond.
+  // Sekme, bir kilim eşkenar dörtgeninin merdiven kenarı gibi basamaklanır.
   const back = 'M27 24H46V27.5H50V31H54V34.5H101Q108 34.5 108 41.5V95Q108 102 101 102H27Q20 102 20 95V31Q20 24 27 24Z';
   const front = 'M20 53Q20 47 27 47H101Q108 47 108 53V96Q108 104 100 104H28Q20 104 20 96Z';
   const band = [44, 64, 84].map(x => eliBelinde(x, 80, 9, '#ffb0b9')).join('');
@@ -202,9 +203,9 @@ ICONS['org.gnome.Settings'] = ['slate', () => {
     `<path d="${hole}" fill="none" stroke="${RED_DEEP}" stroke-width="2.4" transform="translate(.8 .8)" opacity=".7"/>`;
 }];
 
-// VATAN's own settings: a smooth rotary knob over the island dock, so it
-// stays apart from the toothed GNOME gear at 32 px. The knob's cap is the
-// Seljuk star and its lit scale is the accent red.
+// VATAN'ın kendi ayarları: ada dock'u üzerinde pürüzsüz bir döner düğme, böylece
+// 32 px'te dişli GNOME çarkından ayrı durur. Düğmenin başlığı Selçuklu yıldızı
+// ve aydınlık ölçeği vurgu kırmızısıdır.
 ICONS['org.vatan.Settings'] = ['slate', () => {
   let scale = '';
   for (let i = 0; i <= 12; i++) {
@@ -238,7 +239,7 @@ ICONS['org.gnome.TextEditor'] = ['blue', () => {
   const page = 'M36 16H76L94 34V106Q94 112 88 112H36Q30 112 30 106V22Q30 16 36 16Z';
   const lines = [[54, 46], [64, 50], [74, 40], [84, 48], [94, 30]]
     .map(([y, w]) => `<path d="M40 ${y}H${40 + w}" stroke="${SLATE}" stroke-width="3.2" stroke-linecap="round" opacity=".28"/>`).join('');
-  // Reed pen (kamış kalem) of the calligraphers, drawn tip-down then rotated.
+  // Hattatların kamış kalemi, uç aşağıda çizilip döndürülür.
   const pen = `<g transform="translate(76 98) rotate(32)">` +
     `<path d="M0 0L-5.5 -15H5.5Z" fill="#ead9b4"/><path d="M0 -1V-9" stroke="#8a6d2e" stroke-width="1"/>` +
     `<path d="${rr(-5.5, -19, 11, 4, 1)}" fill="url(#p-gold)"/>` +
@@ -343,9 +344,9 @@ ICONS['org.gnome.Characters'] = ['ivory', () =>
   orkhon('AEB', 64, 36, 58, RED, 108) +
   `<path d="M30 30V24H36M98 24V30M30 98V104H36M92 104H98V98" fill="none" stroke="${SLATE}" stroke-width="1.2" opacity=".45"/>`];
 
-// A specimen "Aa", with Orkhon A (𐰀) as the small corner mark. At full size
-// next to the Latin A the Orkhon letter read as a music note at 32 px, so it
-// is kept to the detail layer.
+// Orhun A'sı (𐰀) küçük köşe işareti olan bir "Aa" örneği. Tam boyutta Latin A'nın
+// yanında Orhun harfi 32 px'te nota gibi okunuyordu; bu yüzden ayrıntı
+// katmanında tutulur.
 ICONS['org.gnome.font-viewer'] = ['slate', () =>
   `<path d="M20 96L39 36H51L70 96H59.5L55.2 82H34.8L30.5 96ZM37.6 73H52.4L45 49Z" fill="url(#p-ivory)"/>` +
   `<circle cx="86" cy="80.5" r="11.5" fill="none" stroke="${RED}" stroke-width="8"/>` +
@@ -362,7 +363,7 @@ ICONS['org.gnome.Loupe'] = ['slate', () =>
 ICONS['org.gnome.Evince'] = ['red', () => {
   const lines = [[76, 46], [84, 50], [92, 40], [100, 30]]
     .map(([y, w]) => `<path d="M40 ${y}H${40 + w}" stroke="${SLATE}" stroke-width="3" stroke-linecap="round" opacity=".28"/>`).join('');
-  // Köşebent: the corner piece of a Turkish book cover.
+  // Köşebent: Türk kitap kapağının köşe parçası.
   return `<path d="${rr(28, 16, 72, 96, 6)}" fill="url(#p-ivory)"/>` +
     `<path d="M33 21H51C45 23 41 27 39 31C37 35 34 37 33 39Z" fill="url(#p-gold)"/>` +
     `<path d="M36 24H44Q39 27 36 32Z" fill="#fff8e2" opacity=".6"/>` +
@@ -434,7 +435,7 @@ ICONS['org.gnome.baobab'] = ['slate', () =>
   kocBoynuzu(64, 62, 13, IVORY, 3.2)];
 
 ICONS['org.gnome.Logs'] = ['blue', () => {
-  // Combed ebru: parallel waves dragged through the paint by a tarak.
+  // Tarakla ebru: tarağın boyanın içinde sürüklediği paralel dalgalar.
   let waves = '';
   const colors = [RED, BLUE, SLATE, RED, BLUE];
   colors.forEach((c, i) => {
@@ -496,7 +497,7 @@ ICONS['org.gnome.Connections'] = ['blue', () => {
     `<path d="${rr(x + 3.5, y + 3.5, 33, 21, 1.5)}" fill="url(#p-slate)"/>` +
     `<path d="M${x + 14} ${y + 36}H${x + 26}" stroke="${IVORY}" stroke-width="3" stroke-linecap="round"/>` +
     `<path d="M${x + 20} ${y + 30}V${y + 35}" stroke="${IVORY}" stroke-width="3"/>`;
-  // Pointed stone arch, as on Malabadi bridge, spanning the two screens.
+  // Malabadi köprüsündeki gibi sivri taş kemer, iki ekranı kapsar.
   return `<path d="M36 64C36 46 48 36 64 28C80 36 92 46 92 64" fill="none" stroke="${IVORY}" stroke-width="5" stroke-linecap="round"/>` +
     `<path d="M44 64C44 50 52 43 64 36C76 43 84 50 84 64" fill="none" stroke="${IVORY}" stroke-width="1.4" opacity=".45"/>` +
     `<path d="${poly([[64, 24], [68, 30], [64, 35], [60, 30]])}" fill="url(#p-red)"/>` +
@@ -557,7 +558,7 @@ ICONS['pardus-update'] = ['emerald', () => {
   const cx = 64, cy = 64, r = 32, a0 = 205, a1 = 505;
   const [sx, sy] = polar(cx, cy, r, a0), [ex, ey] = polar(cx, cy, r, a1);
   const t = [-Math.sin(rad(a1)), Math.cos(rad(a1))], n = [Math.cos(rad(a1)), Math.sin(rad(a1))];
-  // Barbed temren, longer than it is wide so the head reads along the arc.
+  // Dikenli temren, başı yay boyunca okunsun diye eninden uzun.
   const at = (u, v) => pt(ex + t[0] * u + n[0] * v, ey + t[1] * u + n[1] * v);
   const head = `M${at(16, 0)}L${at(-3, 9)}L${at(1, 0)}L${at(-3, -9)}Z`;
   const vane = (r1, r2) => poly([polar(cx, cy, r1, a0 + 2), polar(cx, cy, r1, a0 + 20), polar(cx, cy, r2, a0 + 13), polar(cx, cy, r2, a0 - 3)]);
@@ -679,8 +680,8 @@ function paintDefs(body) {
 function render(base, body) {
   const [hi, lo] = BASES[base];
   const light = base === 'ivory';
-  // On a light tile a dark rim would read as an outline, so ivory gets a
-  // softer bottom edge and a weaker glyph shadow than the coloured tiles.
+  // Açık bir karoda koyu kenar çerçeve gibi okunurdu; bu yüzden fildişi, renkli
+  // karolardan daha yumuşak bir alt kenar ve daha zayıf bir glif gölgesi alır.
   const rimLow = light ? .14 : .32, lift = light ? .16 : .38;
   return `<svg xmlns="http://www.w3.org/2000/svg" width="128" height="128" viewBox="0 0 128 128">` +
     `<defs>` +
@@ -702,7 +703,7 @@ function render(base, body) {
     `</svg>\n`;
 }
 
-// One element per line keeps the files diffable and readable by hand.
+// Satır başına bir eleman, dosyaları diff'lenebilir ve elle okunabilir tutar.
 const pretty = svg => svg.replace(/></g, '>\n<');
 
 mkdirSync(outDir, { recursive: true });

@@ -7,12 +7,12 @@ import * as Main from '../main.js';
 import {cornerAt, halfRect, halfSideOf, nextPlacement, quarterRect} from '../../misc/vatanTiling.js';
 
 const CORNER_REACH_PX = 48;
-// Mutter does not report pointer motion during a window move, so the corner
-// is found by sampling the pointer while the grab lasts.
+// Mutter pencere taşıma sırasında işaretçi hareketini bildirmez, bu yüzden köşe
+// tutma sürerken işaretçi örneklenerek bulunur.
 const POLL_MS = 40;
 const MOVE_OPS = [Meta.GrabOp.MOVING, Meta.GrabOp.KEYBOARD_MOVING, Meta.GrabOp.MOVING_UNCONSTRAINED];
-// Mutter applies the last drag position after grab-op-end; a placement made
-// right away can keep its size but lose its position to that move.
+// Mutter son sürükleme konumunu grab-op-end'den sonra uygular; hemen yapılan bir
+// yerleştirme boyutunu koruyabilir ama konumunu o taşımaya kaptırabilir.
 const SETTLE_MS = 150;
 const POSITION_TOLERANCE_PX = 2;
 
@@ -24,8 +24,8 @@ function toMtk({x, y, width, height}) {
     return new Mtk.Rectangle({x, y, width, height});
 }
 
-// Mutter 48 tiles halves only. VATAN adds quarters: drag a window into a
-// corner, or press Super+Up/Down on a half-tiled window.
+// Mutter 48 yalnızca yarıları döşer (tile). VATAN çeyrekleri ekler: bir pencereyi
+// köşeye sürükle ya da yarım döşenmiş pencerede Super+Up/Down'a bas.
 export class VatanQuarterTiling {
     constructor() {
         this._quarters = new WeakMap();
@@ -44,8 +44,8 @@ export class VatanQuarterTiling {
             (_display, window) => this._onSnapKey(window, false));
     }
 
-    // While a corner is chosen, the tile preview belongs to us and Mutter's
-    // half-screen preview requests are ignored.
+    // Bir köşe seçiliyken döşeme önizlemesi bize aittir ve Mutter'ın yarım ekran
+    // önizleme istekleri yok sayılır.
     get ownsPreview() {
         return this._pendingCorner !== null;
     }
@@ -119,7 +119,7 @@ export class VatanQuarterTiling {
         const quarter = this._quarters.get(window);
         if (quarter) {
             const rect = quarterRect(area, quarter);
-            // The user may have moved it since; only trust a quarter that still fits.
+            // Kullanıcı bu arada taşımış olabilir; yalnızca hâlâ sığan bir çeyreğe güven.
             if (Math.abs(frame.x - rect.x) <= POSITION_TOLERANCE_PX &&
                 Math.abs(frame.y - rect.y) <= POSITION_TOLERANCE_PX)
                 return {quarter};
