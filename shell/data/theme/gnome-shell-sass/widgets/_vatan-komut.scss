@@ -58,7 +58,8 @@ $komut_shadow_color: if($variant == 'light', rgba(20, 24, 31, .28), rgba(0, 0, 0
 
 .vatan-komut-row {
   min-height: $komut_row_height;
-  padding: 0 10px;
+  // Two-line rows (title plus description) need air above and below.
+  padding: 6px 10px;
   border-radius: 8px;
 
   StBoxLayout {
