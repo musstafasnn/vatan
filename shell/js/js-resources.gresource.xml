@@ -159,8 +159,6 @@
     <file>ui/status/system.js</file>
     <file>ui/status/thunderbolt.js</file>
     <file>ui/status/volume.js</file>
-  </gresource>
-  <gresource prefix="/org/gnome/shell">
     <file>ui/vatan/actionsProvider.js</file>
   </gresource>
 </gresources>
