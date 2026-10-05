@@ -396,15 +396,23 @@ class Komut extends St.Widget {
         const cancellable = this._cancellable;
         const sections = this._sections();
         const answered = new Array(sections.length).fill(null);
+        let pending = sections.length;
+        const settle = entries => {
+            pending--;
+            if (cancellable.is_cancelled() || !this.isOpen)
+                return;
+            if (entries === null && pending > 0)
+                return;
+            this._setRows(answered.flatMap(rows => rows ?? []), terms, '', pending === 0);
+        };
         sections.forEach((section, index) => {
             this._querySection(section, terms, cancellable).then(entries => {
-                if (cancellable.is_cancelled() || !this.isOpen)
-                    return;
                 answered[index] = entries;
-                this._setRows(answered.flatMap(rows => rows ?? []), terms, '');
+                settle(entries);
             }).catch(e => {
                 if (!cancellable.is_cancelled())
                     logError(e, 'Komut search provider failed');
+                settle(null);
             });
         });
     }
@@ -431,7 +439,7 @@ class Komut extends St.Widget {
         }
         if (cancellable.is_cancelled() || !this.isOpen)
             return;
-        this._setRows(entries, [], _('Öneriler'));
+        this._setRows(entries, [], _('Öneriler'), true);
     }
 
     _clearRows() {
@@ -440,7 +448,10 @@ class Komut extends St.Widget {
         this._selected = -1;
     }
 
-    _setRows(entries, terms, header) {
+    _setRows(entries, terms, header, complete) {
+        // Results arrive provider by provider; keep the row the user is on
+        // so a late answer cannot move a different item under Enter.
+        const previous = this._rows[this._selected]?.result;
         this._list.destroy_all_children();
         this._header.text = header;
         this._header.visible = header !== '';
@@ -457,15 +468,21 @@ class Komut extends St.Widget {
             return row;
         });
 
-        if (this._rows.length === 0 && terms.length > 0) {
+        // The empty state waits for the slowest provider, otherwise it
+        // flashes while remote providers are still answering.
+        if (this._rows.length === 0 && terms.length > 0 && complete) {
             this._list.add_child(new St.Label({
                 style_class: 'vatan-komut-empty',
                 text: _('Sonuç yok. Bir uygulama adı, dosya ya da “ses 30” dene.'),
             }));
         }
 
+        const kept = previous
+            ? this._rows.findIndex(row =>
+                row.result.id === previous.id && row.result.provider === previous.provider)
+            : -1;
         this._selected = -1;
-        this._select(0);
+        this._select(Math.max(kept, 0));
         this._relayout();
     }
 

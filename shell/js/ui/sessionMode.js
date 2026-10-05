@@ -24,7 +24,10 @@ const _modes = {
         stylesheetName: 'gnome-shell.css',
         // VATAN follows the app color scheme: 'default' means light for the
         // shell too, so the dark-mode toggle and Komut flip shell and apps
-        // together instead of leaving a dark shell over light apps.
+        // together instead of leaving a dark shell over light apps. The lock
+        // and login screens inherit it on purpose: their core uses the
+        // always-dark system tokens, and forcing dark there would reload the
+        // stylesheet on every lock.
         colorScheme: 'prefer-light',
         themeResourceName: 'gnome-shell-theme.gresource',
         hasOverview: false,
