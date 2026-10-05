@@ -60,6 +60,8 @@ override_dh_install:
 	install -Dm644 -t $(pkgroot)/usr/share/fonts/truetype/vatan data/fonts/*.ttf
 	install -Dm644 -t $(pkgroot)/usr/share/backgrounds/vatan data/backgrounds/*.png
 	install -Dm644 data/backgrounds/vatan.xml $(pkgroot)/usr/share/gnome-background-properties/vatan.xml
+	install -Dm644 data/icons/VATAN/index.theme $(pkgroot)/usr/share/icons/VATAN/index.theme
+	install -Dm644 -t $(pkgroot)/usr/share/icons/VATAN/places data/icons/VATAN/places/*.svg
 
 # The rest of the upstream install (desktop files, D-Bus services, schemas,
 # systemd units) duplicates what gnome-shell already ships for the system.

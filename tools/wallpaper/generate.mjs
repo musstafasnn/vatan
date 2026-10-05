@@ -20,7 +20,7 @@ const THEMES = {
   light: {
     file: 'vatan-light.png', seaCenter: [233, 236, 240], seaEdge: [203, 208, 215],
     landLow: [226, 230, 236], landHigh: [255, 255, 255], ink: [20, 24, 31],
-    terraceShadow: .2, dropShadow: .28, shade: .08, rim: .8, seaLine: .06, accent: [200, 16, 46],
+    terraceShadow: .2, dropShadow: .28, shade: .08, rim: .8, seaLine: .06, accent: [230, 45, 66],
   },
   dark: {
     file: 'vatan-dark.png', seaCenter: [21, 25, 33], seaEdge: [7, 8, 11],

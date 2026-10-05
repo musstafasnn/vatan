@@ -210,3 +210,17 @@ $ada_lit_edge_color: if($variant == 'light', #ffffff, rgba(255, 255, 255, .16));
   background-color: mix($ada_surface_top, $ada_surface_bottom, 50%);
   box-shadow: 0 2px 8px -4px $ada_shadow_color;
 }
+
+// Banners rise from the island too. Same flat slab as the menus: the banner
+// bin leaves only a few pixels of margin for the shadow.
+.notification-banner {
+  border-radius: $ada_radius;
+  border: 1px solid $ada_edge_color;
+  border-top-color: $ada_lit_edge_color;
+  box-shadow: 0 2px 8px -4px $ada_shadow_color;
+
+  .message {
+    border-radius: $ada_radius;
+    background-color: mix($ada_surface_top, $ada_surface_bottom, 50%);
+  }
+}

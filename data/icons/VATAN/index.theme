@@ -1,0 +1,13 @@
+[Icon Theme]
+Name=VATAN
+Comment=Pardus icons with VATAN red folders
+Comment[tr]=VATAN kırmızısı klasörlerle Pardus simgeleri
+Inherits=pardus-gnome,Adwaita,hicolor
+Directories=places
+
+[places]
+Context=Places
+Size=200
+MinSize=16
+MaxSize=512
+Type=Scalable

@@ -11,7 +11,7 @@ Pardus 25 için masaüstü oturumu. Üst bar yerine ekranın altında tek bir ad
 - **Komut** — `Super` ile açılır. Uygulama, dosya, ayar ve hesap makinesi sonuçlarının yanında Türkçe eylemleri anlar: `karanlık`, `odak`, `gece ışığı`, `parlaklık 40`, `ses 30`, `yan yana diz`, `kilitle`.
 - **Ada** — sık kullanılan ve çalışan uygulamalar, alan düğmesi, hızlı ayarlar ve saat tek yerde. Üstten ışık alan bir yüzey: ikonlar üzerine gelince yükselir, açılan uygulama zıplar. Menüler ve bildirimler adanın üstünde açılır.
 - **Yerleştirme** — pencereyi ekran kenarına sürükle: yarım ekran; üst kenara: tam ekran.
-- **Görünüm** — Geist ve Instrument Serif yazı tipleri, kat kat yükselen kabartma Türkiye haritası duvar kağıdı (açık ve koyu), Al vurgu rengi. Giriş doğrudan masaüstüne açılır.
+- **Görünüm** — Geist ve Instrument Serif yazı tipleri, kat kat yükselen kabartma Türkiye haritası duvar kağıdı (açık ve koyu), kırmızı klasörlü VATAN simge teması. Kabuk, uygulamalar ve simgeler aynı kırmızıyı kullanır. Giriş doğrudan masaüstüne açılır.
 
 ## Kurulum
 
@@ -66,12 +66,13 @@ Duvar kağıtları `tools/wallpaper/generate.mjs` ile üretilir (Node 20+): `nod
 | `data/session/` | Oturum ve systemd kullanıcı birimleri |
 | `data/90_vatan.gschema.override` | Yalnızca VATAN oturumunda geçerli varsayılanlar |
 | `data/fonts/`, `data/backgrounds/` | Yazı tipleri ve duvar kağıtları |
+| `data/icons/VATAN/` | Simge teması: Pardus klasörleri kırmızıya çevrilmiş hali (`tools/icons/recolor.mjs`) |
 | `debian/` | `vatan` paketi |
 | `shell/debian/` | Pardus'un gnome-shell paketlemesi; çatalın kaynağını belgelemek için duruyor, `vatan` paketini derlemez |
 
 ## Lisans
 
-Kabuk GNU GPL 2 ya da sonrası (`LICENSE`). Geist ve Instrument Serif SIL Open Font License 1.1 (`data/fonts/`). Ayrıntılar `debian/copyright` içinde.
+Kabuk GNU GPL 2 ya da sonrası (`LICENSE`). Geist ve Instrument Serif SIL Open Font License 1.1 (`data/fonts/`). Klasör simgeleri Pardus'un pardus-gnome-icon-theme paketinden, GNU GPL 3 ya da sonrası. Ayrıntılar `debian/copyright` içinde.
 
 ---
 

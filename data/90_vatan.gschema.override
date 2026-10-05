@@ -5,6 +5,7 @@
 
 [org.gnome.desktop.interface:VATAN]
 accent-color='red'
+icon-theme='VATAN'
 color-scheme='default'
 enable-hot-corners=false
 font-name='Geist 11'
