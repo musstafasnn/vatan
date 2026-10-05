@@ -225,17 +225,21 @@ $_gdm_dialog_width: 25em;
 // Clock
 .unlock-dialog-clock {
   color: $_gdm_fg;
-  spacing: 2em;
+  spacing: 0;
 
+  // Instrument Serif ships with the VATAN fonts package; the generic serif
+  // fallback keeps the clock legible without it.
   .unlock-dialog-clock-time {
-    @extend %numeric;
-    @include fontsize(72pt);
-    font-weight: 800;
+    font-family: "Instrument Serif", serif;
+    font-size: 150pt;
+    font-weight: 400;
+    letter-spacing: -6px;
   }
 
   .unlock-dialog-clock-date {
-    @extend %title_1;
+    @include fontsize(13pt);
     font-weight: 400;
+    color: transparentize($_gdm_fg, .35);
   }
 
   .unlock-dialog-clock-hint {

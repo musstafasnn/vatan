@@ -27,9 +27,12 @@ const HINT_TIMEOUT = 4;
 const CROSSFADE_TIME = 300;
 const FADE_OUT_TRANSLATION = 200;
 const FADE_OUT_SCALE = 0.3;
+const CLOCK_SCREEN_MARGIN = 48;
 
-const BLUR_BRIGHTNESS = 0.65;
-const BLUR_RADIUS = 90;
+// No blur: the contour wallpaper stays sharp. The dim is strong enough for
+// the light lock text to stay readable on the light wallpaper variant too.
+const BLUR_BRIGHTNESS = 0.45;
+const BLUR_RADIUS = 0;
 
 const NotificationsBox = GObject.registerClass({
     Signals: {'wake-up-screen': {}},
@@ -334,20 +337,20 @@ class UnlockDialogClock extends St.BoxLayout {
 
         this._time = new St.Label({
             style_class: 'unlock-dialog-clock-time',
-            x_align: Clutter.ActorAlign.CENTER,
+            x_align: Clutter.ActorAlign.START,
         });
         this._date = new St.Label({
             style_class: 'unlock-dialog-clock-date',
-            x_align: Clutter.ActorAlign.CENTER,
+            x_align: Clutter.ActorAlign.START,
         });
         this._hint = new St.Label({
             style_class: 'unlock-dialog-clock-hint',
-            x_align: Clutter.ActorAlign.CENTER,
+            x_align: Clutter.ActorAlign.START,
             opacity: 0,
         });
 
-        this.add_child(this._time);
         this.add_child(this._date);
+        this.add_child(this._time);
         this.add_child(this._hint);
 
         this._wallClock = new GnomeDesktop.WallClock({time_only: true});
@@ -401,10 +404,11 @@ class UnlockDialogClock extends St.BoxLayout {
 
 const UnlockDialogLayout = GObject.registerClass(
 class UnlockDialogLayout extends Clutter.LayoutManager {
-    _init(stack, notifications, switchUserButton) {
+    _init(stack, clock, notifications, switchUserButton) {
         super._init();
 
         this._stack = stack;
+        this._clock = clock;
         this._notifications = notifications;
         this._switchUserButton = switchUserButton;
     }
@@ -457,6 +461,19 @@ class UnlockDialogLayout extends Clutter.LayoutManager {
         actorBox.y2 = stackY + stackHeight;
 
         this._stack.allocate(actorBox);
+
+        // Clock sits in the bottom-left corner, apart from the centered prompt.
+        const {scaleFactor} = St.ThemeContext.get_for_stage(global.stage);
+        const clockMargin = CLOCK_SCREEN_MARGIN * scaleFactor;
+        const [, , clockWidth, clockHeight] = this._clock.get_preferred_size();
+        if (this._clock.get_text_direction() === Clutter.TextDirection.RTL)
+            actorBox.x1 = box.x2 - clockMargin - clockWidth;
+        else
+            actorBox.x1 = box.x1 + clockMargin;
+        actorBox.y1 = box.y2 - clockMargin - clockHeight;
+        actorBox.x2 = actorBox.x1 + clockWidth;
+        actorBox.y2 = actorBox.y1 + clockHeight;
+        this._clock.allocate(actorBox);
 
         // Switch User button
         if (this._switchUserButton.visible) {
@@ -568,8 +585,8 @@ export const UnlockDialog = GObject.registerClass({
         this._stack.add_child(this._promptBox);
 
         this._clock = new Clock();
-        this._clock.set_pivot_point(0.5, 0.5);
-        this._stack.add_child(this._clock);
+        // Scale toward the corner the clock is anchored to.
+        this._clock.set_pivot_point(0, 1);
         this._showClock();
 
         this.allowCancel = false;
@@ -614,10 +631,12 @@ export const UnlockDialog = GObject.registerClass({
         let mainBox = new St.Widget();
         mainBox.add_constraint(new Layout.MonitorConstraint({primary: true}));
         mainBox.add_child(this._stack);
+        mainBox.add_child(this._clock);
         mainBox.add_child(this._notificationsBox);
         mainBox.add_child(this._otherUserButton);
         mainBox.layout_manager = new UnlockDialogLayout(
             this._stack,
+            this._clock,
             this._notificationsBox,
             this._otherUserButton);
         this.add_child(mainBox);
