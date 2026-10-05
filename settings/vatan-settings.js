@@ -17,6 +17,12 @@ const FEEDS = [
 ];
 const CUSTOM_FEED_LABEL = 'Başka bir adres';
 
+// Page entrance: each preference group rises a little and fades in, one
+// after another, so a page reads as arriving rather than being swapped.
+const ENTRANCE_MS = 320;
+const ENTRANCE_STAGGER_MS = 50;
+const ENTRANCE_RISE_PX = 14;
+
 // GNOME's accent names; the swatches show the colours the shell and the apps use.
 const ACCENTS = [
     ['red', 'Kırmızı', '#e62d42'], ['blue', 'Mavi', '#3584e4'], ['teal', 'Turkuaz', '#2190a4'],
@@ -35,8 +41,15 @@ const KOMUT_EXAMPLES = [
 ];
 
 const CSS = `
-.vatan-swatch { min-width: 26px; min-height: 26px; padding: 0; border-radius: 999px; }
-.vatan-swatch:checked { outline: 2px solid @window_fg_color; outline-offset: 2px; }
+.vatan-swatch {
+  min-width: 26px; min-height: 26px; padding: 0; border-radius: 999px;
+  transition: transform 180ms cubic-bezier(.2, .9, .3, 1.3), outline-color 180ms ease-out;
+  outline: 2px solid transparent; outline-offset: 2px;
+}
+.vatan-swatch:hover { transform: scale(1.12); }
+.vatan-swatch:checked { outline-color: @window_fg_color; }
+.navigation-sidebar row { transition: background-color 160ms ease-out; }
+row.activatable { transition: background-color 160ms ease-out; }
 ${ACCENTS.map(([name, , hex]) => `.vatan-swatch-${name} { background: ${hex}; }`).join('\n')}
 .vatan-sidebar-title { font-weight: 600; }
 `;
@@ -74,7 +87,10 @@ class VatanSettingsWindow extends Adw.ApplicationWindow {
         this._vatan = new Gio.Settings({schema_id: 'org.vatan.shell'});
 
         this._toasts = new Adw.ToastOverlay();
-        const stack = new Gtk.Stack({transition_type: Gtk.StackTransitionType.CROSSFADE});
+        const stack = new Gtk.Stack({
+            transition_type: Gtk.StackTransitionType.CROSSFADE,
+            transition_duration: 200,
+        });
         const pages = [
             ['gorunum', 'Görünüm', 'applications-graphics-symbolic', this._appearancePage()],
             ['gundem', 'Gündem', 'x-office-document-symbolic', this._newsPage()],
@@ -101,8 +117,11 @@ class VatanSettingsWindow extends Adw.ApplicationWindow {
             content: contentPage,
         });
         sidebarList.connect('row-activated', (_list, row) => {
-            const [name, title] = pages[row.get_index()];
-            stack.visible_child_name = name;
+            const [name, title, , page] = pages[row.get_index()];
+            if (stack.visible_child_name !== name) {
+                stack.visible_child_name = name;
+                this._playEntrance(page);
+            }
             contentPage.title = title;
             split.show_content = true;
         });
@@ -114,6 +133,8 @@ class VatanSettingsWindow extends Adw.ApplicationWindow {
         const breakpoint = new Adw.Breakpoint({condition: Adw.BreakpointCondition.parse('max-width: 600sp')});
         breakpoint.add_setter(split, 'collapsed', true);
         this.add_breakpoint(breakpoint);
+
+        this._playEntrance(pages[0][3]);
     }
 
     _sidebar(list) {
@@ -123,6 +144,42 @@ class VatanSettingsWindow extends Adw.ApplicationWindow {
         const view = new Adw.ToolbarView({content: new Gtk.ScrolledWindow({child: list})});
         view.add_top_bar(header);
         return new Adw.NavigationPage({title: 'VATAN', child: view});
+    }
+
+    _playEntrance(page) {
+        let child = page.get_first_child();
+        const groups = [];
+        // PreferencesPage nests its groups in a scrolled window and a box.
+        while (child && !(child instanceof Adw.PreferencesGroup)) {
+            const next = child.get_first_child();
+            if (!next)
+                break;
+            child = next;
+        }
+        for (let group = child; group; group = group.get_next_sibling()) {
+            if (group instanceof Adw.PreferencesGroup)
+                groups.push(group);
+        }
+
+        groups.forEach((group, index) => {
+            group.opacity = 0;
+            group.margin_top = ENTRANCE_RISE_PX;
+            const animation = new Adw.TimedAnimation({
+                widget: group,
+                value_from: 0,
+                value_to: 1,
+                duration: ENTRANCE_MS,
+                easing: Adw.Easing.EASE_OUT_CUBIC,
+                target: Adw.CallbackAnimationTarget.new(value => {
+                    group.opacity = value;
+                    group.margin_top = Math.round(ENTRANCE_RISE_PX * (1 - value));
+                }),
+            });
+            GLib.timeout_add(GLib.PRIORITY_DEFAULT, index * ENTRANCE_STAGGER_MS, () => {
+                animation.play();
+                return GLib.SOURCE_REMOVE;
+            });
+        });
     }
 
     _toast(title) {

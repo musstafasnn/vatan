@@ -1,6 +1,7 @@
 import Clutter from 'gi://Clutter';
 import GObject from 'gi://GObject';
 import Graphene from 'gi://Graphene';
+import Mtk from 'gi://Mtk';
 import Shell from 'gi://Shell';
 import St from 'gi://St';
 
@@ -124,9 +125,28 @@ class VatanDock extends PanelMenu.Button {
         });
         item._indicator = indicator;
         item._iconBin = iconBin;
+        // Tell the window manager where this app lives in the dock so its
+        // windows minimize into the icon and come back out of it.
+        item.connect('notify::allocation', () => this._updateIconGeometry(app, item));
+        app.connectObject('windows-changed', () => this._updateIconGeometry(app, item), item);
         item.connect('notify::hover', () => this._lift(item));
         item.connect('clicked', () => this._activate(app, item));
         return item;
+    }
+
+    _updateIconGeometry(app, item) {
+        if (!item.mapped)
+            return;
+        const [x, y] = item.get_transformed_position();
+        const [width, height] = item.get_transformed_size();
+        const rect = new Mtk.Rectangle({
+            x: Math.round(x),
+            y: Math.round(y),
+            width: Math.round(width),
+            height: Math.round(height),
+        });
+        for (const win of app.get_windows())
+            win.set_icon_geometry(rect);
     }
 
     _lift(item) {
