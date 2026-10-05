@@ -1,0 +1,75 @@
+name: Paket
+
+on:
+  push:
+    branches: [main]
+    tags: ['v*']
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  deb:
+    name: deb (${{ matrix.arch }})
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - arch: amd64
+            runner: ubuntu-24.04
+          - arch: arm64
+            runner: ubuntu-24.04-arm
+    runs-on: ${{ matrix.runner }}
+    # Pardus 25 is built on Debian 13; building in a trixie container links
+    # against the same GNOME 48 libraries the package will meet at runtime.
+    container: debian:trixie
+    timeout-minutes: 60
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Derleme bağımlılıkları
+        run: |
+          apt-get update
+          apt-get install -y --no-install-recommends build-essential devscripts equivs
+          mk-build-deps --install --remove \
+            --tool 'apt-get -y --no-install-recommends' debian/control
+
+      - name: Paketi derle
+        run: dpkg-buildpackage -us -uc -b
+
+      - name: Paketi topla
+        run: |
+          mkdir -p out
+          cp ../vatan_*.deb out/
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: vatan-${{ matrix.arch }}
+          path: out/*.deb
+          if-no-files-found: error
+
+  release:
+    if: startsWith(github.ref, 'refs/tags/v')
+    needs: deb
+    runs-on: ubuntu-24.04
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/download-artifact@v4
+        with:
+          path: dist
+          merge-multiple: true
+
+      - name: Sürümü yayınla
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          cd dist
+          sha256sum *.deb > SHA256SUMS
+          gh release create "$GITHUB_REF_NAME" ./*.deb SHA256SUMS \
+            --repo "$GITHUB_REPOSITORY" \
+            --title "VATAN ${GITHUB_REF_NAME#v}" \
+            --notes-file ../docs/surum-notlari/"$GITHUB_REF_NAME".md

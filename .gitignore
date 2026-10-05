@@ -3,3 +3,10 @@
 /shell/obj-*/
 *.deb
 .DS_Store
+/build-vatan/
+/debian/.debhelper/
+/debian/vatan/
+/debian/tmp/
+/debian/files
+/debian/*.substvars
+/debian/debhelper-build-stamp
