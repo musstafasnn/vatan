@@ -52,3 +52,97 @@ $ada_shadow_color: if($variant == 'light', rgba(20, 24, 31, .28), rgba(0, 0, 0, 
     }
   }
 }
+
+// The pill radius upstream gives the clock and the sharing indicators would
+// be a second radius system inside the island.
+#panel,
+#panel:overview,
+#panel.unlock-screen,
+#panel.login-screen {
+  .panel-button {
+    &.clock-display .clock,
+    &.screen-recording-indicator,
+    &.screen-sharing-indicator {
+      border-radius: $ada_control_radius;
+    }
+  }
+}
+
+// Section separators are borders on the section boxes so the layout stays
+// free of extra actors.
+#panelCenter,
+#panelRight {
+  margin-left: 4px;
+  padding-left: 8px;
+  border-left: 1px solid $borders_color;
+  // A border spans the full box height; the island only wants 24px of it.
+  min-height: 24px;
+  max-height: 24px;
+}
+
+// Lock and login layouts leave the center empty; no orphan separator there.
+#panel.unlock-screen #panelCenter,
+#panel.login-screen #panelCenter {
+  margin-left: 0;
+  padding-left: 0;
+  border-left-width: 0;
+}
+
+.vatan-dock-host {
+  padding: 0;
+  background-color: transparent;
+}
+
+.vatan-dock {
+  spacing: 4px;
+}
+
+.vatan-dock-item {
+  width: 40px;
+  height: 40px;
+  border-radius: $ada_control_radius;
+
+  &:hover,
+  &:focus {
+    background-color: $hover_bg_color;
+  }
+
+  .vatan-dock-indicator {
+    height: 2px;
+    width: 0;
+    margin-bottom: 3px;
+    border-radius: 1px;
+    background-color: -st-accent-color;
+    transition-duration: 300ms;
+  }
+
+  &.running .vatan-dock-indicator {
+    width: 4px;
+  }
+
+  &.focused .vatan-dock-indicator {
+    width: 14px;
+  }
+}
+
+.vatan-komut-button {
+  min-width: 250px;
+  background-color: transparentize($fg_color, .95);
+
+  .vatan-komut-box {
+    spacing: 8px;
+  }
+
+  .vatan-komut-label,
+  .vatan-komut-hint {
+    color: $insensitive_fg_color;
+  }
+
+  .vatan-komut-hint {
+    font-size: 11px;
+  }
+}
+
+.vatan-workspace-box {
+  spacing: 6px;
+}

@@ -160,5 +160,8 @@
     <file>ui/status/thunderbolt.js</file>
     <file>ui/status/volume.js</file>
     <file>ui/vatan/actionsProvider.js</file>
+    <file>ui/vatan/dock.js</file>
+    <file>ui/vatan/komutButton.js</file>
+    <file>ui/vatan/workspaceButton.js</file>
   </gresource>
 </gresources>

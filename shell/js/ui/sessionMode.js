@@ -58,7 +58,7 @@ const _modes = {
             : ['polkitAgent'],
         panel: {
             left: [],
-            center: ['dateMenu'],
+            center: [],
             right: ['dwellClick', 'a11y', 'keyboard', 'quickSettings'],
         },
         panelStyle: 'login-screen',
@@ -92,9 +92,9 @@ const _modes = {
         unlockDialog: UnlockDialog,
         components: USER_SESSION_COMPONENTS,
         panel: {
-            left: ['activities'],
-            center: ['dateMenu'],
-            right: ['screenRecording', 'screenSharing', 'dwellClick', 'a11y', 'keyboard', 'quickSettings'],
+            left: ['vatanDock'],
+            center: ['vatanKomut'],
+            right: ['vatanWorkspace', 'screenRecording', 'screenSharing', 'dwellClick', 'a11y', 'keyboard', 'quickSettings', 'dateMenu'],
         },
     },
 };

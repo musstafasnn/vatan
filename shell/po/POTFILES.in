@@ -81,6 +81,9 @@ js/ui/status/thunderbolt.js
 js/ui/status/volume.js
 js/ui/switchMonitor.js
 js/ui/unlockDialog.js
+js/ui/vatan/dock.js
+js/ui/vatan/komutButton.js
+js/ui/vatan/workspaceButton.js
 js/ui/welcomeDialog.js
 js/ui/windowAttentionHandler.js
 js/ui/windowManager.js

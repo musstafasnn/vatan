@@ -39,6 +39,9 @@ import {ATIndicator} from './status/accessibility.js';
 import {InputSourceIndicator} from './status/keyboard.js';
 import {DwellClickIndicator} from './status/dwellClick.js';
 import {ScreenRecordingIndicator, ScreenSharingIndicator} from './status/remoteAccess.js';
+import {VatanDock} from './vatan/dock.js';
+import {VatanKomutButton} from './vatan/komutButton.js';
+import {VatanWorkspaceButton} from './vatan/workspaceButton.js';
 
 const PANEL_ICON_SIZE = 16;
 const APP_MENU_ICON_MARGIN = 0;
@@ -641,6 +644,9 @@ const PANEL_ITEM_IMPLEMENTATIONS = {
     'dwellClick': DwellClickIndicator,
     'screenRecording': ScreenRecordingIndicator,
     'screenSharing': ScreenSharingIndicator,
+    'vatanDock': VatanDock,
+    'vatanKomut': VatanKomutButton,
+    'vatanWorkspace': VatanWorkspaceButton,
 };
 
 export const Panel = GObject.registerClass(
