@@ -43,6 +43,19 @@ jobs:
           mkdir -p out
           cp ../vatan_*.deb out/
 
+      # No amd64 Pardus machine is in the loop yet, so every build at least
+      # installs the package and boots the shell headless on its own arch.
+      - name: Kabuğu ekransız çalıştır
+        run: |
+          apt-get install -y --no-install-recommends ./out/vatan_*.deb dbus
+          useradd -m deneme
+          su deneme -c 'XDG_RUNTIME_DIR=$(mktemp -d) XDG_CURRENT_DESKTOP=VATAN:GNOME \
+            dbus-run-session -- timeout 40 /usr/lib/vatan-shell/bin/gnome-shell \
+            --headless --virtual-monitor 1280x800 --wayland --no-x11 > /tmp/kabuk.log 2>&1 || true'
+          cat /tmp/kabuk.log
+          grep -q "GNOME Shell started" /tmp/kabuk.log
+          if grep -E "JS ERROR|TypeError|ReferenceError|SyntaxError" /tmp/kabuk.log; then exit 1; fi
+
       - uses: actions/upload-artifact@v4
         with:
           name: vatan-${{ matrix.arch }}
