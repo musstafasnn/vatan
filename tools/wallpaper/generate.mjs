@@ -22,7 +22,7 @@ const clamp = (v, a, b) => Math.min(Math.max(v, a), b);
 const smooth = t => t * t * (3 - 2 * t);
 const lerp = (a, b, t) => a + (b - a) * t;
 
-// Same LCG-shuffled permutation as the browser prototype so both render the same terrain.
+// Fixed-seed LCG shuffle: regenerating must reproduce the shipped SVGs byte for byte.
 const PERM = (() => {
   let seed = 1923;
   const rnd = () => (seed = (seed * 1664525 + 1013904223) >>> 0) / 4294967296;

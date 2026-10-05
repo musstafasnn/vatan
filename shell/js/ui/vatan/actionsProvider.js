@@ -182,6 +182,9 @@ export class VatanActionsProvider {
         const sink = control.get_default_sink();
         if (!sink)
             return;
+        // Like the volume slider: asking for a level means wanting to hear it.
+        if (percent > 0 && sink.is_muted)
+            sink.change_is_muted(false);
         sink.volume = percent / 100 * control.get_vol_max_norm();
         sink.push_volume();
     }

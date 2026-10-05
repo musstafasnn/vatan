@@ -277,8 +277,12 @@ export const LayoutManager = GObject.registerClass({
             name: 'panelBox',
             orientation: Clutter.Orientation.VERTICAL,
         });
+        // The box spans the whole bottom edge only to reserve the strut; the
+        // island inside it tracks its own input region (see Panel), so on X11
+        // the empty strip beside the island still reaches the windows below.
         this.addChrome(this.panelBox, {
             affectsStruts: true,
+            affectsInputRegion: false,
             trackFullscreen: true,
         });
         this.panelBox.connect('notify::allocation',

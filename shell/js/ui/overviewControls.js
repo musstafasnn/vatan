@@ -846,17 +846,20 @@ class ControlsManager extends St.Widget {
             mode: Clutter.AnimationMode.LINEAR,
         });
 
-        // Search bar falls from the ceiling
-        const {primaryMonitor} = Main.layoutManager;
-        const [, y] = this._searchEntryBin.get_transformed_position();
-        const yOffset = y - primaryMonitor.y;
+        // Search bar falls from the ceiling. VATAN hides it, and a hidden bin
+        // is never allocated, so its transformed position would be NaN.
+        if (this._searchEntryBin.visible) {
+            const {primaryMonitor} = Main.layoutManager;
+            const [, y] = this._searchEntryBin.get_transformed_position();
+            const yOffset = y - primaryMonitor.y;
 
-        this._searchEntryBin.translation_y = -(yOffset + this._searchEntryBin.height);
-        this._searchEntryBin.ease({
-            translation_y: 0,
-            duration: STARTUP_ANIMATION_TIME,
-            mode: Clutter.AnimationMode.EASE_OUT_QUAD,
-        });
+            this._searchEntryBin.translation_y = -(yOffset + this._searchEntryBin.height);
+            this._searchEntryBin.ease({
+                translation_y: 0,
+                duration: STARTUP_ANIMATION_TIME,
+                mode: Clutter.AnimationMode.EASE_OUT_QUAD,
+            });
+        }
 
         // The Dash rises from the bottom. This is the last animation to finish,
         // so resolve the promise there.

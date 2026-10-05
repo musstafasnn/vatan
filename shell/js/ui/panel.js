@@ -681,6 +681,10 @@ class Panel extends St.Widget {
             this);
 
         Main.layoutManager.panelBox.add_child(this);
+        Main.layoutManager.trackChrome(this, {
+            affectsInputRegion: true,
+            affectsStruts: false,
+        });
         Main.ctrlAltTabManager.addGroup(this,
             _('Top Bar'), 'shell-focus-top-bar-symbolic',
             {sortGroup: CtrlAltTab.SortGroup.TOP});

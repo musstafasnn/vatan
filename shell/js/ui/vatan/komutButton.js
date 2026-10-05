@@ -54,7 +54,8 @@ class VatanKomutButton extends PanelMenu.Button {
     }
 
     _activate() {
-        // Task 9 provides vatanKomut; the overview search stands in until then.
+        // Komut exists only in session modes with an overview; elsewhere the
+        // button falls back to the overview itself.
         if (Main.vatanKomut)
             Main.vatanKomut.toggle();
         else
