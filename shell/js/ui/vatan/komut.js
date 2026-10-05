@@ -108,6 +108,7 @@ class Komut extends St.Widget {
 
         this._grab = null;
         this._rows = [];
+        this._rowsQuery = null;
         this._selected = -1;
         this._searchId = 0;
         this._cancellable = new Gio.Cancellable();
@@ -409,7 +410,7 @@ class Komut extends St.Widget {
             this._querySection(section, terms, cancellable).then(entries => {
                 answered[index] = entries;
                 settle(entries);
-            }).catch(e => {
+            }, e => {
                 if (!cancellable.is_cancelled())
                     logError(e, 'Komut search provider failed');
                 settle(null);
@@ -449,9 +450,12 @@ class Komut extends St.Widget {
     }
 
     _setRows(entries, terms, header, complete) {
-        // Results arrive provider by provider; keep the row the user is on
-        // so a late answer cannot move a different item under Enter.
-        const previous = this._rows[this._selected]?.result;
+        // Results arrive provider by provider; within one query keep the row
+        // the user is on so a late answer cannot move a different item under
+        // Enter. A new query starts from the top result again.
+        const sameQuery = terms.join(' ') === this._rowsQuery;
+        const previous = sameQuery ? this._rows[this._selected]?.result : null;
+        this._rowsQuery = terms.join(' ');
         this._list.destroy_all_children();
         this._header.text = header;
         this._header.visible = header !== '';
