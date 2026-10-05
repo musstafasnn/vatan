@@ -667,9 +667,6 @@ class Panel extends St.Widget {
         this._rightBox = new St.BoxLayout({name: 'panelRight'});
         this.add_child(this._rightBox);
 
-        this.connect('button-press-event', this._onButtonPress.bind(this));
-        this.connect('touch-event', this._onTouchEvent.bind(this));
-
         Main.overview.connectObject('showing',
             () => this.add_style_pseudo_class('overview'),
             this);
@@ -686,9 +683,6 @@ class Panel extends St.Widget {
             this._updatePanel.bind(this),
             this);
 
-        global.display.connectObject('workareas-changed',
-            () => this.queue_relayout(),
-            this);
         this._updatePanel();
     }
 
@@ -698,16 +692,19 @@ class Panel extends St.Widget {
     }
 
     vfunc_get_preferred_width(forHeight) {
+        const themeNode = this.get_theme_node();
+        const contentHeight = themeNode.adjust_for_height(forHeight);
         const boxes = this._occupiedBoxes();
         let width = boxes.reduce(
-            (sum, box) => sum + box.get_preferred_width(forHeight)[1], 0);
+            (sum, box) => sum + box.get_preferred_width(contentHeight)[1], 0);
         width += SECTION_SPACING * Math.max(0, boxes.length - 1);
 
+        [, width] = themeNode.adjust_preferred_width(width, width);
         const monitor = Main.layoutManager.primaryMonitor;
         if (monitor)
             width = Math.min(width, monitor.width - 2 * ISLAND_SCREEN_MARGIN);
 
-        return this.get_theme_node().adjust_preferred_width(width, width);
+        return [width, width];
     }
 
     vfunc_allocate(box) {
@@ -719,9 +716,9 @@ class Panel extends St.Widget {
             boxes.reverse();
 
         const childBox = new Clutter.ActorBox();
-        for (const empty of [this._leftBox, this._centerBox, this._rightBox]) {
-            if (!boxes.includes(empty))
-                empty.allocate(childBox);
+        for (const section of [this._leftBox, this._centerBox, this._rightBox]) {
+            if (!boxes.includes(section))
+                section.allocate(childBox);
         }
 
         let x = content.x1;
@@ -733,43 +730,6 @@ class Panel extends St.Widget {
             sectionBox.allocate(childBox);
             x += width + SECTION_SPACING;
         }
-    }
-
-    _tryDragWindow(event) {
-        if (Main.modalCount > 0)
-            return Clutter.EVENT_PROPAGATE;
-
-        const targetActor = global.stage.get_event_actor(event);
-        if (targetActor !== this)
-            return Clutter.EVENT_PROPAGATE;
-
-        const [x, y] = event.get_coords();
-        let dragWindow = this._getDraggableWindowForPosition(x);
-
-        if (!dragWindow)
-            return Clutter.EVENT_PROPAGATE;
-
-        const positionHint = new Graphene.Point({x, y});
-        return dragWindow.begin_grab_op(
-            Meta.GrabOp.MOVING,
-            event.get_device(),
-            event.get_event_sequence(),
-            event.get_time(),
-            positionHint) ? Clutter.EVENT_STOP : Clutter.EVENT_PROPAGATE;
-    }
-
-    _onButtonPress(actor, event) {
-        if (event.get_button() !== Clutter.BUTTON_PRIMARY)
-            return Clutter.EVENT_PROPAGATE;
-
-        return this._tryDragWindow(event);
-    }
-
-    _onTouchEvent(actor, event) {
-        if (event.type() !== Clutter.EventType.TOUCH_BEGIN)
-            return Clutter.EVENT_PROPAGATE;
-
-        return this._tryDragWindow(event);
     }
 
     vfunc_key_press_event(event) {
@@ -953,21 +913,5 @@ class Panel extends St.Widget {
                 if (boxAlignment === Main.messageTray.bannerAlignment)
                     Main.messageTray.bannerBlocked = isOpen;
             }, this);
-    }
-
-    _getDraggableWindowForPosition(stageX) {
-        let workspaceManager = global.workspace_manager;
-        const windows = workspaceManager.get_active_workspace().list_windows();
-        const allWindowsByStacking =
-            global.display.sort_windows_by_stacking(windows).reverse();
-
-        return allWindowsByStacking.find(metaWindow => {
-            let rect = metaWindow.get_frame_rect();
-            return metaWindow.is_on_primary_monitor() &&
-                   metaWindow.showing_on_its_workspace() &&
-                   metaWindow.get_window_type() !== Meta.WindowType.DESKTOP &&
-                   metaWindow.maximized_vertically &&
-                   stageX > rect.x && stageX < rect.x + rect.width;
-        });
     }
 });

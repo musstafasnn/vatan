@@ -5,6 +5,9 @@
 $ada_radius: 14px;
 $ada_control_radius: 8px;
 $ada_screen_gap: 14px;
+// Gap between maximized windows and the island; part of the panel box so
+// the bottom strut includes it.
+$ada_window_gap: 10px;
 $ada_shadow_color: if($variant == 'light', rgba(20, 24, 31, .28), rgba(0, 0, 0, .6));
 
 #panelBox {
@@ -14,6 +17,7 @@ $ada_shadow_color: if($variant == 'light', rgba(20, 24, 31, .28), rgba(0, 0, 0, 
 #panel {
   height: 40px;
   padding: 6px;
+  margin-top: $ada_window_gap;
   margin-bottom: $ada_screen_gap;
   border: 1px solid $borders_color;
   border-radius: $ada_radius;
@@ -40,6 +44,10 @@ $ada_shadow_color: if($variant == 'light', rgba(20, 24, 31, .28), rgba(0, 0, 0, 
 
       &.clock-display {
         @include panel_button($highlighted_child: true, $child_class: '.clock');
+      }
+
+      &#panelActivities .workspace-dot {
+        background-color: $panel_fg_color;
       }
     }
   }
