@@ -21,6 +21,7 @@ const RESIZE_TIME = 200;
 const PANEL_FADE_TIME = 150;
 const SEARCH_DEBOUNCE_MS = 120;
 const ICON_SIZE = 16;
+const ENTRY_ICON_SIZE = 18;
 
 const MAX_ACTION_RESULTS = 5;
 const MAX_APP_RESULTS = 3;
@@ -49,8 +50,18 @@ const KomutRow = GObject.registerClass({
         const box = new St.BoxLayout({x_expand: true});
         this.set_child(box);
 
-        const iconBin = new St.Bin({style_class: 'vatan-komut-row-icon'});
-        iconBin.set_child(meta.createIcon(ICON_SIZE));
+        const iconBin = new St.Bin({
+            style_class: 'vatan-komut-row-icon',
+            y_align: Clutter.ActorAlign.CENTER,
+        });
+        // Remote providers may return metas without an icon; fall back to
+        // the provider's own app icon so every row keeps its tile.
+        const icon = meta.createIcon(ICON_SIZE) ?? new St.Icon({
+            gicon: result.provider.appInfo?.get_icon() ?? null,
+            fallback_icon_name: 'system-search-symbolic',
+            icon_size: ICON_SIZE,
+        });
+        iconBin.set_child(icon);
         box.add_child(iconBin);
 
         const text = new St.BoxLayout({
@@ -126,7 +137,10 @@ class Komut extends St.Widget {
         this._entry = new St.Entry({
             style_class: 'vatan-komut-entry',
             hint_text: _('Uygulama, dosya, ayar ya da “ses 30”'),
-            primary_icon: new St.Icon({icon_name: 'edit-find-symbolic'}),
+            primary_icon: new St.Icon({
+                icon_name: 'edit-find-symbolic',
+                icon_size: ENTRY_ICON_SIZE,
+            }),
             can_focus: true,
             x_expand: true,
         });
@@ -376,26 +390,32 @@ class Komut extends St.Widget {
             return;
         }
 
+        // Each provider is shown as soon as it answers, in section order. A
+        // remote provider can sit on D-Bus activation for many seconds, so
+        // waiting for all of them would leave the list frozen.
         const cancellable = this._cancellable;
-        const settled = await Promise.allSettled(this._sections().map(async section => {
-            const ids = await section.provider.getInitialResultSet(terms, cancellable);
-            const top = section.provider.filterResults(ids, section.max);
-            if (top.length === 0)
-                return [];
-            const metas = await section.provider.getResultMetas(top, cancellable);
-            return metas.map(meta => ({meta, section}));
-        }));
-        if (cancellable.is_cancelled() || !this.isOpen)
-            return;
-
-        const entries = settled.flatMap(result => {
-            if (result.status === 'fulfilled')
-                return result.value;
-            // One broken provider must not empty the whole list.
-            logError(result.reason, 'Komut search provider failed');
-            return [];
+        const sections = this._sections();
+        const answered = new Array(sections.length).fill(null);
+        sections.forEach((section, index) => {
+            this._querySection(section, terms, cancellable).then(entries => {
+                if (cancellable.is_cancelled() || !this.isOpen)
+                    return;
+                answered[index] = entries;
+                this._setRows(answered.flatMap(rows => rows ?? []), terms, '');
+            }).catch(e => {
+                if (!cancellable.is_cancelled())
+                    logError(e, 'Komut search provider failed');
+            });
         });
-        this._setRows(entries, terms, '');
+    }
+
+    async _querySection(section, terms, cancellable) {
+        const ids = await section.provider.getInitialResultSet(terms, cancellable);
+        const top = section.provider.filterResults(ids, section.max);
+        if (top.length === 0)
+            return [];
+        const metas = await section.provider.getResultMetas(top, cancellable);
+        return metas.map(meta => ({meta, section}));
     }
 
     async _showSuggestions() {

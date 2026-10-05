@@ -22,7 +22,10 @@ const _modes = {
     'restrictive': {
         parentMode: null,
         stylesheetName: 'gnome-shell.css',
-        colorScheme: 'prefer-dark',
+        // VATAN follows the app color scheme: 'default' means light for the
+        // shell too, so the dark-mode toggle and Komut flip shell and apps
+        // together instead of leaving a dark shell over light apps.
+        colorScheme: 'prefer-light',
         themeResourceName: 'gnome-shell-theme.gresource',
         hasOverview: false,
         showCalendarEvents: false,

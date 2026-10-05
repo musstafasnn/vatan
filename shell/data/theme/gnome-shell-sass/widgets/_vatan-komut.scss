@@ -19,7 +19,11 @@ $komut_shadow_color: if($variant == 'light', rgba(20, 24, 31, .28), rgba(0, 0, 0
   spacing: 4px;
 }
 
-.vatan-komut-entry {
+// Upstream StEntry rules (type plus pseudo class) outrank a bare class, so the
+// entry is scoped under the Komut surface to drop the field chrome.
+.vatan-komut StEntry.vatan-komut-entry,
+.vatan-komut StEntry.vatan-komut-entry:hover,
+.vatan-komut StEntry.vatan-komut-entry:focus {
   min-height: 34px;
   padding: 8px 12px;
   border: none;
@@ -30,12 +34,7 @@ $komut_shadow_color: if($variant == 'light', rgba(20, 24, 31, .28), rgba(0, 0, 0
   selection-background-color: st-transparentize(-st-accent-color, .7);
   @include fontsize($base_font_size * 1.25);
 
-  &:focus {
-    box-shadow: none;
-  }
-
   StIcon.primary {
-    icon-size: 18px;
     padding-right: 10px;
     color: $insensitive_fg_color;
   }
