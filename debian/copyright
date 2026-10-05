@@ -16,7 +16,7 @@ Comment: Fork of the Pardus gnome-shell 48.7-0+deb13u2pardus1 source
  shell/debian/copyright.
 License: GPL-2+
 
-Files: data/fonts/Geist-*
+Files: data/fonts/Geist-* data/fonts/GeistMono-*
 Copyright: 2024 The Geist Project Authors (https://github.com/vercel/geist-font)
 License: OFL-1.1
 

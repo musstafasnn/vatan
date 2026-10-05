@@ -10,6 +10,7 @@ color-scheme='default'
 enable-hot-corners=false
 font-name='Geist 11'
 document-font-name='Geist 11'
+monospace-font-name='Geist Mono 11'
 
 [org.gnome.desktop.wm.preferences:VATAN]
 button-layout=':minimize,maximize,close'

@@ -6,6 +6,8 @@
 | | | | Geist-Medium.ttf | 0090e004725f6f64b841715b4167920580f883fcf9b67fc6d744089103fec101 |
 | | | | Geist-SemiBold.ttf | 612ec98df33935354f39e81e54101656961ab6e5549f64b63eb57868ba7bab8d |
 | | | | Geist-Bold.ttf | e866b423b755233cae8bce6a37519f6fe630be9772fa08fc3114bff15bc8580f |
+| | | | GeistMono-Regular.ttf (path `GeistMono/ttf/`) | 42d8ad2e610238e64e8abfcde3037c63f7850a73928742b7ab7229d897bcb155 |
+| | | | GeistMono-Bold.ttf | ea1cabb4d152088721b5e0b1865bb43c75c1b2d468384a551e0958e53d4fa370 |
 | | | | Geist-OFL.txt (zip root `OFL.txt`) | c683bfbcc7e087f5d37a54ef628f10387c451a83ddc459b151403a164ac46c90 |
 | Instrument Serif | https://github.com/google/fonts/tree/0b58fb370093f9a9f4ff785d94405710b79de67c/ofl/instrumentserif | 1.000 | InstrumentSerif-Regular.ttf | 498efd461f6ddfcb7a111bf9a565709d2085d48201d501ead960d93e84ffbb88 |
 | | | | InstrumentSerif-Italic.ttf | 08939b8bdf534afec24ae0ef5e03f948940cd9a8fe08e7fecbad040e62327385 |
