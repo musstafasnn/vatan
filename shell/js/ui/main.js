@@ -27,6 +27,7 @@ import * as Overview from './overview.js';
 import * as PadOsd from './padOsd.js';
 import * as Panel from './panel.js';
 import {Komut} from './vatan/komut.js';
+import {VatanTimers} from './vatan/timerIsland.js';
 import * as RunDialog from './runDialog.js';
 import * as WelcomeDialog from './welcomeDialog.js';
 import * as Layout from './layout.js';
@@ -61,6 +62,7 @@ export let componentManager = null;
 export let extensionManager = null;
 export let panel = null;
 export let vatanKomut = null;
+export let vatanTimers = null;
 export let overview = null;
 export let runDialog = null;
 export let lookingGlass = null;
@@ -248,6 +250,8 @@ async function _initializeUI() {
     screenshotUI = new Screenshot.ScreenshotUI();
 
     messageTray = new MessageTray.MessageTray();
+    // Before the panel: its timer item reads the timers when it is built.
+    vatanTimers = new VatanTimers();
     panel = new Panel.Panel();
     if (sessionMode.hasOverview)
         vatanKomut = new Komut();

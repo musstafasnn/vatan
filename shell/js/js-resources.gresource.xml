@@ -45,6 +45,7 @@
     <file>misc/timeLimitsManager.js</file>
     <file>misc/util.js</file>
     <file>misc/vatanActions.js</file>
+    <file>misc/vatanTimer.js</file>
     <file>misc/weather.js</file>
 
     <file>ui/accessDialog.js</file>
@@ -163,6 +164,7 @@
     <file>ui/vatan/dock.js</file>
     <file>ui/vatan/komut.js</file>
     <file>ui/vatan/komutButton.js</file>
+    <file>ui/vatan/timerIsland.js</file>
     <file>ui/vatan/workspaceButton.js</file>
   </gresource>
 </gresources>

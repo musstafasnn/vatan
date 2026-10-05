@@ -224,3 +224,45 @@ $ada_lit_edge_color: if($variant == 'light', #ffffff, rgba(255, 255, 255, .16));
     background-color: mix($ada_surface_top, $ada_surface_bottom, 50%);
   }
 }
+
+// Same footprint as an app icon so the row reads as one dock.
+.vatan-dock-apps-tile {
+  width: 36px;
+  height: 36px;
+  border-radius: 10px;
+  border: 1px solid $ada_edge_color;
+  border-top-color: $ada_lit_edge_color;
+  background-color: transparentize($fg_color, .92);
+  color: $fg_color;
+}
+
+/* Canlı Ada: the timer section */
+.vatan-timer-box {
+  spacing: 8px;
+}
+
+.vatan-timer-countdown {
+  font-feature-settings: "tnum";
+}
+
+.vatan-timer-name {
+  max-width: 140px;
+  color: $insensitive_fg_color;
+}
+
+.vatan-timer-progress {
+  height: 2px;
+  margin-top: 2px;
+  border-radius: 1px;
+  background-color: -st-accent-color;
+}
+
+#panel .panel-button.vatan-timer:done,
+#panel .panel-button.vatan-timer:done:hover {
+  background-color: -st-accent-color;
+  color: -st-accent-fg-color;
+
+  .vatan-timer-name {
+    color: -st-accent-fg-color;
+  }
+}

@@ -16,7 +16,7 @@ class VatanWorkspaceButton extends PanelMenu.Button {
 
         const box = new St.BoxLayout({style_class: 'vatan-workspace-box'});
         box.add_child(new St.Icon({
-            icon_name: 'view-app-grid-symbolic',
+            icon_name: 'focus-windows-symbolic',
             style_class: 'system-status-icon',
         }));
         this._label = new St.Label({y_align: Clutter.ActorAlign.CENTER});

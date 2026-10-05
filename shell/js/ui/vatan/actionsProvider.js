@@ -6,6 +6,7 @@ import * as Main from '../main.js';
 import {getMixerControl} from '../status/volume.js';
 import {loadInterfaceXML} from '../../misc/fileUtils.js';
 import {parseLevelCommand} from '../../misc/turkishText.js';
+import {formatDuration, parseTimerCommand, secondsUntil} from '../../misc/vatanTimer.js';
 import {rankActions} from '../../misc/vatanActions.js';
 
 const BRIGHTNESS_BUS_NAME = 'org.gnome.SettingsDaemon.Power';
@@ -16,12 +17,13 @@ const BrightnessProxy = Gio.DBusProxy.makeProxyWrapper(
     loadInterfaceXML('org.gnome.SettingsDaemon.Power.Screen'));
 
 const LEVEL_PREFIX = 'level:';
+const TIMER_PREFIX = 'timer:';
 
 const ACCENTS = [
-    {id: 'accent-red', value: 'red', title: _('Vurgu rengi: Al')},
-    {id: 'accent-blue', value: 'blue', title: _('Vurgu rengi: Lacivert')},
-    {id: 'accent-green', value: 'green', title: _('Vurgu rengi: Zümrüt')},
-    {id: 'accent-yellow', value: 'yellow', title: _('Vurgu rengi: Safran')},
+    {id: 'accent-red', value: 'red', title: _('Vurgu rengi: Kırmızı')},
+    {id: 'accent-blue', value: 'blue', title: _('Vurgu rengi: Mavi')},
+    {id: 'accent-green', value: 'green', title: _('Vurgu rengi: Yeşil')},
+    {id: 'accent-yellow', value: 'yellow', title: _('Vurgu rengi: Sarı')},
 ];
 const ACCENT_KEYWORDS = 'renk vurgu tema';
 
@@ -93,6 +95,9 @@ export class VatanActionsProvider {
         const level = parseLevelCommand(query);
         if (level)
             ids.unshift(`${LEVEL_PREFIX}${level.target}:${level.percent}`);
+        const timer = parseTimerCommand(query);
+        if (timer)
+            ids.unshift(`${TIMER_PREFIX}${JSON.stringify(timer)}`);
         return ids;
     }
 
@@ -109,7 +114,13 @@ export class VatanActionsProvider {
         const metas = [];
         for (const id of ids) {
             let name, iconName;
-            if (id.startsWith(LEVEL_PREFIX)) {
+            if (id.startsWith(TIMER_PREFIX)) {
+                const {seconds, label, at} = JSON.parse(id.slice(TIMER_PREFIX.length));
+                const when = at ?? formatDuration(seconds);
+                const what = label ? `${label} · ${when}` : when;
+                name = at ? _('Hatırlatıcı kur: %s').format(what) : _('Zamanlayıcı kur: %s').format(what);
+                iconName = 'alarm-symbolic';
+            } else if (id.startsWith(LEVEL_PREFIX)) {
                 const [target, percent] = id.slice(LEVEL_PREFIX.length).split(':');
                 const label = `%${percent}`;
                 if (target === 'brightness') {
@@ -137,12 +148,26 @@ export class VatanActionsProvider {
     }
 
     activateResult(id) {
+        if (id.startsWith(TIMER_PREFIX)) {
+            this._startTimer(JSON.parse(id.slice(TIMER_PREFIX.length)));
+            return;
+        }
         if (id.startsWith(LEVEL_PREFIX)) {
             const [target, percent] = id.slice(LEVEL_PREFIX.length).split(':');
             this._setLevel(target, Number(percent));
             return;
         }
         this._actionTable().find(a => a.id === id)?.run();
+    }
+
+    // A clock-time reminder is measured again on activation: the result may
+    // have sat in Komut for a while since it was parsed.
+    _startTimer({seconds, label, at}) {
+        if (at) {
+            const [hours, minutes] = at.split(':').map(Number);
+            seconds = secondsUntil(hours, minutes, new Date());
+        }
+        Main.vatanTimers.add(seconds, label);
     }
 
     filterResults(results, maxNumber) {

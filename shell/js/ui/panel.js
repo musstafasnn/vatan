@@ -41,6 +41,7 @@ import {DwellClickIndicator} from './status/dwellClick.js';
 import {ScreenRecordingIndicator, ScreenSharingIndicator} from './status/remoteAccess.js';
 import {VatanDock} from './vatan/dock.js';
 import {VatanKomutButton} from './vatan/komutButton.js';
+import {VatanTimerButton} from './vatan/timerIsland.js';
 import {VatanWorkspaceButton} from './vatan/workspaceButton.js';
 
 const PANEL_ICON_SIZE = 16;
@@ -646,6 +647,7 @@ const PANEL_ITEM_IMPLEMENTATIONS = {
     'screenSharing': ScreenSharingIndicator,
     'vatanDock': VatanDock,
     'vatanKomut': VatanKomutButton,
+    'vatanTimer': VatanTimerButton,
     'vatanWorkspace': VatanWorkspaceButton,
 };
 

@@ -5,10 +5,12 @@ import Shell from 'gi://Shell';
 import St from 'gi://St';
 
 import * as AppFavorites from '../appFavorites.js';
+import * as Main from '../main.js';
 import * as PanelMenu from '../panelMenu.js';
 
 const MAX_DOCK_ITEMS = 8;
 const DOCK_ICON_SIZE = 36;
+const APPS_ICON_SIZE = 20;
 const INDICATOR_EASE_MS = 300;
 // Hover lifts the icon off the slab rather than scaling it: a scaled icon
 // texture goes soft, a translated one stays pixel sharp.
@@ -29,6 +31,7 @@ class VatanDock extends PanelMenu.Button {
 
         this._box = new St.BoxLayout({style_class: 'vatan-dock'});
         this.add_child(this._box);
+        this._box.add_child(this._createAppsButton());
 
         this._items = new Map();
         const appSystem = Shell.AppSystem.get_default();
@@ -66,9 +69,34 @@ class VatanDock extends PanelMenu.Button {
                 this._items.set(app, item);
                 this._box.add_child(item);
             }
-            this._box.set_child_at_index(item, index);
+            // Index 0 is the apps button.
+            this._box.set_child_at_index(item, index + 1);
             this._updateState(app, item);
         });
+    }
+
+    _createAppsButton() {
+        const tile = new St.Bin({
+            style_class: 'vatan-dock-apps-tile',
+            x_align: Clutter.ActorAlign.CENTER,
+            y_align: Clutter.ActorAlign.CENTER,
+            child: new St.Icon({icon_name: 'view-app-grid-symbolic', icon_size: APPS_ICON_SIZE}),
+        });
+        const button = new St.Button({
+            style_class: 'vatan-dock-item',
+            accessible_name: _('Uygulamalar'),
+            can_focus: true,
+            child: tile,
+        });
+        button._iconBin = tile;
+        button.connect('notify::hover', () => this._lift(button));
+        button.connect('clicked', () => {
+            if (Main.overview.visible && Main.overview.dash.showAppsButton.checked)
+                Main.overview.hide();
+            else
+                Main.overview.showApps();
+        });
+        return button;
     }
 
     _createItem(app) {
