@@ -40,12 +40,12 @@ import * as ModalDialog from '../ui/modalDialog.js';
 import * as PopupMenu from '../ui/popupMenu.js';
 import * as Realmd from './realmd.js';
 import * as UserWidget from '../ui/userWidget.js';
+import {CLOCK_SCREEN_MARGIN, bottomEdgeClearOfIsland} from '../ui/unlockDialog.js';
 
 const _FADE_ANIMATION_TIME = 250;
 const _SCROLL_ANIMATION_TIME = 500;
 const _TIMED_LOGIN_IDLE_THRESHOLD = 5.0;
 const _CONFLICTING_SESSION_DIALOG_TIMEOUT = 60;
-const GREETER_SCREEN_MARGIN = 48;
 
 Gio._promisify(Gio.File.prototype, 'load_contents_async');
 
@@ -654,7 +654,8 @@ export const LoginDialog = GObject.registerClass({
         let centerX = dialogBox.x1 + (dialogBox.x2 - dialogBox.x1) / 2;
 
         actorBox.x1 = Math.floor(centerX - natWidth / 2);
-        actorBox.y1 = dialogBox.y2 - natHeight;
+        actorBox.y1 = bottomEdgeClearOfIsland(
+            actorBox.x1, actorBox.x2, dialogBox.y2, 0) - natHeight;
         actorBox.x2 = actorBox.x1 + natWidth;
         actorBox.y2 = actorBox.y1 + natHeight;
 
@@ -683,20 +684,20 @@ export const LoginDialog = GObject.registerClass({
 
         let [, , natWidth, natHeight] = actor.get_preferred_size();
 
-        // Same margin as the lock screen clock so both screens share one edge
         const {scaleFactor} = St.ThemeContext.get_for_stage(global.stage);
-        const margin = GREETER_SCREEN_MARGIN * scaleFactor;
-        const bottom = dialogBox.y2 - Main.layoutManager.panelBox.height - margin;
+        const margin = CLOCK_SCREEN_MARGIN * scaleFactor;
 
         natWidth = Math.min(natWidth, dialogBox.x2 - dialogBox.x1 - margin * 2);
-        natHeight = Math.min(natHeight, bottom - dialogBox.y1);
 
         if (this.get_text_direction() === Clutter.TextDirection.RTL)
             actorBox.x1 = Math.floor(dialogBox.x2 - margin - natWidth);
         else
             actorBox.x1 = Math.floor(dialogBox.x1 + margin);
-        actorBox.y1 = Math.floor(bottom - natHeight);
         actorBox.x2 = actorBox.x1 + natWidth;
+
+        const bottom = bottomEdgeClearOfIsland(actorBox.x1, actorBox.x2, dialogBox.y2, margin);
+        natHeight = Math.min(natHeight, bottom - dialogBox.y1 - margin);
+        actorBox.y1 = Math.floor(bottom - natHeight);
         actorBox.y2 = actorBox.y1 + natHeight;
 
         return actorBox;

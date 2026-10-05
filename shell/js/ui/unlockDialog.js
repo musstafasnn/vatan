@@ -27,7 +27,23 @@ const HINT_TIMEOUT = 4;
 const CROSSFADE_TIME = 300;
 const FADE_OUT_TRANSLATION = 200;
 const FADE_OUT_SCALE = 0.3;
-const CLOCK_SCREEN_MARGIN = 48;
+export const CLOCK_SCREEN_MARGIN = 48;
+
+// Lock clock and greeter column share one bottom edge: the screen bottom,
+// lifted above the island only where their x-span would run under it. All
+// arguments are in primary-monitor coordinates.
+export function bottomEdgeClearOfIsland(x1, x2, screenBottom, margin) {
+    const bottom = screenBottom - margin;
+    const monitor = Main.layoutManager.primaryMonitor;
+    const [panelX, panelY] = Main.panel.get_transformed_position();
+    const [panelWidth] = Main.panel.get_transformed_size();
+    const islandX1 = panelX - monitor.x;
+    const islandTop = panelY - monitor.y;
+
+    if (panelWidth <= 0 || x2 <= islandX1 || x1 >= islandX1 + panelWidth)
+        return bottom;
+    return Math.min(bottom, islandTop - margin);
+}
 
 // No blur: the contour wallpaper stays sharp. The dim is strong enough for
 // the light lock text to stay readable on the light wallpaper variant too.
@@ -475,7 +491,7 @@ class UnlockDialogLayout extends Clutter.LayoutManager {
 
         // On narrow screens the corner clock reaches the centered
         // notifications column; lift it above them instead of overlapping.
-        let clockBottom = box.y2 - clockMargin;
+        let clockBottom = bottomEdgeClearOfIsland(actorBox.x1, actorBox.x2, box.y2, clockMargin);
         const overlapsNotifications = maxNotificationsHeight > 0 &&
             actorBox.x1 < columnX1 + columnWidth && actorBox.x2 > columnX1;
         if (overlapsNotifications)
