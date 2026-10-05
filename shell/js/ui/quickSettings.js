@@ -716,7 +716,7 @@ const QuickSettingsLayout = GObject.registerClass({
 
 export const QuickSettingsMenu = class extends PopupMenu.PopupMenu {
     constructor(sourceActor, nColumns = 1) {
-        super(sourceActor, 0, St.Side.TOP);
+        super(sourceActor, 0, St.Side.BOTTOM);
 
         this.actor = new St.Widget({reactive: true, width: 0, height: 0});
         this.actor.add_child(this._boxPointer);
