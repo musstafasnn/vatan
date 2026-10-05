@@ -161,24 +161,30 @@ class ControlsManagerLayout extends Clutter.LayoutManager {
         let availableHeight = height;
 
         // Search entry
-        let [searchHeight] = this._searchEntry.get_preferred_height(width);
-        childBox.set_origin(0, startY);
-        childBox.set_size(width, searchHeight);
-        this._searchEntry.allocate(childBox);
+        let searchHeight = 0;
+        if (this._searchEntry.visible) {
+            [searchHeight] = this._searchEntry.get_preferred_height(width);
+            childBox.set_origin(0, startY);
+            childBox.set_size(width, searchHeight);
+            this._searchEntry.allocate(childBox);
 
-        availableHeight -= searchHeight + spacing;
+            availableHeight -= searchHeight + spacing;
+        }
 
         // Dash
         const maxDashHeight = Math.round(box.get_height() * DASH_MAX_HEIGHT_RATIO);
         this._dash.setMaxSize(width, maxDashHeight);
 
-        let [, dashHeight] = this._dash.get_preferred_height(width);
-        dashHeight = Math.min(dashHeight, maxDashHeight);
-        childBox.set_origin(0, startY + height - dashHeight);
-        childBox.set_size(width, dashHeight);
-        this._dash.allocate(childBox);
+        let dashHeight = 0;
+        if (this._dash.visible) {
+            [, dashHeight] = this._dash.get_preferred_height(width);
+            dashHeight = Math.min(dashHeight, maxDashHeight);
+            childBox.set_origin(0, startY + height - dashHeight);
+            childBox.set_size(width, dashHeight);
+            this._dash.allocate(childBox);
 
-        availableHeight -= dashHeight + spacing;
+            availableHeight -= dashHeight + spacing;
+        }
 
         // Workspace Thumbnails
         let thumbnailsHeight = 0;
@@ -334,9 +340,13 @@ class ControlsManager extends St.Widget {
         this._searchEntryBin = new St.Bin({
             child: this._searchEntry,
             x_align: Clutter.ActorAlign.CENTER,
+            visible: false,
         });
 
+        // Other code reads Main.overview.dash, so the actor stays; VATAN
+        // launches apps from Ada and the command palette instead.
         this.dash = new Dash.Dash();
+        this.dash.visible = false;
 
         this._workspaceAdjustment = Main.createWorkspacesAdjustment(this);
 

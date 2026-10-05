@@ -153,7 +153,7 @@ export const SearchController = GObject.registerClass({
             else
                 Main.overview.hide();
             return Clutter.EVENT_STOP;
-        } else if (this._shouldTriggerSearch(symbol)) {
+        } else if (this._entry.get_parent().visible && this._shouldTriggerSearch(symbol)) {
             this.startSearch(event);
         }
         return Clutter.EVENT_PROPAGATE;
