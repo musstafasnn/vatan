@@ -26,6 +26,7 @@ import * as OsdMonitorLabeler from './osdMonitorLabeler.js';
 import * as Overview from './overview.js';
 import * as PadOsd from './padOsd.js';
 import * as Panel from './panel.js';
+import {Komut} from './vatan/komut.js';
 import * as RunDialog from './runDialog.js';
 import * as WelcomeDialog from './welcomeDialog.js';
 import * as Layout from './layout.js';
@@ -59,6 +60,7 @@ const GNOMESHELL_STARTED_MESSAGE_ID = 'f3ea493c22934e26811cd62abe8e203a';
 export let componentManager = null;
 export let extensionManager = null;
 export let panel = null;
+export let vatanKomut = null;
 export let overview = null;
 export let runDialog = null;
 export let lookingGlass = null;
@@ -245,6 +247,8 @@ async function _initializeUI() {
 
     messageTray = new MessageTray.MessageTray();
     panel = new Panel.Panel();
+    if (sessionMode.hasOverview)
+        vatanKomut = new Komut();
     keyboard = new Keyboard.KeyboardManager();
     notificationDaemon = new NotificationDaemon.NotificationDaemon();
     windowAttentionHandler = new WindowAttentionHandler.WindowAttentionHandler();

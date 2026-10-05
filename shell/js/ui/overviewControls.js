@@ -431,10 +431,14 @@ class ControlsManager extends St.Widget {
                 ? transitioning && finalState > initialState
                 : Main.overview.visible && timeDiff < Overview.ANIMATION_TIME;
 
+            // Super opens Komut on the desktop; inside the overview it still
+            // leaves the overview so the key never traps the user there.
             if (shouldShift)
                 this._shiftState(Meta.MotionDirection.UP);
-            else
+            else if (Main.overview.visible || !Main.vatanKomut)
                 Main.overview.toggle();
+            else
+                Main.vatanKomut.toggle();
         }, this);
 
         // connect_after to give search controller first dibs on the event

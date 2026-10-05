@@ -1,0 +1,107 @@
+/* Komut */
+// The command bar that grows out of Ada. Same surface, border and radius as
+// the island so the morph reads as one object changing shape.
+
+$komut_row_height: 48px;
+$komut_visible_rows: 7;
+$komut_shadow_color: if($variant == 'light', rgba(20, 24, 31, .28), rgba(0, 0, 0, .6));
+
+.vatan-komut {
+  padding: 8px;
+  border: 1px solid $borders_color;
+  border-radius: 14px;
+  background-color: $panel_bg_color;
+  color: $panel_fg_color;
+  box-shadow: 0 12px 32px -10px $komut_shadow_color;
+}
+
+.vatan-komut-content {
+  spacing: 4px;
+}
+
+.vatan-komut-entry {
+  min-height: 34px;
+  padding: 8px 12px;
+  border: none;
+  border-radius: 8px;
+  background-color: transparent;
+  box-shadow: none;
+  color: $fg_color;
+  selection-background-color: st-transparentize(-st-accent-color, .7);
+  @include fontsize($base_font_size * 1.25);
+
+  &:focus {
+    box-shadow: none;
+  }
+
+  StIcon.primary {
+    icon-size: 18px;
+    padding-right: 10px;
+    color: $insensitive_fg_color;
+  }
+
+  .hint-text {
+    color: $insensitive_fg_color;
+  }
+}
+
+.vatan-komut-header {
+  padding: 4px 12px;
+  color: $insensitive_fg_color;
+  font-size: 9pt;
+  font-weight: bold;
+  letter-spacing: 1px;
+}
+
+.vatan-komut-scroll {
+  max-height: $komut_row_height * $komut_visible_rows;
+}
+
+.vatan-komut-row {
+  min-height: $komut_row_height;
+  padding: 0 10px;
+  border-radius: 8px;
+
+  StBoxLayout {
+    spacing: 12px;
+  }
+
+  &:selected {
+    background-color: transparentize($fg_color, .94);
+
+    .vatan-komut-row-icon {
+      background-color: -st-accent-color;
+      color: -st-accent-fg-color;
+    }
+  }
+}
+
+.vatan-komut-row-icon {
+  width: 30px;
+  height: 30px;
+  border-radius: 8px;
+  background-color: transparentize($fg_color, .95);
+}
+
+.vatan-komut-row-title {
+  font-weight: 500;
+}
+
+.vatan-komut-row-description,
+.vatan-komut-row-kind,
+.vatan-komut-empty {
+  color: $insensitive_fg_color;
+  font-size: 9pt;
+}
+
+.vatan-komut-empty {
+  padding: 16px 12px;
+}
+
+.vatan-komut-footer {
+  margin-top: 6px;
+  padding: 10px 12px 4px;
+  border-top: 1px solid $borders_color;
+  color: $insensitive_fg_color;
+  font-size: 9pt;
+}
