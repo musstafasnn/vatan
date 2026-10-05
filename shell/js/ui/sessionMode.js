@@ -99,7 +99,7 @@ const _modes = {
         components: USER_SESSION_COMPONENTS,
         panel: {
             left: ['vatanDock'],
-            center: ['vatanKomut', 'vatanTimer'],
+            center: ['vatanKomut', 'vatanTimer', 'vatanMedia'],
             right: ['vatanWorkspace', 'screenRecording', 'screenSharing', 'dwellClick', 'a11y', 'keyboard', 'quickSettings', 'dateMenu'],
         },
     },

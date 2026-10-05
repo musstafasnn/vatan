@@ -29,6 +29,7 @@ import * as Panel from './panel.js';
 import {Komut} from './vatan/komut.js';
 import {VatanTimers} from './vatan/timerIsland.js';
 import {VatanNewsWidget} from './vatan/newsWidget.js';
+import {maybeShowTour} from './vatan/tour.js';
 import * as RunDialog from './runDialog.js';
 import * as WelcomeDialog from './welcomeDialog.js';
 import * as Layout from './layout.js';
@@ -362,6 +363,9 @@ async function _initializeUI() {
     layoutManager.connect('startup-complete', () => {
         if (actionMode === Shell.ActionMode.NONE)
             actionMode = Shell.ActionMode.NORMAL;
+
+        if (vatanKomut)
+            maybeShowTour();
 
         if (screenShield)
             screenShield.lockIfWasLocked();

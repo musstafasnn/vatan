@@ -11,6 +11,10 @@
       <summary>RSS feed of the news card</summary>
       <description>Must be an https URL; anything else is ignored.</description>
     </key>
+    <key name="tour-shown" type="b">
+      <default>false</default>
+      <summary>Whether the first-login tour has been shown</summary>
+    </key>
     <key name="news-source" type="s">
       <default>'TRT Haber'</default>
       <summary>Name shown as the source of the news card</summary>

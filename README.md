@@ -9,10 +9,14 @@ Pardus 25 için masaüstü oturumu. Üst bar yerine ekranın altında tek bir ad
 | ![Komut](docs/ekran/komut.png) | ![Karanlık](docs/ekran/karanlik.png) | ![Kilit](docs/ekran/kilit.png) |
 
 - **Komut** — `Super` ile açılır. Uygulama, dosya, ayar ve hesap makinesi sonuçlarının yanında Türkçe eylemleri anlar: `karanlık`, `odak`, `gece ışığı`, `parlaklık 40`, `ses 30`, `yan yana diz`, `kilitle`.
+  - Kur ve birim: `100 dolar`, `1.000 tl euro` (TCMB döviz satış kuru), `5 km kaç mil`, `100 f c`. Enter sonucu kopyalar.
+  - Kamu hizmetleri: `e-devlet`, `mhrs`, `e-nabız`, `e-okul`, `eba`, `uyap`, `vergi`.
+  - Pardus araçları fiille: `biçimlendir`, `iso yaz`, `güncelle`, `donanım`, `uygulama kur`.
 - **Ada** — sık kullanılan ve çalışan uygulamalar, alan düğmesi, hızlı ayarlar ve saat tek yerde. Üstten ışık alan bir yüzey: ikonlar üzerine gelince yükselir, açılan uygulama zıplar. Menüler ve bildirimler adanın üstünde açılır.
-- **Canlı Ada** — Komut'a `çay 3 dk`, `25 dakika odak`, `1 saat 30 dk` ya da `18:30 toplantı` yaz: ada geri sayımı ve kalan süreyi canlı gösterir, süre dolunca kırmızıya döner ve bildirim gönderir. Adadaki bölmeye tıklayınca kurulu zamanlayıcılar listelenir ve iptal edilebilir.
+- **Canlı Ada** — müzik ya da video çalarken parça adada görünür; oynat/duraklat ve sonraki oradan. Komut'a `çay 3 dk`, `25 dakika odak`, `1 saat 30 dk` ya da `18:30 toplantı` yaz: ada geri sayımı ve kalan süreyi canlı gösterir, süre dolunca kırmızıya döner ve bildirim gönderir. Adadaki bölmeye tıklayınca kurulu zamanlayıcılar listelenir ve iptal edilebilir.
 - **Gündem** — masaüstünde, pencerelerin altında TRT Haber son dakika başlıkları; tıklayınca haber tarayıcıda açılır. Komut'ta `gündem` yazarak kaldırılır ya da geri getirilir. Kaynak `org.vatan.shell news-feed` ayarıyla değişir (yalnızca https).
 - **NSosyal** — dock'ta ve Komut'ta tek tıkla NSosyal.
+- **Tanıtım turu** — ilk girişte dört sayfalık kısa tur; Komut'ta `tur` yazarak yeniden açılır.
 - **Uygulamalar** — adanın başındaki ızgara düğmesi bilgisayardaki tüm uygulamaları açar.
 - **Yerleştirme** — pencereyi ekran kenarına sürükle: yarım ekran; üst kenara: tam ekran.
 - **Görünüm** — Geist ve Instrument Serif yazı tipleri, kat kat yükselen kabartma Türkiye haritası duvar kağıdı (açık ve koyu), kırmızı klasörlü VATAN simge teması. Kabuk, uygulamalar ve simgeler aynı kırmızıyı kullanır. Giriş doğrudan masaüstüne açılır.
@@ -43,6 +47,7 @@ sudo apt remove vatan
 - Giriş ekranı Pardus'un giriş ekranıdır; VATAN görünümü giriş yaptıktan sonra başlar.
 - Panelin, dock'un ya da genel bakışın yerine geçen eklentiler (dash-to-panel, dash-to-dock, blur-my-shell, ArcMenu ve benzerleri) ile masaüstü simgeleri VATAN oturumunda yüklenmez. GNOME oturumunda çalışmaya devam ederler.
 - Komut'taki parlaklık eylemi yalnızca parlaklığı ayarlanabilen ekranlarda çalışır.
+- Kur çevirisi istendiğinde TCMB'nin günlük bültenine istek gider (saatte en fazla bir kez).
 - Gündem kartı açıkken TRT Haber'e 15 dakikada bir istek gider; kapatınca hiç istek gitmez.
 - NSosyal'ın herkese açık bir API'si olmadığı için kart NSosyal paylaşımlarını gösteremiyor; kısayol NSosyal'ı tarayıcıda açar.
 - Ayarlar GNOME oturumuyla ortaktır (dconf). VATAN'ın varsayılanları (vurgu rengi, yazı tipi, duvar kağıdı, sık kullanılanlar) yalnızca senin hiç değiştirmediğin anahtarlarda geçerlidir; birinde değiştirdiğin ayar ötekinde de değişir.

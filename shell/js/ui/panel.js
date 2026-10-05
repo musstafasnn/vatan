@@ -42,6 +42,7 @@ import {ScreenRecordingIndicator, ScreenSharingIndicator} from './status/remoteA
 import {VatanDock} from './vatan/dock.js';
 import {VatanKomutButton} from './vatan/komutButton.js';
 import {VatanTimerButton} from './vatan/timerIsland.js';
+import {VatanMediaButton} from './vatan/mediaIsland.js';
 import {VatanWorkspaceButton} from './vatan/workspaceButton.js';
 
 const PANEL_ICON_SIZE = 16;
@@ -648,6 +649,7 @@ const PANEL_ITEM_IMPLEMENTATIONS = {
     'vatanDock': VatanDock,
     'vatanKomut': VatanKomutButton,
     'vatanTimer': VatanTimerButton,
+    'vatanMedia': VatanMediaButton,
     'vatanWorkspace': VatanWorkspaceButton,
 };
 

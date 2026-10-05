@@ -1,5 +1,8 @@
 import Gio from 'gi://Gio';
+import GLib from 'gi://GLib';
 import Meta from 'gi://Meta';
+import Shell from 'gi://Shell';
+import Soup from 'gi://Soup';
 import St from 'gi://St';
 
 import * as Main from '../main.js';
@@ -7,7 +10,11 @@ import {getMixerControl} from '../status/volume.js';
 import {loadInterfaceXML} from '../../misc/fileUtils.js';
 import {parseLevelCommand} from '../../misc/turkishText.js';
 import {formatDuration, parseTimerCommand, secondsUntil} from '../../misc/vatanTimer.js';
+import {
+    convertCurrency, convertUnits, formatAmount, isCurrency, parseConversion, parseTcmbRates, unitName,
+} from '../../misc/vatanConvert.js';
 import {rankActions} from '../../misc/vatanActions.js';
+import {showTour} from './tour.js';
 
 const BRIGHTNESS_BUS_NAME = 'org.gnome.SettingsDaemon.Power';
 const BRIGHTNESS_OBJECT_PATH = '/org/gnome/SettingsDaemon/Power';
@@ -18,6 +25,47 @@ const BrightnessProxy = Gio.DBusProxy.makeProxyWrapper(
 
 const LEVEL_PREFIX = 'level:';
 const TIMER_PREFIX = 'timer:';
+const CONVERT_PREFIX = 'convert:';
+
+// TCMB publishes one bulletin per working day; an hour-old copy is current.
+const RATES_URL = 'https://www.tcmb.gov.tr/kurlar/today.xml';
+const RATES_TTL_MS = 60 * 60 * 1000;
+const RATES_TIMEOUT_SECONDS = 10;
+
+Gio._promisify(Soup.Session.prototype, 'send_and_read_async');
+
+// Pardus's own tools under the words people use for the job, not the app names.
+const PARDUS_TOOLS = [
+    {id: 'tool-usb', appId: 'tr.org.pardus.usb-formatter.desktop',
+        title: _('USB belleği biçimlendir'), keywords: 'usb biçimlendir format flash bellek sil'},
+    {id: 'tool-iso', appId: 'tr.org.pardus.image-writer.desktop',
+        title: _('Disk kalıbını USB\'ye yaz'), keywords: 'iso kalıp yaz önyüklenebilir usb imaj'},
+    {id: 'tool-update', appId: 'tr.org.pardus.update.desktop',
+        title: _('Sistemi güncelle'), keywords: 'güncelle güncelleme yükselt yama'},
+    {id: 'tool-hardware', appId: 'tr.org.pardus.about-hardware.desktop',
+        title: _('Donanım bilgisini göster'), keywords: 'donanım işlemci bellek ram ekran kartı'},
+    {id: 'tool-install', appId: 'tr.org.pardus.software.desktop',
+        title: _('Uygulama kur'), keywords: 'yazılım kur yükle indir mağaza program'},
+    {id: 'tool-disks', appId: 'tr.org.pardus.mycomputer.desktop',
+        title: _('Diskleri göster'), keywords: 'bilgisayarım disk sürücü bölüm'},
+];
+
+const PUBLIC_SERVICES = [
+    {id: 'web-edevlet', uri: 'https://www.turkiye.gov.tr',
+        title: _('e-Devlet Kapısı'), keywords: 'edevlet devlet türkiye.gov kimlik belge'},
+    {id: 'web-mhrs', uri: 'https://www.mhrs.gov.tr',
+        title: _('MHRS: hastane randevusu'), keywords: 'randevu hastane doktor hekim'},
+    {id: 'web-enabiz', uri: 'https://enabiz.gov.tr',
+        title: _('e-Nabız'), keywords: 'enabız sağlık tahlil reçete'},
+    {id: 'web-eokul', uri: 'https://e-okul.meb.gov.tr',
+        title: _('e-Okul'), keywords: 'eokul karne not meb öğrenci veli'},
+    {id: 'web-eba', uri: 'https://www.eba.gov.tr',
+        title: _('EBA'), keywords: 'eğitim ders meb'},
+    {id: 'web-uyap', uri: 'https://vatandas.uyap.gov.tr',
+        title: _('UYAP Vatandaş'), keywords: 'dava mahkeme adliye'},
+    {id: 'web-gib', uri: 'https://ivd.gib.gov.tr',
+        title: _('İnternet Vergi Dairesi'), keywords: 'gib vergi beyanname borç'},
+];
 
 const ACCENTS = [
     {id: 'accent-red', value: 'red', title: _('Vurgu rengi: Kırmızı')},
@@ -75,6 +123,13 @@ export class VatanActionsProvider {
                 run: () => this._toggleBoolean(this._vatanSettings, 'show-news'),
             },
             {
+                id: 'tour',
+                title: _('VATAN turunu göster'),
+                keywords: 'tur tanıtım yardım nasıl kullanılır başlangıç',
+                icon: 'help-about-symbolic',
+                run: () => showTour(),
+            },
+            {
                 id: 'tile',
                 title: _('Pencereleri yan yana diz'),
                 keywords: 'böl yerleştir ikiye',
@@ -88,6 +143,15 @@ export class VatanActionsProvider {
                 icon: 'system-lock-screen-symbolic',
                 run: () => Main.screenShield.lock(true),
             },
+            ...PARDUS_TOOLS
+                .map(tool => ({...tool, app: Shell.AppSystem.get_default().lookup_app(tool.appId)}))
+                .filter(tool => tool.app)
+                .map(tool => ({...tool, run: () => tool.app.activate()})),
+            ...PUBLIC_SERVICES.map(service => ({
+                ...service,
+                icon: 'web-browser-symbolic',
+                run: () => this._openUri(service.uri),
+            })),
             ...ACCENTS.map(({id, value, title}) => ({
                 id,
                 title,
@@ -110,20 +174,90 @@ export class VatanActionsProvider {
         return ids;
     }
 
-    getInitialResultSet(terms) {
-        return this._search(terms);
+    async getInitialResultSet(terms, cancellable) {
+        const ids = this._search(terms);
+        const conversion = await this._convert(terms.join(' '), cancellable);
+        if (conversion)
+            ids.unshift(`${CONVERT_PREFIX}${JSON.stringify(conversion)}`);
+        return ids;
     }
 
-    getSubsearchResultSet(_previousResults, terms) {
-        return this._search(terms);
+    getSubsearchResultSet(_previousResults, terms, cancellable) {
+        return this.getInitialResultSet(terms, cancellable);
+    }
+
+    async _convert(query, cancellable) {
+        const request = parseConversion(query);
+        if (!request)
+            return null;
+
+        const {amount, from, to} = request;
+        if (!isCurrency(from))
+            return {amount, from, to, result: convertUnits(amount, from, to)};
+
+        const bulletin = await this._rates(cancellable);
+        const result = bulletin && convertCurrency(amount, from, to, bulletin.rates);
+        return result === null || result === undefined
+            ? null : {amount, from, to, result, date: bulletin.date};
+    }
+
+    // Concurrent queries share one request; a failed refresh keeps serving
+    // the last bulletin rather than showing nothing.
+    _rates(cancellable) {
+        if (this._bulletin && Date.now() - this._bulletin.fetchedAt < RATES_TTL_MS)
+            return Promise.resolve(this._bulletin);
+        this._ratesRequest ??= this._fetchRates().finally(() => {
+            this._ratesRequest = null;
+        });
+        return cancellable ? Promise.race([this._ratesRequest, this._whenCancelled(cancellable)]) : this._ratesRequest;
+    }
+
+    _whenCancelled(cancellable) {
+        return new Promise(resolve => {
+            if (cancellable.is_cancelled())
+                resolve(null);
+            else
+                cancellable.connect(() => resolve(null));
+        });
+    }
+
+    async _fetchRates() {
+        this._session ??= new Soup.Session({timeout: RATES_TIMEOUT_SECONDS, user_agent: 'VATAN'});
+        try {
+            const message = Soup.Message.new('GET', RATES_URL);
+            const bytes = await this._session.send_and_read_async(message, GLib.PRIORITY_DEFAULT, null);
+            if (message.get_status() !== Soup.Status.OK)
+                throw new Error(`HTTP ${message.get_status()}`);
+            const {date, rates} = parseTcmbRates(new TextDecoder().decode(bytes.get_data()));
+            if (!rates.size)
+                throw new Error('no rates in the bulletin');
+            this._bulletin = {date, rates, fetchedAt: Date.now()};
+        } catch (e) {
+            console.warn(`VATAN rates: ${e.message}`);
+        }
+        return this._bulletin ?? null;
+    }
+
+    _openUri(uri) {
+        try {
+            Gio.AppInfo.launch_default_for_uri(uri, global.create_app_launch_context(0, -1));
+        } catch (e) {
+            console.warn(`VATAN: cannot open ${uri}: ${e.message}`);
+        }
     }
 
     getResultMetas(ids) {
         const table = this._actionTable();
         const metas = [];
         for (const id of ids) {
-            let name, iconName;
-            if (id.startsWith(TIMER_PREFIX)) {
+            let name, iconName, description = '', createIcon = null;
+            if (id.startsWith(CONVERT_PREFIX)) {
+                const {amount, from, to, result, date} = JSON.parse(id.slice(CONVERT_PREFIX.length));
+                const money = isCurrency(from);
+                name = `${formatAmount(amount, money)} ${unitName(from)} = ${formatAmount(result, money)} ${unitName(to)}`;
+                description = date ? _('TCMB döviz satış kuru, %s · Enter kopyalar').format(date) : _('Enter kopyalar');
+                iconName = money ? 'money-symbolic' : 'accessories-calculator-symbolic';
+            } else if (id.startsWith(TIMER_PREFIX)) {
                 const {seconds, label, at} = JSON.parse(id.slice(TIMER_PREFIX.length));
                 const when = at ?? formatDuration(seconds);
                 const what = label ? `${label} · ${when}` : when;
@@ -145,18 +279,26 @@ export class VatanActionsProvider {
                     continue;
                 name = action.title;
                 iconName = action.icon;
+                if (action.app)
+                    createIcon = size => action.app.create_icon_texture(size);
             }
             metas.push({
                 id,
                 name,
-                description: '',
-                createIcon: size => new St.Icon({icon_name: iconName, icon_size: size}),
+                description,
+                createIcon: createIcon ?? (size => new St.Icon({icon_name: iconName, icon_size: size})),
             });
         }
         return metas;
     }
 
     activateResult(id) {
+        if (id.startsWith(CONVERT_PREFIX)) {
+            const {result, from} = JSON.parse(id.slice(CONVERT_PREFIX.length));
+            St.Clipboard.get_default().set_text(St.ClipboardType.CLIPBOARD,
+                formatAmount(result, isCurrency(from)));
+            return;
+        }
         if (id.startsWith(TIMER_PREFIX)) {
             this._startTimer(JSON.parse(id.slice(TIMER_PREFIX.length)));
             return;

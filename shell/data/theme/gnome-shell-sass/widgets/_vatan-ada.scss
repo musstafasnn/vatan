@@ -311,3 +311,49 @@ $ada_lit_edge_color: if($variant == 'light', #ffffff, rgba(255, 255, 255, .16));
 .vatan-news-headline {
   padding-bottom: 2px;
 }
+
+/* Canlı Ada: the media section */
+.vatan-media-box {
+  spacing: 4px;
+}
+
+.vatan-media-control {
+  padding: 4px;
+  border-radius: $ada_control_radius;
+
+  &:hover,
+  &:focus {
+    background-color: transparentize($fg_color, .9);
+  }
+}
+
+.vatan-media-title {
+  max-width: 220px;
+  padding: 0 4px;
+}
+
+/* First-login tour */
+.vatan-tour .modal-dialog-content-box {
+  spacing: 18px;
+}
+
+.vatan-tour-icon {
+  icon-size: 48px;
+  color: -st-accent-color;
+}
+
+.vatan-tour-dots {
+  spacing: 6px;
+}
+
+.vatan-tour-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 3px;
+  background-color: transparentize($fg_color, .8);
+
+  &:checked {
+    width: 18px;
+    background-color: -st-accent-color;
+  }
+}
