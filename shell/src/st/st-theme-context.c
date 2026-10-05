@@ -28,12 +28,13 @@
 #include "st-theme-context.h"
 #include "st-theme-node-private.h"
 
-#define ACCENT_COLOR_BLUE   "#3584e4"
+/* VATAN maps red/blue/green/yellow to Al, Lacivert, Zümrüt, Safran. */
+#define ACCENT_COLOR_BLUE   "#1d4ed8"
 #define ACCENT_COLOR_TEAL   "#2190a4"
-#define ACCENT_COLOR_GREEN  "#3a944a"
-#define ACCENT_COLOR_YELLOW "#c88800"
+#define ACCENT_COLOR_GREEN  "#0a7a58"
+#define ACCENT_COLOR_YELLOW "#a85f06"
 #define ACCENT_COLOR_ORANGE "#ed5b00"
-#define ACCENT_COLOR_RED    "#e62d42"
+#define ACCENT_COLOR_RED    "#c8102e"
 #define ACCENT_COLOR_PINK   "#d56199"
 #define ACCENT_COLOR_PURPLE "#9141ac"
 #define ACCENT_COLOR_SLATE  "#6f8396"
