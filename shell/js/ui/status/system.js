@@ -132,13 +132,17 @@ class SettingsItem extends QuickSettingsItem {
             child: new St.Icon(),
         });
 
-        this._settingsApp = Shell.AppSystem.get_default().lookup_app(
-            'org.gnome.Settings.desktop');
+        // VATAN Ayarları leads to GNOME Settings for everything else, so the
+        // gear opens it first; GNOME Settings is the fallback if it is missing.
+        const appSystem = Shell.AppSystem.get_default();
+        this._settingsApp = appSystem.lookup_app('org.vatan.Settings.desktop') ??
+            appSystem.lookup_app('org.gnome.Settings.desktop');
 
         if (!this._settingsApp)
             console.warn('Missing required core component Settings, expect trouble…');
 
-        this.child.gicon = this._settingsApp?.get_icon() ?? null;
+        // The app icon is full colour; the quick settings row is symbolic.
+        this.child.icon_name = 'cog-wheel-symbolic';
         this.accessible_name = this._settingsApp?.get_name() ?? null;
 
         this.connect('clicked', () => {
