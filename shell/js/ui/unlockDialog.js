@@ -47,10 +47,12 @@ export function bottomEdgeClearOfIsland(x1, x2, screenBottom, margin) {
     return Math.min(bottom, islandTop - margin);
 }
 
-// No blur: the contour wallpaper stays sharp. The dim is strong enough for
-// the light lock text to stay readable on the light wallpaper variant too.
+// Effectively no blur, so the contour wallpaper stays sharp. Not 0: a zero
+// radius makes Shell.BlurEffect skip the brightness pass too. The dim is
+// strong enough for the light lock text to stay readable on the light
+// wallpaper variant.
 const BLUR_BRIGHTNESS = 0.45;
-const BLUR_RADIUS = 0;
+const BLUR_RADIUS = 1;
 
 const NotificationsBox = GObject.registerClass({
     Signals: {'wake-up-screen': {}},
@@ -461,17 +463,23 @@ class UnlockDialogLayout extends Clutter.LayoutManager {
             notificationsHeight,
             height - tenthOfHeight - stackHeight);
 
+        // The centered column sits right over the island; keep it above.
+        const notificationsBottom = bottomEdgeClearOfIsland(
+            columnX1, columnX1 + columnWidth, height, 0);
+        maxNotificationsHeight = Math.max(0, Math.min(
+            maxNotificationsHeight, notificationsBottom - tenthOfHeight - stackHeight));
+
         actorBox.x1 = columnX1;
-        actorBox.y1 = height - maxNotificationsHeight;
+        actorBox.y1 = notificationsBottom - maxNotificationsHeight;
         actorBox.x2 = columnX1 + columnWidth;
-        actorBox.y2 = actorBox.y1 + maxNotificationsHeight;
+        actorBox.y2 = notificationsBottom;
 
         this._notifications.allocate(actorBox);
 
         // Authentication Box
         let stackY = Math.min(
             thirdOfHeight,
-            height - stackHeight - maxNotificationsHeight);
+            notificationsBottom - stackHeight - maxNotificationsHeight);
 
         actorBox.x1 = columnX1;
         actorBox.y1 = stackY;
@@ -497,7 +505,7 @@ class UnlockDialogLayout extends Clutter.LayoutManager {
         const overlapsNotifications = maxNotificationsHeight > 0 &&
             actorBox.x1 < columnX1 + columnWidth && actorBox.x2 > columnX1;
         if (overlapsNotifications)
-            clockBottom = Math.min(clockBottom, height - maxNotificationsHeight - clockMargin);
+            clockBottom = Math.min(clockBottom, notificationsBottom - maxNotificationsHeight - clockMargin);
         actorBox.y1 = clockBottom - clockHeight;
         actorBox.y2 = clockBottom;
         this._clock.allocate(actorBox);
