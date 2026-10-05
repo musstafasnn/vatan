@@ -69,6 +69,7 @@ override_dh_install:
 	install -Dm644 -t $(pkgroot)/usr/share/icons/VATAN/places data/icons/VATAN/places/*.svg
 	install -Dm644 -t $(pkgroot)/usr/share/icons/VATAN/apps data/icons/VATAN/apps/*.svg
 	install -Dm644 -t $(pkgroot)/usr/share/plymouth/themes/vatan data/plymouth/vatan/*
+	install -Dm755 data/login/vatan-login-screen $(pkgroot)/usr/lib/vatan/vatan-login-screen
 
 # The rest of the upstream install (desktop files, D-Bus services, schemas,
 # systemd units) duplicates what gnome-shell already ships for the system.

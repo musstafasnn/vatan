@@ -357,3 +357,11 @@ $ada_lit_edge_color: if($variant == 'light', #ffffff, rgba(255, 255, 255, .16));
     background-color: -st-accent-color;
   }
 }
+
+// The greeter (when VATAN draws the login screen) sits on the dark relief.
+// The unlock dialog paints its own blurred background over this group.
+#lockDialogGroup {
+  background: #07080b url("file:///usr/share/backgrounds/vatan/vatan-dark.png");
+  background-size: cover;
+  background-position: center;
+}

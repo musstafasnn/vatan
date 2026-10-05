@@ -1,0 +1,14 @@
+#!/bin/sh
+set -e
+
+# Without the VATAN shell an enabled login-screen override would make GDM
+# start a binary that no longer exists; drop it with the package.
+if [ "$1" = "remove" ] || [ "$1" = "purge" ]; then
+    home=$(getent passwd Debian-gdm | cut -d: -f6 || true)
+    override="$home/.local/share/applications/org.gnome.Shell.desktop"
+    if [ -n "$home" ] && [ -f "$override" ] && grep -q "/usr/lib/vatan-shell/" "$override"; then
+        rm -f "$override"
+    fi
+fi
+
+#DEBHELPER#

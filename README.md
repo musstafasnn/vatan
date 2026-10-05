@@ -50,6 +50,17 @@ sudo plymouth-set-default-theme -R vatan
 
 Geri almak için aynı komutu önceki temanın adıyla çalıştır (`plymouth-set-default-theme --list`).
 
+### Giriş ekranı (isteğe bağlı)
+
+Giriş ekranı da bütün kullanıcılar için ortak olduğundan VATAN onu kendiliğinden devralmaz:
+
+```sh
+sudo /usr/lib/vatan/vatan-login-screen enable    # VATAN çizsin
+sudo /usr/lib/vatan/vatan-login-screen disable   # GNOME'a geri ver
+```
+
+Değişiklik GDM yeniden başlayınca ya da bilgisayar açılınca geçerli olur. Paket kaldırılırken bu ayar da silinir.
+
 ### Kaldırma
 
 ```sh
