@@ -22,6 +22,13 @@ const CUSTOM_FEED_LABEL = 'Başka bir adres';
 const ENTRANCE_MS = 320;
 const ENTRANCE_STAGGER_MS = 50;
 const ENTRANCE_RISE_PX = 14;
+const STACK_FADE_MS = 200;
+
+const PACES = [
+    {name: 'live', label: 'Canlı', factor: 1.0},
+    {name: 'balanced', label: 'Dengeli', factor: 1.3},
+    {name: 'calm', label: 'Sakin', factor: 1.7},
+];
 
 // GNOME's accent names; the swatches show the colours the shell and the apps use.
 const ACCENTS = [
@@ -87,10 +94,13 @@ class VatanSettingsWindow extends Adw.ApplicationWindow {
         this._vatan = new Gio.Settings({schema_id: 'org.vatan.shell'});
 
         this._toasts = new Adw.ToastOverlay();
-        const stack = new Gtk.Stack({
-            transition_type: Gtk.StackTransitionType.CROSSFADE,
-            transition_duration: 200,
-        });
+        const stack = new Gtk.Stack({transition_type: Gtk.StackTransitionType.CROSSFADE});
+        // The app keeps the shell's pace so its pages move like the desktop.
+        const syncPace = () => {
+            stack.transition_duration = Math.round(STACK_FADE_MS * this._pace());
+        };
+        syncPace();
+        this._vatan.connect('changed::animation-pace', syncPace);
         const pages = [
             ['gorunum', 'Görünüm', 'applications-graphics-symbolic', this._appearancePage()],
             ['gundem', 'Gündem', 'x-office-document-symbolic', this._newsPage()],
@@ -146,6 +156,10 @@ class VatanSettingsWindow extends Adw.ApplicationWindow {
         return new Adw.NavigationPage({title: 'VATAN', child: view});
     }
 
+    _pace() {
+        return this._vatan.get_double('animation-pace');
+    }
+
     _playEntrance(page) {
         let child = page.get_first_child();
         const groups = [];
@@ -168,14 +182,14 @@ class VatanSettingsWindow extends Adw.ApplicationWindow {
                 widget: group,
                 value_from: 0,
                 value_to: 1,
-                duration: ENTRANCE_MS,
+                duration: Math.round(ENTRANCE_MS * this._pace()),
                 easing: Adw.Easing.EASE_OUT_CUBIC,
                 target: Adw.CallbackAnimationTarget.new(value => {
                     group.opacity = value;
                     group.margin_top = Math.round(ENTRANCE_RISE_PX * (1 - value));
                 }),
             });
-            GLib.timeout_add(GLib.PRIORITY_DEFAULT, index * ENTRANCE_STAGGER_MS, () => {
+            GLib.timeout_add(GLib.PRIORITY_DEFAULT, Math.round(index * ENTRANCE_STAGGER_MS * this._pace()), () => {
                 animation.play();
                 return GLib.SOURCE_REMOVE;
             });
@@ -207,6 +221,7 @@ class VatanSettingsWindow extends Adw.ApplicationWindow {
         schemeRow.add_suffix(schemes);
         style.add(schemeRow);
         style.add(this._accentRow());
+        style.add(this._paceRow());
         page.add(style);
 
         const look = new Adw.PreferencesGroup({title: 'Simgeler ve duvar kağıdı'});
@@ -240,6 +255,32 @@ class VatanSettingsWindow extends Adw.ApplicationWindow {
         look.add(wallpaper);
         page.add(look);
         return page;
+    }
+
+    _paceRow() {
+        const row = new Adw.ActionRow({
+            title: 'Animasyon hızı',
+            subtitle: 'Pencereler, ada, Komut ve menüler bu hızda hareket eder',
+        });
+        const group = new Adw.ToggleGroup({valign: Gtk.Align.CENTER});
+        for (const {name, label} of PACES)
+            group.add(new Adw.Toggle({name, label}));
+        // Snap to the nearest preset so a hand-set value still selects one.
+        const sync = () => {
+            const pace = this._pace();
+            const nearest = PACES.reduce((a, b) =>
+                Math.abs(b.factor - pace) < Math.abs(a.factor - pace) ? b : a);
+            group.active_name = nearest.name;
+        };
+        sync();
+        this._vatan.connect('changed::animation-pace', sync);
+        group.connect('notify::active-name', () => {
+            const preset = PACES.find(p => p.name === group.active_name);
+            if (preset && Math.abs(preset.factor - this._pace()) > 0.01)
+                this._vatan.set_double('animation-pace', preset.factor);
+        });
+        row.add_suffix(group);
+        return row;
     }
 
     _accentRow() {

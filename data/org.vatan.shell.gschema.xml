@@ -16,6 +16,12 @@
       <summary>Let Komut fetch exchange rates from TCMB</summary>
       <description>Off means no request goes to TCMB and Komut converts only units.</description>
     </key>
+    <key name="animation-pace" type="d">
+      <range min="1.0" max="2.0"/>
+      <default>1.3</default>
+      <summary>How much slower than GNOME's timing VATAN animates</summary>
+      <description>Multiplies every shell animation; 1.0 is GNOME's own pace.</description>
+    </key>
     <key name="tour-shown" type="b">
       <default>false</default>
       <summary>Whether the first-login tour has been shown</summary>

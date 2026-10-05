@@ -66,6 +66,7 @@ export let panel = null;
 export let vatanKomut = null;
 export let vatanTimers = null;
 export let vatanNews = null;
+let _vatanSettings = null;
 export let overview = null;
 export let runDialog = null;
 export let lookingGlass = null;
@@ -253,6 +254,8 @@ async function _initializeUI() {
     screenshotUI = new Screenshot.ScreenshotUI();
 
     messageTray = new MessageTray.MessageTray();
+    _syncAnimationPace();
+
     // Before the panel: its timer item reads the timers when it is built.
     vatanTimers = new VatanTimers();
     panel = new Panel.Panel();
@@ -434,6 +437,18 @@ async function _handleLockScreenWarning() {
             _('Screen Lock disabled'),
             _('Screen Locking requires the GNOME display manager'));
     }
+}
+
+// The pace is a user choice in VATAN Ayarları; GNOME_SHELL_SLOWDOWN_FACTOR
+// stays the developer override and wins when it is set.
+function _syncAnimationPace() {
+    if (GLib.getenv('GNOME_SHELL_SLOWDOWN_FACTOR'))
+        return;
+    if (!_vatanSettings) {
+        _vatanSettings = new Gio.Settings({schema_id: 'org.vatan.shell'});
+        _vatanSettings.connect('changed::animation-pace', _syncAnimationPace);
+    }
+    St.Settings.get().slow_down_factor = _vatanSettings.get_double('animation-pace');
 }
 
 function _getStylesheet(name) {
