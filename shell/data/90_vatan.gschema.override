@@ -1,0 +1,12 @@
+# Sorts after Pardus's 20_pardus-gnome-settings override so VATAN defaults win.
+# Only the two extensions that neither restyle nor replace the panel, overview
+# or desktop stay enabled; user extensions are off so none can undo that.
+[org.gnome.desktop.interface]
+accent-color='red'
+color-scheme='default'
+enable-hot-corners=false
+
+[org.gnome.shell]
+favorite-apps=['firefox-esr.desktop', 'org.gnome.Nautilus.desktop', 'org.gnome.Console.desktop', 'libreoffice-writer.desktop', 'tr.org.pardus.software.desktop']
+enabled-extensions=['appindicatorsupport@rgcjonas.gmail.com', 'gtk3-accent-sync@pardus.org.tr']
+disable-user-extensions=true

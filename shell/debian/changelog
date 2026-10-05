@@ -1,3 +1,17 @@
+gnome-shell (48.7-0+deb13u2pardus1+vatan1) trixie; urgency=medium
+
+  * Bottom island panel (Ada) with dock, Komut button and workspace button
+  * Komut command bar with Turkish actions provider
+  * Upward panel menus
+  * Banners and OSD above the island
+  * Overview without dash and search entry
+  * VATAN theme tokens, accent palette and radius system
+  * Lock screen corner clock and greeter alignment
+  * Stylesheets regenerated from SCSS
+  * VATAN gsettings defaults
+
+ -- Mustafa <musstafasnn@gmail.com>  Mon, 05 Oct 2026 16:10:00 +0300
+
 gnome-shell (48.7-0+deb13u2pardus1) trixie; urgency=medium
 
   * Add patch for use pardus-software in application details
