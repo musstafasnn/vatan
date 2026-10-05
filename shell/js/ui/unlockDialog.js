@@ -465,14 +465,23 @@ class UnlockDialogLayout extends Clutter.LayoutManager {
         // Clock sits in the bottom-left corner, apart from the centered prompt.
         const {scaleFactor} = St.ThemeContext.get_for_stage(global.stage);
         const clockMargin = CLOCK_SCREEN_MARGIN * scaleFactor;
-        const [, , clockWidth, clockHeight] = this._clock.get_preferred_size();
+        const [, , naturalClockWidth, clockHeight] = this._clock.get_preferred_size();
+        const clockWidth = Math.min(naturalClockWidth, width - 2 * clockMargin);
         if (this._clock.get_text_direction() === Clutter.TextDirection.RTL)
             actorBox.x1 = box.x2 - clockMargin - clockWidth;
         else
             actorBox.x1 = box.x1 + clockMargin;
-        actorBox.y1 = box.y2 - clockMargin - clockHeight;
         actorBox.x2 = actorBox.x1 + clockWidth;
-        actorBox.y2 = actorBox.y1 + clockHeight;
+
+        // On narrow screens the corner clock reaches the centered
+        // notifications column; lift it above them instead of overlapping.
+        let clockBottom = box.y2 - clockMargin;
+        const overlapsNotifications = maxNotificationsHeight > 0 &&
+            actorBox.x1 < columnX1 + columnWidth && actorBox.x2 > columnX1;
+        if (overlapsNotifications)
+            clockBottom = Math.min(clockBottom, height - maxNotificationsHeight - clockMargin);
+        actorBox.y1 = clockBottom - clockHeight;
+        actorBox.y2 = clockBottom;
         this._clock.allocate(actorBox);
 
         // Switch User button
@@ -849,7 +858,9 @@ export const UnlockDialog = GObject.registerClass({
         this._ensureAuthPrompt();
 
         let progress = this._adjustment.value;
-        tracker.confirmSwipe(this._stack.height,
+        // The stack only holds the prompt now, which is hidden while the clock
+        // shows; a third of the screen keeps the swipe distance meaningful.
+        tracker.confirmSwipe(this.height / 3,
             [0, 1],
             progress,
             Math.round(progress));
