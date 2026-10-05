@@ -1,0 +1,70 @@
+#!/usr/bin/make -f
+
+DPKG_EXPORT_BUILDFLAGS = 1
+include /usr/share/dpkg/default.mk
+
+export DEB_BUILD_MAINT_OPTIONS = hardening=+all
+
+# The shell is a fork of gnome-shell 48. It lives under its own prefix so it
+# never shadows the gnome-shell package, which still provides GDM, the
+# helper services and the GSettings schemas the fork shares.
+prefix := /usr/lib/vatan-shell
+builddir := build-vatan
+pkgroot := $(CURDIR)/debian/vatan
+
+%:
+	dh $@
+
+override_dh_auto_configure:
+	meson setup $(builddir) shell \
+		--wrap-mode=nodownload \
+		--buildtype=plain \
+		--prefix=$(prefix) \
+		--libdir=lib \
+		--libexecdir=libexec \
+		--sysconfdir=/etc \
+		--localstatedir=/var \
+		-Dextensions_tool=false \
+		-Dextensions_app=false \
+		-Dman=false \
+		-Dgtk_doc=false \
+		-Dportal_helper=false \
+		-Dtests=false \
+		-Dnetworkmanager=true \
+		-Dsystemd=true
+
+override_dh_auto_build:
+	meson compile -C $(builddir)
+
+override_dh_auto_test:
+
+override_dh_auto_install:
+	DESTDIR=$(CURDIR)/debian/tmp meson install -C $(builddir) --no-rebuild
+
+override_dh_auto_clean:
+	rm -rf $(builddir)
+
+override_dh_install:
+	dh_install
+	install -Dm644 data/session/vatan.desktop $(pkgroot)/usr/share/wayland-sessions/vatan.desktop
+	install -Dm644 data/session/vatan-xorg.desktop $(pkgroot)/usr/share/xsessions/vatan.desktop
+	install -Dm644 data/session/vatan.session $(pkgroot)/usr/share/gnome-session/sessions/vatan.session
+	install -Dm644 data/session/org.vatan.Shell.desktop $(pkgroot)/usr/share/applications/org.vatan.Shell.desktop
+	install -Dm644 data/session/gnome-session@vatan.target.d/vatan.session.conf \
+		$(pkgroot)/usr/lib/systemd/user/gnome-session@vatan.target.d/vatan.session.conf
+	install -Dm644 -t $(pkgroot)/usr/lib/systemd/user \
+		data/session/org.vatan.Shell.target \
+		data/session/org.vatan.Shell@wayland.service \
+		data/session/org.vatan.Shell@x11.service
+	install -Dm644 data/90_vatan.gschema.override $(pkgroot)/usr/share/glib-2.0/schemas/90_vatan.gschema.override
+	install -Dm644 -t $(pkgroot)/usr/share/fonts/truetype/vatan data/fonts/*.ttf
+	install -Dm644 -t $(pkgroot)/usr/share/backgrounds/vatan data/backgrounds/*.svg
+	install -Dm644 data/backgrounds/vatan.xml $(pkgroot)/usr/share/gnome-background-properties/vatan.xml
+
+# The rest of the upstream install (desktop files, D-Bus services, schemas,
+# systemd units) duplicates what gnome-shell already ships for the system.
+override_dh_missing:
+	dh_missing --list-missing
+
+override_dh_shlibdeps:
+	dh_shlibdeps -l$(pkgroot)$(prefix)/lib/gnome-shell

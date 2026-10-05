@@ -1,0 +1,65 @@
+Source: vatan
+Section: gnome
+Priority: optional
+Maintainer: Mustafa <musstafasnn@gmail.com>
+Build-Depends: debhelper-compat (= 13),
+               gjs (>= 1.81.2),
+               gir1.2-gcr-4-dev,
+               gir1.2-gdkpixbuf-2.0-dev,
+               gir1.2-polkitagent-1.0-dev,
+               gnome-control-center-dev,
+               gobject-introspection (>= 1.80),
+               gsettings-desktop-schemas-dev (>= 48~beta),
+               libasound2-dev,
+               libatk-bridge2.0-dev,
+               libecal2.0-dev (>= 3.45),
+               libedataserver1.2-dev (>= 3.45),
+               libgcr-4-dev (>= 3.90.0),
+               libgjs-dev (>= 1.81.2),
+               libglib2.0-dev (>= 2.80),
+               libgnome-autoar-0-dev,
+               libgnome-bluetooth-3.0-dev (>= 3.9.0),
+               libgnome-desktop-4-dev (>= 40),
+               libgnome-menu-3-dev,
+               libgstreamer1.0-dev,
+               libgstreamer-plugins-base1.0-dev,
+               libgtk-4-dev,
+               libibus-1.0-dev,
+               libjson-glib-dev,
+               libmutter-16-dev (>= 48.0),
+               libnm-dev,
+               libpipewire-0.3-dev (>= 0.3.49),
+               libpolkit-agent-1-dev,
+               libpulse-dev,
+               libsecret-1-dev,
+               libsystemd-dev,
+               libx11-dev,
+               libxfixes-dev,
+               libxml2-dev,
+               mesa-common-dev,
+               meson (>= 0.58.0),
+               pkgconf,
+               sassc,
+               systemd-dev
+Rules-Requires-Root: no
+Standards-Version: 4.7.2
+Homepage: https://github.com/musstafasnn/vatan
+Vcs-Git: https://github.com/musstafasnn/vatan.git
+Vcs-Browser: https://github.com/musstafasnn/vatan
+
+Package: vatan
+Architecture: linux-any
+Depends: ${shlibs:Depends},
+         ${misc:Depends},
+         gnome-session,
+         gnome-settings-daemon,
+         gnome-shell (>= 48.7~),
+         gnome-shell (<< 49~)
+Description: VATAN desktop session for Pardus
+ VATAN is a desktop session for Pardus 25 GNOME. It replaces the top bar
+ with an island at the bottom of the screen that holds the dock, Komut
+ (a command bar that understands Turkish actions, apps, files and
+ calculations), the workspace button and the system status.
+ .
+ It installs next to GNOME: choose "VATAN" from the gear menu on the login
+ screen, choose "GNOME" to go back. The stock GNOME session is not changed.

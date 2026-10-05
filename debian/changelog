@@ -1,0 +1,12 @@
+vatan (0.1.0) trixie; urgency=medium
+
+  * First public release.
+  * Island panel at the bottom with dock, Komut button, workspace button,
+    status and clock; menus open upward, banners and OSD sit above it.
+  * Komut command bar: apps, files, settings, calculator and Turkish
+    actions such as "karanlık", "parlaklık 40" or "ses 30".
+  * Lock screen with a corner clock, Geist and Instrument Serif fonts,
+    Turkey contour wallpaper in light and dark.
+  * Installs as its own session next to GNOME.
+
+ -- Mustafa <musstafasnn@gmail.com>  Mon, 05 Oct 2026 17:00:00 +0300
