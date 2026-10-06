@@ -338,6 +338,22 @@ ICONS['org.gnome.Contacts'] = ['ivory', () =>
   `<circle cx="92" cy="88" r="12.5" fill="none" stroke="#ffc2c9" stroke-width="1" opacity=".8"/>` +
   `<path d="M92 80V96M86 84Q92 79 98 84M88 96H96" fill="none" stroke="${IVORY}" stroke-width="2.4" stroke-linecap="round"/>`];
 
+// VATAN Posta: arkadan görülen, kapağı kapalı bir zarf ve kapağın ucunda
+// mum mühür (mektup mührü). Mührün içinde damga gibi duran Orhun 𐰋 harfi.
+// Düz zarf her posta uygulamasında var; mühür onu "kapalı, sahibi belli bir
+// mektup"a çevirir ve 32 px'te kırmızı bir nokta olarak da okunur.
+ICONS['org.vatan.Posta'] = ['blue', () => {
+  const wax = [];
+  for (let i = 0; i < 20; i++) wax.push(polar(64, 70, i % 2 ? 12.2 : 14, i * 18));
+  return `<path d="${rr(16, 32, 96, 66, 7)}" fill="url(#p-ivory)"/>` +
+    `<path d="${poly([[20, 95], [64, 63], [108, 95]])}" fill="url(#p-ivoryDim)"/>` +
+    `<path d="M18 36L64 73L110 36" fill="none" stroke="${SLATE}" stroke-width="2.2" opacity=".24" transform="translate(.6 1.6)"/>` +
+    `<path d="${poly([[18, 35], [64, 72], [110, 35]])}" fill="url(#p-ivory)"/>` +
+    `<path d="${poly(wax)}" fill="url(#p-red)"/>` +
+    `<circle cx="64" cy="70" r="9.6" fill="none" stroke="#ffc2c9" stroke-width="1" opacity=".7"/>` +
+    orkhon('AEB', 64, 63.5, 13, IVORY, 120);
+}];
+
 ICONS['org.gnome.Characters'] = ['ivory', () =>
   `<path d="${rr(24, 18, 80, 92, 10)}" fill="#fffdf9" stroke="#d9d0bf" stroke-width="1.2"/>` +
   `<path d="M28 36H100M28 94H100" stroke="${RED}" stroke-width="1" opacity=".35" stroke-dasharray="3 3"/>` +
