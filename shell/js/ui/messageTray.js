@@ -921,6 +921,10 @@ export const MessageTray = GObject.registerClass({
         if (!notification.source.policy.showBanners && notification.urgency !== Urgency.CRITICAL)
             return;
 
+        // VATAN zamanlı odağı: bildirim listede birikir, balon çıkmaz.
+        if (Main.vatanFocus?.active && notification.urgency !== Urgency.CRITICAL)
+            return;
+
         if (this._notification === notification) {
             // If a notification that is being shown is updated, we update
             // how it is shown and extend the time until it auto-hides.

@@ -119,6 +119,3 @@ windowcontrols > button.close:backdrop > image {
   background-color: color-mix(in srgb, var(--accent-bg-color) 22%, transparent);
 }
 
-button {
-  border-radius: 8px;
-}

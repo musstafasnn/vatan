@@ -21,15 +21,18 @@ override="$home/.local/share/applications/org.gnome.Shell.desktop"
 case "${1:-status}" in
     enable)
         [ -x "$SHELL_BIN" ] || { echo "vatan-login-screen: $SHELL_BIN missing" >&2; exit 1; }
-        install -d -o "$GDM_USER" -g "$GDM_USER" "$home/.local/share/applications"
-        sed -e "s|^Exec=.*|Exec=$SHELL_BIN|" -e "s|^TryExec=.*|TryExec=$SHELL_BIN|" \
-            "$SYSTEM_DESKTOP" > "$override.tmp"
-        chown "$GDM_USER:$GDM_USER" "$override.tmp"
-        mv "$override.tmp" "$override"
+        # Hedef dizin greeter kullanıcısına ait; root orada yazarsa, ele
+        # geçirilmiş bir greeter'ın koyduğu bir sembolik bağ root'u herhangi bir
+        # sistem dosyasına yazdırabilir. Yazma işini greeter kullanıcısı yapar.
+        sed -e "s|^Exec=.*|Exec=$SHELL_BIN|" -e "s|^TryExec=.*|TryExec=$SHELL_BIN|" "$SYSTEM_DESKTOP" |
+            runuser -u "$GDM_USER" -- sh -c 'set -eu
+                mkdir -p "$(dirname "$1")"
+                cat > "$1.tmp"
+                mv -f "$1.tmp" "$1"' sh "$override"
         echo "VATAN draws the login screen after the next GDM restart or reboot."
         ;;
     disable)
-        rm -f "$override"
+        runuser -u "$GDM_USER" -- rm -f "$override"
         echo "GNOME draws the login screen after the next GDM restart or reboot."
         ;;
     status)

@@ -23,6 +23,9 @@ StartLimitBurst=3
 Slice=session.slice
 Type=notify
 ExecStart=/usr/lib/vatan-shell/bin/gnome-shell
+# Uygulama görünümü dosyaları yalnızca VATAN oturumu sürerken var olmalı; aynı
+# kullanıcı hemen GNOME'a geçerse GNOME uygulamaları onları görmesin.
+ExecStopPost=-/bin/rm -rf %t/vatan
 SuccessExitStatus=1
 Restart=always
 RestartSec=0ms

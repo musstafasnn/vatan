@@ -20,6 +20,9 @@ ConditionEnvironment=XDG_SESSION_TYPE=%I
 Slice=session.slice
 Type=notify
 ExecStart=/usr/lib/vatan-shell/bin/gnome-shell
+# Uygulama görünümü dosyaları yalnızca VATAN oturumu sürerken var olmalı; aynı
+# kullanıcı hemen GNOME'a geçerse GNOME uygulamaları onları görmesin.
+ExecStopPost=-/bin/rm -rf %t/vatan
 SuccessExitStatus=1
 ExecStopPost=-/bin/sh -c 'test "$SERVICE_RESULT" != "exec-condition" && systemctl --user unset-environment GNOME_SETUP_DISPLAY WAYLAND_DISPLAY DISPLAY XAUTHORITY'
 Restart=no

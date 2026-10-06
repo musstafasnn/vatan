@@ -38,6 +38,9 @@ jobs:
       - name: Paketi derle
         run: dpkg-buildpackage -us -uc -b
 
+      - name: Posta birim testleri
+        run: gjs -m posta/tests/test-mail-format.js
+
       - name: Paketi topla
         run: |
           mkdir -p out

@@ -575,7 +575,10 @@ export class ExtensionManager extends Signals.EventEmitter {
 
         extensions.sort((a, b) => this._compareExtensions(this.lookup(a), this.lookup(b)));
 
-        const desktopIcons = this._vatanSettings.get_boolean('desktop-icons');
+        // Çökme sonrası kabuk disable-user-extensions'ı açar; masaüstü simgeleri
+        // de bir kullanıcı eklentisi olduğundan o korumaya uyar.
+        const desktopIcons = this._vatanSettings.get_boolean('desktop-icons') &&
+            !global.settings.get_boolean(DISABLE_USER_EXTENSIONS_KEY);
         extensions = extensions.filter(item => item !== DESKTOP_ICONS_UUID);
         if (desktopIcons)
             extensions.push(DESKTOP_ICONS_UUID);

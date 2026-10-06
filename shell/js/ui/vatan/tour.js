@@ -25,7 +25,7 @@ const PAGES = [
     {
         icon: 'web-browser-symbolic',
         title: _('Gündem ve kısayollar'),
-        body: _('Masaüstündeki Gündem kartı son dakika haberlerini gösterir. Komut\'ta “e-devlet”, “mhrs”, “usb biçimlendir” gibi kısayollar da var.'),
+        body: _('Komut\'ta “e-devlet”, “mhrs”, “usb biçimlendir” gibi kısayollar var. Son dakika haberlerini masaüstüne getiren Gündem kartını VATAN Ayarları\'ndan açabilirsin.'),
     },
 ];
 
