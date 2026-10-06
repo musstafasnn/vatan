@@ -74,6 +74,7 @@ override_dh_install:
 	install -Dm644 -t $(pkgroot)/usr/share/plymouth/themes/vatan data/plymouth/vatan/*
 	install -Dm755 data/login/vatan-login-screen $(pkgroot)/usr/lib/vatan/vatan-login-screen
 	install -Dm644 -t $(pkgroot)/usr/share/vatan/style data/style/gtk-4.0.css
+	install -Dm644 -t $(pkgroot)/usr/share/vatan/templates data/templates/*
 
 # Upstream kurulumunun geri kalanı (desktop dosyaları, D-Bus servisleri, şemalar,
 # systemd birimleri) gnome-shell'in sistem için zaten sunduklarının kopyasıdır.

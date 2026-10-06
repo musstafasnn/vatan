@@ -56,6 +56,10 @@
       <default>true</default>
       <summary>Show files and folders on the desktop, with the desktop right-click menu</summary>
     </key>
+    <key name="templates-version" type="i">
+      <default>0</default>
+      <summary>Internal: the set of "New Document" templates last copied to the Templates folder</summary>
+    </key>
     <key name="tour-shown" type="b">
       <default>false</default>
       <summary>Whether the first-login tour has been shown</summary>

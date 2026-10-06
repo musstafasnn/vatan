@@ -171,6 +171,7 @@
     <file>ui/vatan/focusSchedule.js</file>
     <file>ui/vatan/komut.js</file>
     <file>ui/vatan/komutButton.js</file>
+    <file>ui/vatan/templates.js</file>
     <file>ui/vatan/mediaIsland.js</file>
     <file>ui/vatan/newsWidget.js</file>
     <file>ui/vatan/quarterTiling.js</file>

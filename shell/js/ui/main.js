@@ -34,6 +34,7 @@ import {VatanQuarterTiling} from './vatan/quarterTiling.js';
 import {VatanClipboardHistory} from './vatan/clipboardHistory.js';
 import {VatanFocusSchedule} from './vatan/focusSchedule.js';
 import {VatanAppStyle} from './vatan/appStyle.js';
+import {installTemplates} from './vatan/templates.js';
 import * as RunDialog from './runDialog.js';
 import * as WelcomeDialog from './welcomeDialog.js';
 import * as Layout from './layout.js';
@@ -274,6 +275,7 @@ async function _initializeUI() {
         vatanClipboard = new VatanClipboardHistory();
         vatanFocus = new VatanFocusSchedule();
         vatanAppStyle = new VatanAppStyle();
+        installTemplates();
     }
     keyboard = new Keyboard.KeyboardManager();
     notificationDaemon = new NotificationDaemon.NotificationDaemon();
