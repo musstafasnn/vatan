@@ -56,7 +56,11 @@ Depends: ${shlibs:Depends},
          gnome-shell (>= 48.7~),
          gnome-shell (<< 49~),
          gjs,
-         gir1.2-adw-1 (>= 1.7)
+         gir1.2-adw-1 (>= 1.7),
+         gir1.2-camel-1.2,
+         gir1.2-webkit-6.0,
+         gir1.2-goa-1.0,
+         gir1.2-secret-1
 Recommends: pardus-gnome-icon-theme,
             gnome-sushi
 Description: VATAN desktop session for Pardus

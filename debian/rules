@@ -61,6 +61,9 @@ override_dh_install:
 	install -Dm644 data/applications/vatan-nsosyal.desktop $(pkgroot)/usr/share/applications/vatan-nsosyal.desktop
 	install -Dm644 data/applications/org.vatan.Settings.desktop $(pkgroot)/usr/share/applications/org.vatan.Settings.desktop
 	install -Dm644 settings/vatan-settings.js $(pkgroot)/usr/share/vatan/settings/vatan-settings.js
+	install -Dm644 data/applications/org.vatan.Posta.desktop $(pkgroot)/usr/share/applications/org.vatan.Posta.desktop
+	install -Dm644 data/org.vatan.posta.gschema.xml $(pkgroot)/usr/share/glib-2.0/schemas/org.vatan.posta.gschema.xml
+	install -Dm644 -t $(pkgroot)/usr/share/vatan/posta posta/*.js
 	dpkg-parsechangelog -S Version > $(pkgroot)/usr/share/vatan/version
 	install -Dm644 -t $(pkgroot)/usr/share/fonts/truetype/vatan data/fonts/*.ttf
 	install -Dm644 -t $(pkgroot)/usr/share/backgrounds/vatan data/backgrounds/*.png

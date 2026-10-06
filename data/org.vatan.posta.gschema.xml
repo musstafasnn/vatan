@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<schemalist gettext-domain="vatan">
+  <schema id="org.vatan.posta" path="/org/vatan/posta/">
+    <key name="accounts" type="aa{ss}">
+      <default>[]</default>
+      <summary>Mail accounts added in VATAN Posta</summary>
+      <description>Display name, address, and the IMAP and SMTP server, port, security and user name of each account added by hand. Passwords are never stored here; they live in the keyring under the libsecret schema org.vatan.Posta.Password.</description>
+    </key>
+    <key name="trusted-certificates" type="as">
+      <default>[]</default>
+      <summary>Server certificates the user chose to trust</summary>
+      <description>"host:port SHA-256-fingerprint" entries for servers whose certificate could not be verified and that the user accepted after seeing the fingerprint.</description>
+    </key>
+    <key name="refresh-minutes" type="u">
+      <range min="2" max="60"/>
+      <default>5</default>
+      <summary>Minutes between checks for new mail</summary>
+      <description>Each check refreshes the inbox of every account and the open folder.</description>
+    </key>
+  </schema>
+</schemalist>

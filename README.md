@@ -17,6 +17,7 @@ Pardus 25 için masaüstü oturumu. Üst bar yerine ekranın altında tek bir ad
 - **Gündem** — masaüstünde, pencerelerin altında TRT Haber son dakika başlıkları; tıklayınca haber tarayıcıda açılır. Komut'ta `gündem` yazarak kaldırılır ya da geri getirilir. Kaynak `org.vatan.shell news-feed` ayarıyla değişir (yalnızca https).
 - **NSosyal** — dock'ta ve Komut'ta tek tıkla NSosyal.
 - **VATAN Ayarları** — biçem, vurgu rengi, VATAN simgeleri, kabartma duvar kağıdı, Gündem kaynağı, döviz kuru isteği ve tanıtım turu tek yerde; sistem ayarlarına da buradan geçilir.
+- **VATAN Posta** — IMAP/SMTP posta uygulaması: hesap ve klasörler, ileti listesi ve okuma bölmesi yan yana; dar pencerede tek bölme. Yanıtla, tümünü yanıtla, ilet, ek gönder ve kaydet, klasörde konu/gönderen/gövde araması, çöpe taşıyıp geri alma. HTML iletilerde betik çalışmaz, uzak görseller sen izin verene kadar yüklenmez. Parola GNOME anahtarlığında durur; doğrulanamayan sunucu sertifikası parmak iziyle sorulur, kendiliğinden kabul edilmez. Kısayollar: `Ctrl+N` yeni, `Ctrl+R` yanıtla, `Ctrl+Shift+R` tümünü yanıtla, `Ctrl+L` ilet, `Delete` sil, `Ctrl+F` ara, `F5` yenile.
 - **Pencere yerleşimi** — pencereyi ekran kenarına sürükle: yarım ekran; köşeye: çeyrek ekran. Yarım ekrandaki pencerede `Super+↑`/`Super+↓` üst/alt çeyreğe alır.
 - **Hızlı Bakış** — Dosyalar'da bir dosyayı seçip boşluk tuşuna bas.
 - **Pano geçmişi** — Komut'a `pano` yaz; son kopyaladıkların çıkar (yalnızca bellekte tutulur, parola yöneticilerinin gizli kopyaları alınmaz).
@@ -77,6 +78,7 @@ sudo apt remove vatan
 - Gündem kartı açıkken TRT Haber'e 15 dakikada bir istek gider; kapatınca hiç istek gitmez.
 - NSosyal'ın herkese açık bir API'si olmadığı için kart NSosyal paylaşımlarını gösteremiyor; kısayol NSosyal'ı tarayıcıda açar.
 - Ayarlar GNOME oturumuyla ortaktır (dconf). VATAN'ın varsayılanları (vurgu rengi, yazı tipi, duvar kağıdı, sık kullanılanlar) yalnızca senin hiç değiştirmediğin anahtarlarda geçerlidir; birinde değiştirdiğin ayar ötekinde de değişir.
+- VATAN Posta yalnızca SSL/TLS ya da STARTTLS ile ve parolayla bağlanır. Gmail/Outlook gibi tarayıcı oturumuyla (OAuth) bağlanan Çevrimiçi Hesaplar hesapları listede görünür ama henüz açılmaz. Yeni posta 5 dakikada bir denetlenir (`org.vatan.posta refresh-minutes`, en az 2).
 - Kabuk gnome-shell 48.7'nin çatalıdır: gnome-shell'e gelen güvenlik düzeltmeleri VATAN'a ancak yeni bir VATAN sürümüyle ulaşır.
 - 0.1 Wayland oturumunda denendi. X11 oturumu ("VATAN (Xorg)") de kuruluyor ama daha az denendi.
 

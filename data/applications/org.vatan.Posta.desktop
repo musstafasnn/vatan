@@ -1,0 +1,13 @@
+[Desktop Entry]
+Type=Application
+Name=VATAN Mail
+Name[tr]=VATAN Posta
+Comment=Read and send email
+Comment[tr]=E-posta oku ve gönder
+Exec=gjs -m /usr/share/vatan/posta/vatan-posta.js
+Icon=mail-send-receive
+Categories=Network;Email;
+Keywords=posta;eposta;e-posta;mail;email;imap;
+StartupNotify=true
+DBusActivatable=false
+OnlyShowIn=VATAN;
