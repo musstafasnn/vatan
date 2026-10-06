@@ -16,6 +16,16 @@ function test(name, fn) {
     }
 }
 
+async function testAsync(name, fn) {
+    try {
+        await fn();
+        print(`ok   ${name}`);
+    } catch (e) {
+        failures++;
+        print(`FAIL ${name}\n     ${e.message}`);
+    }
+}
+
 function eq(actual, expected) {
     const a = JSON.stringify(actual);
     const b = JSON.stringify(expected);
@@ -199,6 +209,36 @@ test('boyut biçimi', () => {
     eq(F.formatSize(512), '512 B');
     eq(F.formatSize(2048), '2 KB');
     eq(F.formatSize(1572864), '1,5 MB');
+});
+
+await testAsync('LatestOnly: yeni iş öncekini iptal eder, işler üst üste binmez', async () => {
+    const makeToken = () => ({cancelled: false, cancel() { this.cancelled = true; }, is_cancelled() { return this.cancelled; }});
+    const q = new F.LatestOnly(makeToken);
+    let running = 0, maxRunning = 0;
+    const started = [];
+    const task = name => async token => {
+        started.push(name);
+        running++;
+        maxRunning = Math.max(maxRunning, running);
+        await new Promise(r => GLib.timeout_add(GLib.PRIORITY_DEFAULT, 20, () => { r(); return GLib.SOURCE_REMOVE; }));
+        running--;
+        return token.is_cancelled() ? 'iptal' : name;
+    };
+    const a = q.run(task('a'));
+    const b = q.run(task('b'));
+    const c = q.run(task('c'));
+    eq([await a, await b, await c], [null, null, 'c']);
+    eq(started, ['c']);
+    eq(maxRunning, 1);
+    const d = q.run(task('d'));
+    await new Promise(r => GLib.idle_add(GLib.PRIORITY_DEFAULT, () => { r(); return GLib.SOURCE_REMOVE; }));
+    const e = q.run(task('e'));
+    eq([await d, await e], ['iptal', 'e']);
+    eq(maxRunning, 1);
+    let failed = false;
+    try { await q.run(async () => { throw new Error('x'); }); } catch { failed = true; }
+    eq(failed, true);
+    eq(await q.run(async () => 'sonra'), 'sonra');
 });
 
 if (failures > 0) {

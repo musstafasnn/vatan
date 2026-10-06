@@ -18,7 +18,7 @@ import Gio from 'gi://Gio';
 import GLib from 'gi://GLib';
 import GObject from 'gi://GObject';
 
-import {parseAddressList, sanitizeFilename} from './mail-format.js';
+import {LatestOnly, parseAddressList, sanitizeFilename} from './mail-format.js';
 import {AuthError, CertificateError, camelFingerprint, listMailboxes, searchText, verifyLogin} from './wire.js';
 
 for (const [klass, method] of [
@@ -350,7 +350,8 @@ export class MailEngine {
         });
         const transport = this._session.add_service(`${uid}-smtp`, 'smtp', Camel.ProviderType.TRANSPORT);
         configureService(transport, account.smtp);
-        entry = {account, store, transport, online: false, folders: [], credentials: null};
+        entry = {account, store, transport, online: false, folders: [], credentials: null,
+            search: new LatestOnly(() => new Gio.Cancellable())};
         this._entries.set(account.id, entry);
         return entry;
     }
@@ -563,12 +564,22 @@ export class MailEngine {
         return {permanent: false, moved, trashName: trash.fullName};
     }
 
+    // Her arama ayrı bir TLS girişi açar; hesap başına tek arama sürer ve yeni
+    // arama öncekini iptal eder. İptal edilen arama null döner.
     async search(account, folder, query) {
         const entry = this._entry(account);
         if (!entry.online)
             return null;
-        return withTimeout(OPERATION_TIMEOUT_MS, c => searchText({protocol: 'imap', ...account.imap},
-            entry.credentials.imap, this._pinsFor(account), folder.get_full_name(), query, c));
+        return entry.search.run(token => withTimeout(OPERATION_TIMEOUT_MS, c => {
+            const id = token.connect(() => c.cancel());
+            return searchText({protocol: 'imap', ...account.imap}, entry.credentials.imap,
+                this._pinsFor(account), folder.get_full_name(), query, c)
+                .finally(() => token.disconnect(id));
+        }));
+    }
+
+    cancelSearch(account) {
+        this._entries.get(account.id)?.search.cancel();
     }
 
     async verifySmtp(account) {
@@ -590,7 +601,14 @@ export class MailEngine {
         } catch (e) {
             console.warn(`posta: closing SMTP connection: ${e.message}`);
         }
-        await this._saveSent(account, message);
+        // İleti bu noktada gitmiş durumda; kopyanın kaydedilememesi gönderimi
+        // başarısız saymamalı, yoksa kullanıcı yeniden gönderip kopya yollar.
+        try {
+            return await this._saveSent(account, message);
+        } catch (e) {
+            console.warn(`posta: saving sent copy for ${account.address}: ${e.message}`);
+            return false;
+        }
     }
 
     async _saveSent(account, message) {

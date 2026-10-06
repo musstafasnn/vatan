@@ -18,6 +18,7 @@ import {MessageView} from './reader.js';
 
 const SECONDS_PER_MINUTE = 60;
 const MIN_SERVER_QUERY = 2;
+const SERVER_SEARCH_DELAY_MS = 400;
 const UNDO_TIMEOUT_S = 10;
 const ROLE_ICONS = {
     inbox: 'mail-inbox-symbolic',
@@ -81,7 +82,16 @@ class PostaWindow extends Adw.ApplicationWindow {
 
         this._installActions();
         this._scheduleRefresh();
-        this._settings.connect('changed::refresh-minutes', () => this._scheduleRefresh());
+        const refreshHandler = this._settings.connect('changed::refresh-minutes', () => this._scheduleRefresh());
+        // Zamanlayıcı ve ayar bağlantısı pencereden uzun yaşar; kaldırılmazsa
+        // kapanmış pencere yenilemeye ve zamanlayıcıyı yeniden kurmaya devam eder.
+        this.connect('destroy', () => {
+            this._settings.disconnect(refreshHandler);
+            if (this._refreshSource)
+                GLib.source_remove(this._refreshSource);
+            this._refreshSource = 0;
+            this._cancelServerSearch();
+        });
         this._loadAccounts().catch(e => logError('loading accounts', e));
     }
 
@@ -172,7 +182,7 @@ class PostaWindow extends Adw.ApplicationWindow {
         this._listStack.visible_child_name = 'none';
 
         this._searchEntry = new Gtk.SearchEntry({placeholder_text: 'Konu, gönderen ya da gövdede ara', hexpand: true});
-        this._searchEntry.connect('search-changed', () => this._onSearch().catch(e => logError('search', e)));
+        this._searchEntry.connect('search-changed', () => this._onSearch());
         this._searchBar = new Gtk.SearchBar({child: this._searchEntry, show_close_button: false});
         this._searchBar.connect_entry(this._searchEntry);
 
@@ -524,7 +534,17 @@ class PostaWindow extends Adw.ApplicationWindow {
             this._listStack.visible_child_name = this._query ? 'nomatch' : 'empty';
     }
 
+    _cancelServerSearch() {
+        if (this._searchSource) {
+            GLib.source_remove(this._searchSource);
+            this._searchSource = 0;
+        }
+        if (this._current)
+            this._engine.cancelSearch(this._current.account);
+    }
+
     _resetSearch() {
+        this._cancelServerSearch();
         this._query = '';
         this._serverHits = new Set();
         if (this._searchEntry.text)
@@ -533,14 +553,25 @@ class PostaWindow extends Adw.ApplicationWindow {
         this._filter.changed(Gtk.FilterChange.LESS_STRICT);
     }
 
-    async _onSearch() {
+    _onSearch() {
         const query = this._searchEntry.text.trim();
+        this._cancelServerSearch();
         this._query = query;
         this._serverHits = new Set();
         this._filter.changed(Gtk.FilterChange.DIFFERENT);
         this._updateListState();
         if (query.length < MIN_SERVER_QUERY || !this._current?.folder)
             return;
+        // Gövde araması her seferinde yeni bir TLS girişi açar; yazma
+        // bitmeden sunucuya gidilirse sağlayıcı hesabı kilitleyebilir.
+        this._searchSource = GLib.timeout_add(GLib.PRIORITY_DEFAULT, SERVER_SEARCH_DELAY_MS, () => {
+            this._searchSource = 0;
+            this._searchServer(query).catch(e => logError('search', e));
+            return GLib.SOURCE_REMOVE;
+        });
+    }
+
+    async _searchServer(query) {
         const {account, folder} = this._current;
         try {
             const uids = await this._engine.search(account, folder, query);
@@ -729,8 +760,10 @@ class PostaWindow extends Adw.ApplicationWindow {
     }
 
     async _send(account, message, recipients, composer) {
-        await this._withTrust(account, 'smtp', () => this._engine.send(account, message, recipients), composer);
+        const copySaved = await this._withTrust(account, 'smtp', () => this._engine.send(account, message, recipients), composer);
         this.toast('İleti gönderildi');
+        if (!copySaved)
+            this.toast('İleti gönderildi ama Gönderilenler klasörüne kaydedilemedi', {timeout: 0});
     }
 
     async _submitAccount(account, password, dialog) {
@@ -773,10 +806,10 @@ class PostaWindow extends Adw.ApplicationWindow {
         const {account, info} = this._current;
         await this._openAccount(account);
         const entry = this._folderRows.get(folderKey(account, info.fullName));
-        if (entry) {
-            this._current = null;
-            this._sidebarList.select_row(entry.row);
-        }
+        // Satır zaten seçili olduğundan select_row row-selected yaymaz; klasör
+        // durumu (_current, liste, çevrimdışı bandı) bu yüzden doğrudan kurulur.
+        if (entry)
+            await this._selectFolder(account, entry.folder);
     }
 
     _scheduleRefresh() {

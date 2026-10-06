@@ -308,3 +308,35 @@ export function imapQuote(text) {
         throw new Error('IMAP quoted string cannot contain CR, LF or NUL');
     return `"${text.replace(/(["\\])/g, '\\$1')}"`;
 }
+
+// Arama gibi "yalnızca sonuncusu geçerli" işler için: yeni iş öncekini iptal
+// eder ve önceki iş (iptal edilmiş olsa bile) bitmeden başlamaz; böylece
+// sunucuya aynı anda en fazla bir oturum açılır. İptal edilen işin sonucu
+// null'dır, hata sayılmaz.
+export class LatestOnly {
+    constructor(makeToken) {
+        this._makeToken = makeToken;
+        this._token = null;
+        this._tail = Promise.resolve();
+    }
+
+    cancel() {
+        this._token?.cancel();
+    }
+
+    run(task) {
+        this.cancel();
+        const token = this._makeToken();
+        this._token = token;
+        const result = this._tail
+            .then(() => token.is_cancelled() ? null : task(token))
+            .catch(e => {
+                if (token.is_cancelled())
+                    return null;
+                throw e;
+            });
+        // Hata run()'ı çağırana gider; kuyruğun kendisi sonraki işe taşımasın.
+        this._tail = result.then(() => {}, () => {});
+        return result;
+    }
+}

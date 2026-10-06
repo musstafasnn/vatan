@@ -11,13 +11,15 @@ import {dateTimeFromUnix, displayName, formatAddress, formatFullDate, formatSize
 
 Gio._promisify(Gtk.FileDialog.prototype, 'save', 'save_finish');
 Gio._promisify(Gtk.UriLauncher.prototype, 'launch', 'launch_finish');
+Gio._promisify(WebKit.WebsiteDataManager.prototype, 'clear', 'clear_finish');
 
 const EXTERNAL_SCHEMES = ['http', 'https', 'mailto'];
 
 // Uzak içeriğin bir kısmı CSP'nin kapsamadığı yollardan da gelebilir (DNS ön
-// çözümleme); bu ayarlardan ayrıca kapatılır. Çerezler
-// ve önbellek her iletide sıfırdan başlasın diye oturum geçicidir.
-function createWebView() {
+// çözümleme); bu ayarlardan ayrıca kapatılır. Oturum geçicidir (diske yazılmaz);
+// oturum bütün iletilerce paylaşıldığından çerez ve önbellek ileti değişince
+// MessageView.show içinde silinir.
+function createWebView(networkSession) {
     const settings = new WebKit.Settings({
         enable_javascript: false,
         enable_javascript_markup: false,
@@ -32,7 +34,7 @@ function createWebView() {
     });
     const view = new WebKit.WebView({
         settings,
-        network_session: WebKit.NetworkSession.new_ephemeral(),
+        network_session: networkSession,
         vexpand: true,
         hexpand: true,
     });
@@ -91,7 +93,7 @@ class MessageView extends Gtk.Box {
             margin_top: 18, margin_bottom: 12, margin_start: 18, margin_end: 18,
         });
         this._remote = new Adw.Banner({title: 'Uzak görseller engellendi', button_label: 'Görselleri göster'});
-        this._remote.connect('button-clicked', () => this._showHtml(true));
+        this._remote.connect('button-clicked', () => this._showHtml(true).catch(e => console.warn(`posta: showing images: ${e.message}`)));
         this._attachments = new Gtk.FlowBox({
             selection_mode: Gtk.SelectionMode.NONE, max_children_per_line: 4, halign: Gtk.Align.START,
             margin_start: 12, margin_end: 12, margin_bottom: 6,
@@ -100,7 +102,9 @@ class MessageView extends Gtk.Box {
             editable: false, cursor_visible: false, wrap_mode: Gtk.WrapMode.WORD_CHAR,
             top_margin: 12, bottom_margin: 18, left_margin: 18, right_margin: 18,
         });
-        this._web = createWebView();
+        this._networkSession = WebKit.NetworkSession.new_ephemeral();
+        this._htmlToken = 0;
+        this._web = createWebView(this._networkSession);
         this._body = new Gtk.Stack();
         this._body.add_named(new Gtk.ScrolledWindow({child: this._text, vexpand: true}), 'text');
         this._body.add_named(this._web, 'html');
@@ -116,6 +120,7 @@ class MessageView extends Gtk.Box {
     }
 
     clear() {
+        this._htmlToken++;
         this._stack.visible_child_name = 'empty';
         this._parsed = null;
     }
@@ -129,8 +134,9 @@ class MessageView extends Gtk.Box {
         this._renderHeader(parsed);
         this._renderAttachments(parsed.attachments);
         if (parsed.html !== null) {
-            this._showHtml(false);
+            this._showHtml(false, true).catch(e => console.warn(`posta: showing message: ${e.message}`));
         } else {
+            this._htmlToken++;
             this._remote.revealed = false;
             this._text.buffer.text = parsed.text ?? '';
             this._body.visible_child_name = 'text';
@@ -138,11 +144,25 @@ class MessageView extends Gtk.Box {
         this._stack.visible_child_name = 'message';
     }
 
-    _showHtml(allowRemote) {
+    async _showHtml(allowRemote, newMessage = false) {
+        const token = ++this._htmlToken;
         const html = this._parsed.html;
         this._remote.revealed = !allowRemote && hasRemoteContent(html);
-        this._web.load_html(prepareHtml(html, allowRemote), 'about:blank');
         this._body.visible_child_name = 'html';
+        if (newMessage) {
+            // Önceki iletide "Görselleri göster" ile gelen izleyici çerezi bu
+            // iletiye taşınmasın. Silme başarısız olsa da ilk gösterim uzak
+            // içeriği CSP ile engelliyor, o yüzden yalnızca uyarılır.
+            try {
+                await this._networkSession.get_website_data_manager()
+                    .clear(WebKit.WebsiteDataTypes.ALL, 0, null);
+            } catch (e) {
+                console.warn(`posta: clearing web data: ${e.message}`);
+            }
+            if (token !== this._htmlToken)
+                return;
+        }
+        this._web.load_html(prepareHtml(html, allowRemote), 'about:blank');
     }
 
     _renderHeader(parsed) {
