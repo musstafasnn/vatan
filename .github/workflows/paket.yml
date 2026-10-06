@@ -92,7 +92,10 @@ jobs:
         run: |
           cd dist
           sha256sum *.deb > SHA256SUMS
-          gh release create "$GITHUB_REF_NAME" ./*.deb SHA256SUMS \
+          # 0.x sürümleri gerçek donanımda henüz yaygın denenmedi; ön sürüm olarak çıkar.
+          prerelease=""
+          case "$GITHUB_REF_NAME" in v0.*) prerelease="--prerelease" ;; esac
+          gh release create "$GITHUB_REF_NAME" ./*.deb SHA256SUMS $prerelease \
             --repo "$GITHUB_REPOSITORY" \
             --title "VATAN ${GITHUB_REF_NAME#v}" \
             --notes-file ../docs/surum-notlari/"$GITHUB_REF_NAME".md
