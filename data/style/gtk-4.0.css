@@ -69,9 +69,9 @@ window.csd:backdrop {
 }
 
 /* Pencere düğmeleri gri daireler değil, küçük dolu noktalar; kapat VATAN
- * kırmızısı. Simge, sıfır boyutla gizlenir ve yalnızca üzerine gelince
- * görünür; arka plan libadwaita'daki gibi yazı renginden türediği için yazı
- * rengi şeffaf yapılamaz. */
+ * kırmızısı. Simge yalnızca üzerine gelince görünür. Arka plan libadwaita'daki
+ * gibi yazı renginden türediği için yazı rengi şeffaf yapılamaz; simge boyutu
+ * sıfırlanırsa da GTK her pencerede uyarı basar, bu yüzden simge süzgeçle gizlenir. */
 windowcontrols > button {
   min-width: 14px;
   min-height: 14px;
@@ -85,13 +85,14 @@ windowcontrols > button > image {
   min-height: 14px;
   padding: 0;
   border-radius: 999px;
-  -gtk-icon-size: 0px;
+  -gtk-icon-size: 10px;
+  -gtk-icon-filter: opacity(0);
   background-color: color-mix(in srgb, currentColor 24%, transparent);
   transition: background-color 150ms ease-out;
 }
 
 windowcontrols > button:hover > image {
-  -gtk-icon-size: 10px;
+  -gtk-icon-filter: opacity(0.85);
   background-color: color-mix(in srgb, currentColor 34%, transparent);
 }
 
