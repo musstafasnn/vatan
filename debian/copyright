@@ -24,9 +24,10 @@ Files: data/fonts/InstrumentSerif-*
 Copyright: 2022 The Instrument Serif Project Authors (https://github.com/Instrument/instrument-serif)
 License: OFL-1.1
 
-Files: tools/wallpaper/generate.mjs data/backgrounds/*
+Files: tools/wallpaper/* data/backgrounds/*
 Copyright: 2026 Mustafa <musstafasnn@gmail.com>
-Comment: The outline of Turkey is from Natural Earth 1:50m (public domain).
+Comment: The outline of Turkey is from Natural Earth 1:50m and the Aegean and
+ Black Sea coasts from Natural Earth 1:10m (both public domain).
 License: GPL-2+
 
 Files: tools/icons/recolor.mjs
