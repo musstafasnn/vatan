@@ -51,8 +51,11 @@ jobs:
       - name: Kabuğu ekransız çalıştır
         run: |
           apt-get install -y --no-install-recommends ./out/vatan_*.deb dbus
-          # Konteynerde systemd yok ama /run/systemd/seats var; kabuk logind'i
-          # sistem veriyolunda arar, veriyolu yoksa açılışta düşer.
+          # Konteynerde systemd ve logind yok, ama systemd paketi
+          # /run/systemd/seats'i bırakıyor; kabuk bu klasörü görünce logind'i
+          # arıyor ve açılışta düşüyor. Klasör kalkınca kabuk logind'siz
+          # sistemler için olan kendi yoluna geçer.
+          rm -rf /run/systemd/seats
           mkdir -p /run/dbus
           dbus-daemon --system --fork
           useradd -m deneme
