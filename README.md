@@ -4,9 +4,13 @@ Pardus 25 için masaüstü oturumu. Üst bar yerine ekranın altında tek bir ad
 
 ![VATAN masaüstü](docs/ekran/masaustu.png)
 
-| Komut | Karanlık tema | Kilit ekranı |
+| Komut | Canlı Ada | Uygulamalar |
 |---|---|---|
-| ![Komut](docs/ekran/komut.png) | ![Karanlık](docs/ekran/karanlik.png) | ![Kilit](docs/ekran/kilit.png) |
+| ![Komut](docs/ekran/komut.png) | ![Canlı Ada](docs/ekran/canli-ada.png) | ![Uygulamalar](docs/ekran/uygulamalar.png) |
+
+| VATAN Ayarları | Sağ tık: Yeni Belge | Kilit ekranı |
+|---|---|---|
+| ![VATAN Ayarları](docs/ekran/ayarlar.png) | ![Yeni Belge](docs/ekran/yeni-belge.png) | ![Kilit](docs/ekran/kilit.png) |
 
 - **Komut** — `Super` ile açılır. Uygulama, dosya, ayar ve hesap makinesi sonuçlarının yanında Türkçe eylemleri anlar: `karanlık`, `odak`, `gece ışığı`, `parlaklık 40`, `ses 30`, `yan yana diz`, `kilitle`.
   - Kur ve birim: `100 dolar`, `1.000 tl euro` (TCMB döviz satış kuru), `5 km kaç mil`, `100 f c`. Enter sonucu kopyalar.
