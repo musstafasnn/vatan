@@ -22,6 +22,29 @@ const EXTENSION_DISABLE_VERSION_CHECK_KEY = 'disable-extension-version-validatio
 
 const UPDATE_CHECK_TIMEOUT = 24 * 60 * 60; // 1 day in seconds
 
+// Bunlar VATAN'ın adayla değiştirdiği paneli, dock'u ya da overview'u yeniden
+// kurar; üstüne yüklenirlerse ikisini de yarım çizilmiş bırakırlar. Pardus
+// bunlardan birkaçını kullanıcının kendi ayarlarında etkinleştirir; şema
+// varsayılanı bunu geçersiz kılamaz, bu yüzden burada atlanırlar.
+const VATAN_INCOMPATIBLE_EXTENSIONS = new Set([
+    'arcmenu@arcmenu.com',
+    'blur-my-shell@aunetx',
+    'dash-to-dock@micxgx.gmail.com',
+    'dash-to-panel@jderose9.github.com',
+    // GTK 3 vurgu rengini VATAN uygulama görünümü yazar; bu eklenti aynı
+    // gtk.css dosyasını baştan yazıp görünümün içe aktarma satırını siler.
+    'gtk3-accent-sync@pardus.org.tr',
+    'date-menu-formatter@marcinjakubowski.github.com',
+    'just-perfection-desktop@just-perfection',
+    'start-overlay-in-application-view@Hex_cz',
+    'ubuntu-dock@ubuntu.com',
+]);
+
+// Masaüstü simgeleri (ve Windows'taki gibi sağ tık menüsü) VATAN Ayarları'ndaki
+// "desktop-icons" anahtarına uyar: açıkken kullanıcının listesinde olmasa da
+// yüklenir, kapalıyken listede olsa da yüklenmez.
+const DESKTOP_ICONS_UUID = 'ding@rastersoft.com';
+
 function stateToString(state) {
     return Object.keys(ExtensionState).find(k => ExtensionState[k] === state);
 }
@@ -31,6 +54,7 @@ export class ExtensionManager extends Signals.EventEmitter {
         super();
 
         this._initializationPromise = null;
+        this._vatanSettings = new Gio.Settings({schema_id: 'org.vatan.shell'});
         this._updateNotified = false;
         this._updateInProgress = false;
         this._updatedUUIDS = [];
@@ -551,9 +575,18 @@ export class ExtensionManager extends Signals.EventEmitter {
 
         extensions.sort((a, b) => this._compareExtensions(this.lookup(a), this.lookup(b)));
 
+        // Çökme sonrası kabuk disable-user-extensions'ı açar; masaüstü simgeleri
+        // de bir kullanıcı eklentisi olduğundan o korumaya uyar.
+        const desktopIcons = this._vatanSettings.get_boolean('desktop-icons') &&
+            !global.settings.get_boolean(DISABLE_USER_EXTENSIONS_KEY);
+        extensions = extensions.filter(item => item !== DESKTOP_ICONS_UUID);
+        if (desktopIcons)
+            extensions.push(DESKTOP_ICONS_UUID);
+
         // filter out 'disabled-extensions' which takes precedence
         let disabledExtensions = global.settings.get_strv(DISABLED_EXTENSIONS_KEY);
-        return extensions.filter(item => !disabledExtensions.includes(item));
+        return extensions.filter(item =>
+            !disabledExtensions.includes(item) && !VATAN_INCOMPATIBLE_EXTENSIONS.has(item));
     }
 
     async _onUserExtensionsEnabledChanged() {
@@ -686,6 +719,9 @@ export class ExtensionManager extends Signals.EventEmitter {
     }
 
     async _loadExtensions() {
+        this._vatanSettings.connect('changed::desktop-icons', () => {
+            this._onEnabledExtensionsChanged();
+        });
         global.settings.connect(`changed::${ENABLED_EXTENSIONS_KEY}`, () => {
             this._onEnabledExtensionsChanged();
         });

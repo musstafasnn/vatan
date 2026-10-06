@@ -1,0 +1,121 @@
+/* VATAN uygulama görünümü (GTK 4 / libadwaita).
+ *
+ * libadwaita renkleri ve köşeleri CSS değişkenleriyle verir; burada yalnızca
+ * değişkenler ve birkaç kural ezilir, uygulamanın kendi düzenine dokunulmaz.
+ * Dosyayı kabuk her VATAN girişinde çalışma dizinine bağlar; GNOME oturumunda
+ * o bağ olmadığı için GNOME uygulamaları kendi görünümünde kalır. */
+
+:root {
+  --window-radius: 12px;
+  --border-opacity: 9%;
+}
+
+@media (prefers-color-scheme: light) {
+  :root {
+    --window-bg-color: #f6f7f9;
+    --view-bg-color: #ffffff;
+    --headerbar-bg-color: #f6f7f9;
+    --headerbar-backdrop-color: #f6f7f9;
+    --headerbar-shade-color: rgb(20 24 31 / 7%);
+    --sidebar-bg-color: #eceef2;
+    --sidebar-backdrop-color: #eceef2;
+    --sidebar-shade-color: rgb(20 24 31 / 6%);
+    --card-bg-color: #ffffff;
+    --popover-bg-color: #ffffff;
+    --dialog-bg-color: #f6f7f9;
+    --window-fg-color: #14181f;
+    --view-fg-color: #14181f;
+    --headerbar-fg-color: #14181f;
+    --sidebar-fg-color: #14181f;
+  }
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --window-bg-color: #16191e;
+    --view-bg-color: #111317;
+    --headerbar-bg-color: #1b1f25;
+    --headerbar-backdrop-color: #16191e;
+    --headerbar-shade-color: rgb(0 0 0 / 35%);
+    --sidebar-bg-color: #14171c;
+    --sidebar-backdrop-color: #14171c;
+    --sidebar-shade-color: rgb(0 0 0 / 30%);
+    --card-bg-color: #1b1e24;
+    --popover-bg-color: #20242b;
+    --dialog-bg-color: #1b1f25;
+    --window-fg-color: #eceef1;
+    --view-fg-color: #eceef1;
+    --headerbar-fg-color: #eceef1;
+    --sidebar-fg-color: #eceef1;
+  }
+
+  /* Adanın üst kenarı gibi: başlık çubuğu ışığı yukarıdan alır. */
+  headerbar {
+    box-shadow: inset 0 1px rgb(255 255 255 / 6%), inset 0 -1px var(--headerbar-shade-color);
+  }
+}
+
+/* macOS ölçüsünde, geniş ve yumuşak gölge: pencere masaüstünden ayrışır. */
+window.csd {
+  box-shadow: 0 0 0 1px rgb(0 0 0 / 12%),
+              0 12px 28px rgb(0 0 0 / 22%),
+              0 28px 64px rgb(0 0 0 / 18%);
+}
+
+window.csd:backdrop {
+  box-shadow: 0 0 0 1px rgb(0 0 0 / 10%),
+              0 6px 16px rgb(0 0 0 / 14%),
+              0 18px 40px rgb(0 0 0 / 10%);
+}
+
+/* Pencere düğmeleri gri daireler değil, küçük dolu noktalar; kapat VATAN
+ * kırmızısı. Simge yalnızca üzerine gelince görünür. Arka plan libadwaita'daki
+ * gibi yazı renginden türediği için yazı rengi şeffaf yapılamaz; simge boyutu
+ * sıfırlanırsa da GTK her pencerede uyarı basar, bu yüzden simge süzgeçle gizlenir. */
+windowcontrols > button {
+  min-width: 14px;
+  min-height: 14px;
+  margin: 0 3px;
+  padding: 0;
+  border-radius: 999px;
+}
+
+windowcontrols > button > image {
+  min-width: 14px;
+  min-height: 14px;
+  padding: 0;
+  border-radius: 999px;
+  -gtk-icon-size: 10px;
+  -gtk-icon-filter: opacity(0);
+  background-color: color-mix(in srgb, currentColor 24%, transparent);
+  transition: background-color 150ms ease-out;
+}
+
+windowcontrols > button:hover > image {
+  -gtk-icon-filter: opacity(0.85);
+  background-color: color-mix(in srgb, currentColor 34%, transparent);
+}
+
+windowcontrols > button.close > image {
+  color: white;
+  background-color: #e62d42;
+}
+
+windowcontrols > button:backdrop > image {
+  background-color: color-mix(in srgb, currentColor 12%, transparent);
+}
+
+windowcontrols > button.close:backdrop > image {
+  background-color: color-mix(in srgb, #e62d42 45%, transparent);
+}
+
+/* Kenar çubuğunda seçili satır vurgu renginin açık tonu, ada menüleri gibi. */
+.navigation-sidebar > row:selected {
+  background-color: color-mix(in srgb, var(--accent-bg-color) 16%, transparent);
+  color: var(--window-fg-color);
+}
+
+.navigation-sidebar > row:selected:hover {
+  background-color: color-mix(in srgb, var(--accent-bg-color) 22%, transparent);
+}
+

@@ -1,0 +1,9 @@
+[Unit]
+Description=VATAN Shell
+DefaultDependencies=no
+
+Requisite=gnome-session-initialized.target
+PartOf=gnome-session-initialized.target
+Before=gnome-session-initialized.target
+
+Wants=org.vatan.Shell@wayland.service org.vatan.Shell@x11.service

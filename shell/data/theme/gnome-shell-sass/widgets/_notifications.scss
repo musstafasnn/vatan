@@ -1,7 +1,7 @@
 /* Notifications & Message Tray */
 
 $notification_banner_height: 64px;
-$notification_banner_width: 34em;
+$notification_banner_width: 400px;
 
 // Banner notifications
 .notification-banner {
@@ -9,7 +9,9 @@ $notification_banner_width: 34em;
   width: $notification_banner_width;
   box-shadow: 0 2px 4px 2px $shadow_color;
   border-radius: $modal_radius;
+  border: 1px solid $borders_color;
   margin: $base_margin;
+  margin-bottom: 10px;
 
   @if $contrast == 'high' {
     @include draw_hc_inset();

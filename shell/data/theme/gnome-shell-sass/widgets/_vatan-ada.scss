@@ -1,0 +1,408 @@
+/* Ada */
+// Üst çubuğun yerini alan alt ada. _panel.scss'ten sonra import edilir, böylece
+// bu kurallar upstream üst çubuk stilinin önüne geçer.
+
+$ada_radius: 22px;
+$ada_control_radius: 12px;
+$ada_screen_gap: 14px;
+// Büyütülmüş pencerelerle ada arasındaki boşluk; panel kutusunun parçası olduğu
+// için alt strut'a dahildir.
+$ada_window_gap: 10px;
+$ada_shadow_color: if($variant == 'light', rgba(20, 24, 31, .3), rgba(0, 0, 0, .75));
+// Yüzeyler duvar kâğıdındaki kabartma gibi yukarıdan aydınlatılır: daha açık bir
+// üst kenar ve yukarıdan aşağıya sönümlenme, düz bir şerit yerine bir plaka
+// gibi okunur.
+$ada_surface_top: if($variant == 'light', #ffffff, #252a33);
+$ada_surface_bottom: if($variant == 'light', #eef0f3, #15181d);
+$ada_edge_color: if($variant == 'light', rgba(20, 24, 31, .1), rgba(255, 255, 255, .06));
+$ada_lit_edge_color: if($variant == 'light', #ffffff, rgba(255, 255, 255, .16));
+
+@mixin ada_surface() {
+  border: 1px solid $ada_edge_color;
+  border-top-color: $ada_lit_edge_color;
+  background-gradient-direction: vertical;
+  background-gradient-start: $ada_surface_top;
+  background-gradient-end: $ada_surface_bottom;
+  // 32px üzerindeki bir blur, 2x ölçekte bulanıklaşmamış bir dikdörtgen olarak çizildi.
+  box-shadow: 0 16px 32px -10px $ada_shadow_color;
+}
+
+#panelBox {
+  background-color: transparent;
+}
+
+#panel {
+  height: 52px;
+  padding: 7px;
+  margin-top: $ada_window_gap;
+  margin-bottom: $ada_screen_gap;
+  border-radius: $ada_radius;
+  @include ada_surface();
+  font-weight: normal;
+
+  .panel-button {
+    border-radius: $ada_control_radius;
+    font-weight: normal;
+  }
+
+  // Upstream, overview, kilit ve giriş ekranlarında üst çubuğu şeffaf yapar.
+  // Ada yüzeyini korur, böylece hiçbir zaman çıplak ikonlar gibi havada kalmaz.
+  &:overview,
+  &.unlock-screen,
+  &.login-screen {
+    @include ada_surface();
+
+    .panel-button {
+      @include panel_button();
+      border-radius: $ada_control_radius;
+      font-weight: normal;
+
+      &.clock-display {
+        @include panel_button($highlighted_child: true, $child_class: '.clock');
+      }
+
+      &#panelActivities .workspace-dot {
+        background-color: $panel_fg_color;
+      }
+    }
+  }
+
+  // Kararmış kilit ve giriş duvar kâğıdı üzerinde açık bir ada göz alır; bunun
+  // yerine, her zaman açık renkli kilit metniyle yarı saydam bir sistem yüzeyi kullan.
+  &.unlock-screen,
+  &.login-screen {
+    background-gradient-direction: none;
+    background-color: transparentize($system_base_color, .35);
+    border-color: transparentize($system_fg_color, .9);
+    border-top-color: transparentize($system_fg_color, .8);
+
+    .panel-button {
+      @include panel_button($fg: $transparent_panel_fg_color);
+      border-radius: $ada_control_radius;
+      font-weight: normal;
+
+      &.clock-display {
+        @include panel_button($fg: $transparent_panel_fg_color, $highlighted_child: true, $child_class: '.clock');
+      }
+    }
+  }
+}
+
+// Upstream'in saate ve paylaşım göstergelerine verdiği hap (pill) yarıçapı,
+// adanın içinde ikinci bir yarıçap sistemi olurdu.
+#panel,
+#panel:overview,
+#panel.unlock-screen,
+#panel.login-screen {
+  .panel-button {
+    &.clock-display .clock,
+    &.screen-recording-indicator,
+    &.screen-sharing-indicator {
+      border-radius: $ada_control_radius;
+    }
+  }
+}
+
+// Bölüm ayraçları, yerleşim fazladan actor'dan arınık kalsın diye bölüm
+// kutularının kenarlıklarıdır. Panel kutuları tam içerik yüksekliğine zorlar,
+// bu yüzden çizgi o yüksekliği kaplar. panel.js'teki 8px SECTION_SPACING ve
+// aşağıdaki padding ile çizginin her iki yanında 8px boşluk kalır.
+#panelCenter,
+#panelRight {
+  padding-left: 8px;
+  border-left: 1px solid $borders_color;
+}
+
+// Kilit ve giriş yerleşimlerinde orta bölüm boştur; orada artık ayraç kalmaz.
+#panel.unlock-screen #panelCenter,
+#panel.login-screen #panelCenter {
+  padding-left: 0;
+  border-left-width: 0;
+}
+
+// Dock kendi başına bir düğme sırasıdır; host panel düğmesi görünümü çizmemeli,
+// yoksa dock'un tamamı tek bir düğme gibi vurgulanır.
+#panel .panel-button.vatan-dock-host {
+  -natural-hpadding: 0;
+  -minimum-hpadding: 0;
+  border-width: 0;
+  box-shadow: none;
+  background-color: transparent;
+
+  &:hover,
+  &:focus,
+  &:active,
+  &:checked {
+    border-width: 0;
+    box-shadow: none;
+    background-color: transparent;
+  }
+}
+
+.vatan-dock {
+  spacing: 2px;
+}
+
+// İkonlar plakanın üzerinde durur ve kendi gölgelerini düşürür; hover onları,
+// arkalarına vurgu kutusu çizmek yerine yukarı kaldırır (dock.js).
+.vatan-dock-item {
+  width: 52px;
+  height: 52px;
+  border-radius: $ada_control_radius;
+
+  StIcon {
+    icon-shadow: 0 3px 6px if($variant == 'light', rgba(20, 24, 31, .25), rgba(0, 0, 0, .5));
+  }
+
+  &:focus {
+    background-color: $hover_bg_color;
+  }
+
+  // Sabit genişlik; St genişliği tween etmediği için dock.js onu x ekseninde
+  // ölçekler.
+  .vatan-dock-indicator {
+    height: 4px;
+    width: 14px;
+    margin-bottom: 0;
+    border-radius: 2px;
+    background-color: -st-accent-color;
+  }
+}
+
+#panel .panel-button.vatan-komut-button,
+#panel:overview .panel-button.vatan-komut-button,
+#panel.unlock-screen .panel-button.vatan-komut-button,
+#panel.login-screen .panel-button.vatan-komut-button {
+  background-color: transparentize($fg_color, .95);
+}
+
+// ButtonBox host üzerindeki min-width'i yok sayar, bu yüzden içeriğin üzerinde durur.
+.vatan-komut-box {
+  min-width: 250px;
+  spacing: 8px;
+
+  .vatan-komut-label,
+  .vatan-komut-hint {
+    color: $insensitive_fg_color;
+  }
+
+  .vatan-komut-hint {
+    font-size: 11px;
+  }
+}
+
+.vatan-workspace-box {
+  spacing: 6px;
+}
+
+// Menüler adadan dışarı büyür; bu yüzden aynı aydınlatılmış plakadır ve kenarına
+// oturmak yerine üzerinde net bir boşluk bırakır.
+// Yükselme, adanın 8px içinde duran düğmeden itibaren sayılır.
+.popup-menu-boxpointer {
+  -arrow-rise: 8px + $ada_window_gap;
+}
+
+.popup-menu-content,
+.quick-settings {
+  border-radius: $ada_radius;
+  @include ada_surface();
+  // Boxpointer içinde gradient gölgeyi sert bir dikdörtgene çevirir ve derin bir
+  // gölge birkaç piksel dışarıda kırpılır; bu yüzden düz ve sığ tutulur.
+  background-gradient-direction: none;
+  background-color: mix($ada_surface_top, $ada_surface_bottom, 50%);
+  box-shadow: 0 2px 8px -4px $ada_shadow_color;
+}
+
+// Bannerlar da adadan yükselir. Menülerle aynı düz plaka: banner bin'i gölge
+// için yalnızca birkaç piksel kenar boşluğu bırakır.
+.notification-banner {
+  border-radius: $ada_radius;
+  border: 1px solid $ada_edge_color;
+  border-top-color: $ada_lit_edge_color;
+  box-shadow: 0 2px 8px -4px $ada_shadow_color;
+
+  .message {
+    border-radius: $ada_radius;
+    background-color: mix($ada_surface_top, $ada_surface_bottom, 50%);
+  }
+}
+
+// Bir uygulama ikonuyla aynı boyutta, böylece sıra tek bir dock gibi okunur.
+.vatan-dock-apps-tile {
+  width: 36px;
+  height: 36px;
+  border-radius: 10px;
+  border: 1px solid $ada_edge_color;
+  border-top-color: $ada_lit_edge_color;
+  background-color: transparentize($fg_color, .92);
+  color: $fg_color;
+}
+
+/* Canlı Ada: zamanlayıcı bölümü */
+.vatan-timer-box {
+  spacing: 8px;
+}
+
+.vatan-timer-countdown {
+  font-feature-settings: "tnum";
+}
+
+.vatan-timer-name {
+  max-width: 140px;
+  color: $insensitive_fg_color;
+}
+
+.vatan-timer-progress {
+  height: 2px;
+  margin-top: 2px;
+  border-radius: 1px;
+  background-color: -st-accent-color;
+}
+
+#panel .panel-button.vatan-timer:done,
+#panel .panel-button.vatan-timer:done:hover {
+  background-color: -st-accent-color;
+  color: -st-accent-fg-color;
+
+  .vatan-timer-name {
+    color: -st-accent-fg-color;
+  }
+}
+
+/* Gündem: masaüstündeki haber kartı */
+.vatan-news {
+  width: 340px;
+  padding: 14px 8px 8px;
+  border-radius: $ada_radius;
+  @include ada_surface();
+  background-gradient-direction: none;
+  background-color: transparentize(mix($ada_surface_top, $ada_surface_bottom, 50%), .08);
+  color: $fg_color;
+}
+
+.vatan-news-header {
+  padding: 0 10px 8px;
+}
+
+.vatan-news-title {
+  font-weight: 600;
+}
+
+.vatan-news-source,
+.vatan-news-time,
+.vatan-news-empty {
+  color: $insensitive_fg_color;
+  font-size: 9pt;
+}
+
+.vatan-news-empty {
+  padding: 4px 10px 8px;
+}
+
+.vatan-news-row {
+  padding: 8px 10px;
+  border-radius: $ada_control_radius;
+  text-align: left;
+
+  &:hover,
+  &:focus {
+    background-color: transparentize($fg_color, .94);
+  }
+}
+
+.vatan-news-headline {
+  padding-bottom: 2px;
+}
+
+/* Canlı Ada: medya bölümü */
+.vatan-media-box {
+  spacing: 4px;
+}
+
+.vatan-media-control {
+  padding: 4px;
+  border-radius: $ada_control_radius;
+
+  &:hover,
+  &:focus {
+    background-color: transparentize($fg_color, .9);
+  }
+}
+
+.vatan-media-title {
+  max-width: 220px;
+  padding: 0 4px;
+}
+
+/* İlk giriş turu */
+.vatan-tour .modal-dialog-content-box {
+  spacing: 18px;
+}
+
+.vatan-tour-icon {
+  icon-size: 48px;
+  color: -st-accent-color;
+}
+
+.vatan-tour-dots {
+  spacing: 6px;
+}
+
+.vatan-tour-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 3px;
+  background-color: transparentize($fg_color, .8);
+
+  &:checked {
+    width: 18px;
+    background-color: -st-accent-color;
+  }
+}
+
+// Greeter (giriş ekranını VATAN çizdiğinde) koyu kabartmanın üzerinde durur.
+// Kilit açma diyaloğu bu grubun üzerine kendi bulanık arka planını çizer.
+#lockDialogGroup {
+  background: #07080b url("file:///usr/share/backgrounds/vatan/vatan-dark.png");
+  background-size: cover;
+  background-position: center;
+}
+
+// Kilit ve giriş ekranında adada yalnızca birkaç durum düğmesi kalır. Ada
+// yüzeyi tek bir simgenin çevresine sarılınca uygulama simgesine benzeyen bir
+// kare oluşuyordu; burada yüzey kalkar, düğmeler tek tek yuvarlak cam olarak durur.
+#panel.unlock-screen,
+#panel.login-screen {
+  height: 40px;
+  padding: 0;
+  border-width: 0;
+  background-gradient-direction: none;
+  background-color: transparent;
+  box-shadow: none;
+
+  .panel-button,
+  .panel-button:hover,
+  .panel-button:active,
+  .panel-button:checked,
+  .panel-button:focus {
+    margin: 0 4px;
+    padding: 0 14px;
+    border-radius: 999px;
+    border: 1px solid transparentize($system_fg_color, .86);
+    box-shadow: none;
+  }
+
+  .panel-button {
+    background-color: transparentize($system_base_color, .45);
+  }
+
+  .panel-button:hover,
+  .panel-button:focus {
+    background-color: transparentize(lighten($system_base_color, 12%), .35);
+  }
+
+  .panel-button:active,
+  .panel-button:checked {
+    background-color: transparentize(lighten($system_base_color, 18%), .25);
+  }
+}

@@ -1,0 +1,60 @@
+From: Daniel van Vugt <daniel.van.vugt@canonical.com>
+Date: Thu, 29 Aug 2024 15:19:14 +0800
+Subject: shell/app: Warn instead of crashing if disposed before startup
+ notification
+
+This is currently easy to reproduce by launching and immediately closing
+Chrome, then closing the shell. But automated crash reports show it can
+also happen while using the shell, during a garbage collection run.
+
+It's currently the top gnome-shell crasher in Ubuntu, and mostly with
+Chromium/Electron apps. But regardless of the offender, we shouldn't
+ever trust application behaviour to keep the shell alive.
+
+Bug: https://gitlab.gnome.org/GNOME/gnome-shell/-/issues/7045
+Bug-Ubuntu: https://bugs.launchpad.net/bugs/2037055
+Forwarded: https://gitlab.gnome.org/GNOME/gnome-shell/-/merge_requests/3457
+---
+ src/shell-app.c | 24 +++++++++++++++++++++---
+ 1 file changed, 21 insertions(+), 3 deletions(-)
+
+diff --git a/src/shell-app.c b/src/shell-app.c
+index 916783a..c7630d2 100644
+--- a/src/shell-app.c
++++ b/src/shell-app.c
+@@ -1736,14 +1736,32 @@ shell_app_dispose (GObject *object)
+ {
+   ShellApp *app = SHELL_APP (object);
+ 
+-  g_clear_object (&app->info);
+   g_clear_object (&app->fallback_icon);
+ 
+   while (app->running_state)
+     _shell_app_remove_window (app, app->running_state->windows->data);
+ 
+-  /* We should have been transitioned when we removed all of our windows */
+-  g_assert (app->state == SHELL_APP_STATE_STOPPED);
++  if (app->state != SHELL_APP_STATE_STOPPED && app->info)
++    {
++      const char *name = g_desktop_app_info_get_generic_name (app->info);
++      const char *file_name = g_desktop_app_info_get_filename (app->info);
++
++      if (!name)
++        name = "(name unknown)";
++
++      if (!file_name)
++        file_name = "(filename unknown)";
++
++      g_warning ("App \"%s\" (%s) claims to still be %s when being disposed. "
++                 "Please ask the app developer to check if StartupNotify=true "
++                 "in the .desktop file is properly implemented.",
++                 name,
++                 file_name,
++                 app->state == SHELL_APP_STATE_STARTING ? "starting" :
++                                                          "running");
++    }
++
++  g_clear_object (&app->info);
+   g_assert (app->running_state == NULL);
+ 
+   G_OBJECT_CLASS(shell_app_parent_class)->dispose (object);

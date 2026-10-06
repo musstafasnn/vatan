@@ -27,11 +27,17 @@ import * as Main from './main.js';
 
 export const SHELL_KEYBINDINGS_SCHEMA = 'org.gnome.shell.keybindings';
 
-const MINIMIZE_WINDOW_ANIMATION_TIME = 400;
-const MINIMIZE_WINDOW_ANIMATION_MODE = Clutter.AnimationMode.EASE_OUT_EXPO;
-const SHOW_WINDOW_ANIMATION_TIME = 150;
+// VATAN: pencereler yerinde büyür ve dock ikonlarına küçülür. Girişte ve çıkışta
+// yavaşla (ease), böylece pencere dock'a oturmak yerine görünür biçimde dock'a
+// doğru yol alır.
+const MINIMIZE_WINDOW_ANIMATION_TIME = 420;
+const MINIMIZE_WINDOW_ANIMATION_MODE = Clutter.AnimationMode.EASE_IN_OUT_QUINT;
+const SHOW_WINDOW_ANIMATION_TIME = 260;
+const SHOW_WINDOW_START_SCALE = 0.92;
+const SHOW_WINDOW_RISE = 12;
 const DIALOG_SHOW_WINDOW_ANIMATION_TIME = 100;
-const DESTROY_WINDOW_ANIMATION_TIME = 150;
+const DESTROY_WINDOW_ANIMATION_TIME = 180;
+const DESTROY_WINDOW_END_SCALE = 0.94;
 const DIALOG_DESTROY_WINDOW_ANIMATION_TIME = 100;
 const WINDOW_ANIMATION_TIME = 250;
 export const SCROLL_TIMEOUT_TIME = 150;
@@ -1496,9 +1502,10 @@ export class WindowManager {
 
         switch (this._getAnimationWindowType(actor)) {
         case Meta.WindowType.NORMAL:
-            actor.set_pivot_point(0.5, 1.0);
-            actor.scale_x = 0.01;
-            actor.scale_y = 0.05;
+            actor.set_pivot_point(0.5, 0.5);
+            actor.scale_x = SHOW_WINDOW_START_SCALE;
+            actor.scale_y = SHOW_WINDOW_START_SCALE;
+            actor.translation_y = SHOW_WINDOW_RISE;
             actor.opacity = 0;
             actor.show();
             this._mapping.add(actor);
@@ -1508,8 +1515,9 @@ export class WindowManager {
                 opacity: 255,
                 scale_x: 1,
                 scale_y: 1,
+                translation_y: 0,
                 duration: SHOW_WINDOW_ANIMATION_TIME,
-                mode: Clutter.AnimationMode.EASE_OUT_EXPO,
+                mode: Clutter.AnimationMode.EASE_OUT_QUINT,
                 onStopped: () => this._mapWindowDone(shellwm, actor),
             });
             break;
@@ -1573,8 +1581,8 @@ export class WindowManager {
 
             actor.ease({
                 opacity: 0,
-                scale_x: 0.8,
-                scale_y: 0.8,
+                scale_x: DESTROY_WINDOW_END_SCALE,
+                scale_y: DESTROY_WINDOW_END_SCALE,
                 duration: DESTROY_WINDOW_ANIMATION_TIME,
                 mode: Clutter.AnimationMode.EASE_OUT_QUAD,
                 onStopped: () => this._destroyWindowDone(shellwm, actor),
@@ -1651,12 +1659,24 @@ export class WindowManager {
     }
 
     _showTilePreview(shellwm, window, tileRect, monitorIndex) {
+        if (Main.vatanQuarterTiling?.ownsPreview)
+            return;
+        this.showVatanTilePreview(window, tileRect, monitorIndex);
+    }
+
+    _hideTilePreview() {
+        if (Main.vatanQuarterTiling?.ownsPreview)
+            return;
+        this.hideVatanTilePreview();
+    }
+
+    showVatanTilePreview(window, tileRect, monitorIndex) {
         if (!this._tilePreview)
             this._tilePreview = new TilePreview();
         this._tilePreview.open(window, tileRect, monitorIndex);
     }
 
-    _hideTilePreview() {
+    hideVatanTilePreview() {
         if (!this._tilePreview)
             return;
         this._tilePreview.close();

@@ -26,6 +26,15 @@ import * as OsdMonitorLabeler from './osdMonitorLabeler.js';
 import * as Overview from './overview.js';
 import * as PadOsd from './padOsd.js';
 import * as Panel from './panel.js';
+import {Komut} from './vatan/komut.js';
+import {VatanTimers} from './vatan/timerIsland.js';
+import {VatanNewsWidget} from './vatan/newsWidget.js';
+import {maybeShowTour} from './vatan/tour.js';
+import {VatanQuarterTiling} from './vatan/quarterTiling.js';
+import {VatanClipboardHistory} from './vatan/clipboardHistory.js';
+import {VatanFocusSchedule} from './vatan/focusSchedule.js';
+import {VatanAppStyle} from './vatan/appStyle.js';
+import {installTemplates} from './vatan/templates.js';
 import * as RunDialog from './runDialog.js';
 import * as WelcomeDialog from './welcomeDialog.js';
 import * as Layout from './layout.js';
@@ -59,6 +68,14 @@ const GNOMESHELL_STARTED_MESSAGE_ID = 'f3ea493c22934e26811cd62abe8e203a';
 export let componentManager = null;
 export let extensionManager = null;
 export let panel = null;
+export let vatanKomut = null;
+export let vatanTimers = null;
+export let vatanNews = null;
+export let vatanQuarterTiling = null;
+export let vatanClipboard = null;
+export let vatanFocus = null;
+export let vatanAppStyle = null;
+let _vatanSettings = null;
 export let overview = null;
 export let runDialog = null;
 export let lookingGlass = null;
@@ -116,8 +133,10 @@ function _sessionUpdated() {
     if (sessionMode.isPrimary)
         _loadDefaultStylesheet();
 
+    // POPUP'a izin verilir ki Super, popup olarak çalışan Komut'u kapatabilsin;
+    // overlay-key handler'ı diğer her popup için onu yok sayar.
     wm.allowKeybinding('overlay-key',
-        Shell.ActionMode.NORMAL | Shell.ActionMode.OVERVIEW);
+        Shell.ActionMode.NORMAL | Shell.ActionMode.OVERVIEW | Shell.ActionMode.POPUP);
 
     wm.allowKeybinding('locate-pointer-key', Shell.ActionMode.ALL);
 
@@ -244,7 +263,20 @@ async function _initializeUI() {
     screenshotUI = new Screenshot.ScreenshotUI();
 
     messageTray = new MessageTray.MessageTray();
+    _syncAnimationPace();
+
+    // Panelden önce: zamanlayıcı öğesi oluşturulurken zamanlayıcıları okur.
+    vatanTimers = new VatanTimers();
     panel = new Panel.Panel();
+    if (sessionMode.hasOverview) {
+        vatanKomut = new Komut();
+        vatanNews = new VatanNewsWidget();
+        vatanQuarterTiling = new VatanQuarterTiling();
+        vatanClipboard = new VatanClipboardHistory();
+        vatanFocus = new VatanFocusSchedule();
+        vatanAppStyle = new VatanAppStyle();
+        installTemplates();
+    }
     keyboard = new Keyboard.KeyboardManager();
     notificationDaemon = new NotificationDaemon.NotificationDaemon();
     windowAttentionHandler = new WindowAttentionHandler.WindowAttentionHandler();
@@ -349,6 +381,9 @@ async function _initializeUI() {
         if (actionMode === Shell.ActionMode.NONE)
             actionMode = Shell.ActionMode.NORMAL;
 
+        if (vatanKomut)
+            maybeShowTour();
+
         if (screenShield)
             screenShield.lockIfWasLocked();
 
@@ -416,6 +451,18 @@ async function _handleLockScreenWarning() {
             _('Screen Lock disabled'),
             _('Screen Locking requires the GNOME display manager'));
     }
+}
+
+// Tempo VATAN Ayarları'nda kullanıcı seçimidir; GNOME_SHELL_SLOWDOWN_FACTOR
+// geliştirici override'ı olarak kalır ve ayarlıysa kazanır.
+function _syncAnimationPace() {
+    if (GLib.getenv('GNOME_SHELL_SLOWDOWN_FACTOR'))
+        return;
+    if (!_vatanSettings) {
+        _vatanSettings = new Gio.Settings({schema_id: 'org.vatan.shell'});
+        _vatanSettings.connect('changed::animation-pace', _syncAnimationPace);
+    }
+    St.Settings.get().slow_down_factor = _vatanSettings.get_double('animation-pace');
 }
 
 function _getStylesheet(name) {

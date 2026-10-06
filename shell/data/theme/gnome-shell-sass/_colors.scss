@@ -8,26 +8,26 @@
 
 
 // global colors
-$base_color: if($variant == 'light', $light_1, $_base_color_dark);
-$bg_color: if($variant == 'light', $_base_color_light, #36363a);
-$fg_color: if($variant == 'light', $_base_color_dark, $light_1);
+$base_color: if($variant == 'light', #fcfcfd, #111317);
+$bg_color: if($variant == 'light', $_base_color_light, #16191e);
+$fg_color: if($variant == 'light', $_base_color_dark, #eceef1);
 
 // OSD elements
 $osd_fg_color: $light_1;
 $osd_bg_color: lighten($_base_color_dark, 5%);
 
 // system elements (e.g. the overview) that are always dark
-$system_base_color: $_base_color_dark;
-$system_fg_color: $_base_color_light;
+$system_base_color: #0b0d11;
+$system_fg_color: #eceef1;
 
 // panel colors
-$panel_bg_color: if($variant == 'light', $_base_color_light, $dark_5);
-$panel_fg_color: if($variant == 'light', $_base_color_dark, $light_1);
+$panel_bg_color: if($variant == 'light', #fcfcfd, #16191e);
+$panel_fg_color: $fg_color;
 
 // card elements
-$card_bg_color: if($variant == 'light', $light_1, lighten($bg_color, 7%));
-$card_shadow_color: if($variant == 'light', transparentize($dark_5, .97), transparent);
-$card_shadow_border_color: if($variant == 'light', transparentize($dark_5, .91), transparent);
+$card_bg_color: if($variant == 'light', #fcfcfd, #1b1e24);
+$card_shadow_color: transparent;
+$card_shadow_border_color: if($variant == 'light', rgba(20,24,31,.09), rgba(255,255,255,.08));
 
 //
 // Derived Colors
@@ -35,7 +35,7 @@ $card_shadow_border_color: if($variant == 'light', transparentize($dark_5, .91),
 // colors based on the global defines above
 
 // borders
-$borders_color: transparentize($fg_color, $border_opacity);
+$borders_color: if($variant == 'light', rgba(20,24,31,.09), rgba(255,255,255,.08));
 $outer_borders_color: if($variant == 'light', darken($bg_color, 7%), lighten($bg_color, 5%));
 
 // osd colors

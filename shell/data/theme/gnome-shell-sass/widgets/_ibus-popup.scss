@@ -7,7 +7,7 @@
 .candidate-popup-content {
   padding: $base_padding;
   spacing: $base_padding;
-  border-radius: $base_padding * 2;
+  border-radius: $modal_radius;
   @extend .popup-menu-content;
 }
 

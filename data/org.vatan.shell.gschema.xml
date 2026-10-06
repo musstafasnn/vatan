@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<schemalist gettext-domain="vatan">
+  <schema id="org.vatan.shell" path="/org/vatan/shell/">
+    <key name="show-news" type="b">
+      <default>false</default>
+      <summary>Show the news card on the desktop</summary>
+      <description>The card fetches the feed below every 15 minutes while it is shown; turning it off stops all requests.</description>
+    </key>
+    <key name="news-feed" type="s">
+      <default>'https://www.trthaber.com/sondakika.rss'</default>
+      <summary>RSS feed of the news card</summary>
+      <description>Must be an https URL; anything else is ignored.</description>
+    </key>
+    <key name="currency-rates" type="b">
+      <default>true</default>
+      <summary>Let Komut fetch exchange rates from TCMB</summary>
+      <description>Off means no request goes to TCMB and Komut converts only units.</description>
+    </key>
+    <key name="animation-pace" type="d">
+      <range min="1.0" max="2.0"/>
+      <default>1.3</default>
+      <summary>How much slower than GNOME's timing VATAN animates</summary>
+      <description>Multiplies every shell animation; 1.0 is GNOME's own pace.</description>
+    </key>
+    <key name="clipboard-history" type="b">
+      <default>true</default>
+      <summary>Keep recent clipboard text for Komut</summary>
+      <description>Kept in memory only, never written to disk; items marked secret by password managers are skipped. Turning this off clears it.</description>
+    </key>
+    <key name="focus-schedule" type="b">
+      <default>false</default>
+      <summary>Silence notification banners on a schedule</summary>
+    </key>
+    <key name="focus-start" type="s">
+      <default>'09:00'</default>
+      <summary>Start of the focus window (HH:MM)</summary>
+    </key>
+    <key name="focus-end" type="s">
+      <default>'17:00'</default>
+      <summary>End of the focus window (HH:MM); earlier than the start means it runs past midnight</summary>
+    </key>
+    <key name="focus-weekdays-only" type="b">
+      <default>true</default>
+      <summary>Apply the focus window on weekdays only</summary>
+    </key>
+    <key name="app-style" type="b">
+      <default>true</default>
+      <summary>Give applications the VATAN window look in the VATAN session</summary>
+      <description>Adds one import block to ~/.config/gtk-3.0/gtk.css and gtk-4.0/gtk.css that points into the session's runtime directory; turning it off removes the block.</description>
+    </key>
+    <key name="desktop-icons" type="b">
+      <default>true</default>
+      <summary>Show files and folders on the desktop, with the desktop right-click menu</summary>
+    </key>
+    <key name="templates-version" type="i">
+      <default>0</default>
+      <summary>Internal: the set of "New Document" templates last copied to the Templates folder</summary>
+    </key>
+    <key name="tour-shown" type="b">
+      <default>false</default>
+      <summary>Whether the first-login tour has been shown</summary>
+    </key>
+    <key name="news-source" type="s">
+      <default>'TRT Haber'</default>
+      <summary>Name shown as the source of the news card</summary>
+    </key>
+  </schema>
+</schemalist>

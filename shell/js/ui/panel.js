@@ -39,6 +39,11 @@ import {ATIndicator} from './status/accessibility.js';
 import {InputSourceIndicator} from './status/keyboard.js';
 import {DwellClickIndicator} from './status/dwellClick.js';
 import {ScreenRecordingIndicator, ScreenSharingIndicator} from './status/remoteAccess.js';
+import {VatanDock} from './vatan/dock.js';
+import {VatanKomutButton} from './vatan/komutButton.js';
+import {VatanTimerButton} from './vatan/timerIsland.js';
+import {VatanMediaButton} from './vatan/mediaIsland.js';
+import {VatanWorkspaceButton} from './vatan/workspaceButton.js';
 
 const PANEL_ICON_SIZE = 16;
 const APP_MENU_ICON_MARGIN = 0;
@@ -48,6 +53,9 @@ const BUTTON_DND_ACTIVATION_TIMEOUT = 250;
 const N_QUICK_SETTINGS_COLUMNS = 2;
 
 const INACTIVE_WORKSPACE_DOT_SCALE = 0.75;
+
+const SECTION_SPACING = 8;
+const ISLAND_SCREEN_MARGIN = 12;
 
 /**
  * AppMenuButton:
@@ -638,6 +646,11 @@ const PANEL_ITEM_IMPLEMENTATIONS = {
     'dwellClick': DwellClickIndicator,
     'screenRecording': ScreenRecordingIndicator,
     'screenSharing': ScreenSharingIndicator,
+    'vatanDock': VatanDock,
+    'vatanKomut': VatanKomutButton,
+    'vatanTimer': VatanTimerButton,
+    'vatanMedia': VatanMediaButton,
+    'vatanWorkspace': VatanWorkspaceButton,
 };
 
 export const Panel = GObject.registerClass(
@@ -646,6 +659,7 @@ class Panel extends St.Widget {
         super._init({
             name: 'panel',
             reactive: true,
+            x_align: Clutter.ActorAlign.CENTER,
         });
 
         this.set_offscreen_redirect(Clutter.OffscreenRedirect.ALWAYS);
@@ -663,9 +677,6 @@ class Panel extends St.Widget {
         this._rightBox = new St.BoxLayout({name: 'panelRight'});
         this.add_child(this._rightBox);
 
-        this.connect('button-press-event', this._onButtonPress.bind(this));
-        this.connect('touch-event', this._onTouchEvent.bind(this));
-
         Main.overview.connectObject('showing',
             () => this.add_style_pseudo_class('overview'),
             this);
@@ -674,6 +685,10 @@ class Panel extends St.Widget {
             this);
 
         Main.layoutManager.panelBox.add_child(this);
+        Main.layoutManager.trackChrome(this, {
+            affectsInputRegion: true,
+            affectsStruts: false,
+        });
         Main.ctrlAltTabManager.addGroup(this,
             _('Top Bar'), 'shell-focus-top-bar-symbolic',
             {sortGroup: CtrlAltTab.SortGroup.TOP});
@@ -682,114 +697,53 @@ class Panel extends St.Widget {
             this._updatePanel.bind(this),
             this);
 
-        global.display.connectObject('workareas-changed',
-            () => this.queue_relayout(),
-            this);
         this._updatePanel();
     }
 
-    vfunc_get_preferred_width(_forHeight) {
-        let primaryMonitor = Main.layoutManager.primaryMonitor;
+    _occupiedBoxes() {
+        return [this._leftBox, this._centerBox, this._rightBox]
+            .filter(box => box.get_preferred_width(-1)[1] > 0);
+    }
 
-        if (primaryMonitor)
-            return [0, primaryMonitor.width];
+    vfunc_get_preferred_width(forHeight) {
+        const themeNode = this.get_theme_node();
+        const contentHeight = themeNode.adjust_for_height(forHeight);
+        const boxes = this._occupiedBoxes();
+        let width = boxes.reduce(
+            (sum, box) => sum + box.get_preferred_width(contentHeight)[1], 0);
+        width += SECTION_SPACING * Math.max(0, boxes.length - 1);
 
-        return [0,  0];
+        [, width] = themeNode.adjust_preferred_width(width, width);
+        const monitor = Main.layoutManager.primaryMonitor;
+        if (monitor)
+            width = Math.min(width, monitor.width - 2 * ISLAND_SCREEN_MARGIN);
+
+        return [width, width];
     }
 
     vfunc_allocate(box) {
         this.set_allocation(box);
 
-        let allocWidth = box.x2 - box.x1;
-        let allocHeight = box.y2 - box.y1;
+        const content = this.get_theme_node().get_content_box(box);
+        const boxes = this._occupiedBoxes();
+        if (this.get_text_direction() === Clutter.TextDirection.RTL)
+            boxes.reverse();
 
-        let [, leftNaturalWidth] = this._leftBox.get_preferred_width(-1);
-        let [, centerNaturalWidth] = this._centerBox.get_preferred_width(-1);
-        let [, rightNaturalWidth] = this._rightBox.get_preferred_width(-1);
-
-        let sideWidth, centerWidth;
-        centerWidth = centerNaturalWidth;
-
-        // get workspace area and center date entry relative to it
-        let monitor = Main.layoutManager.findMonitorForActor(this);
-        let centerOffset = 0;
-        if (monitor) {
-            let workArea = Main.layoutManager.getWorkAreaForMonitor(monitor.index);
-            centerOffset = 2 * (workArea.x - monitor.x) + workArea.width - monitor.width;
+        const childBox = new Clutter.ActorBox();
+        for (const section of [this._leftBox, this._centerBox, this._rightBox]) {
+            if (!boxes.includes(section))
+                section.allocate(childBox);
         }
 
-        sideWidth = Math.max(0, (allocWidth - centerWidth + centerOffset) / 2);
-
-        let childBox = new Clutter.ActorBox();
-
-        childBox.y1 = 0;
-        childBox.y2 = allocHeight;
-        if (this.get_text_direction() === Clutter.TextDirection.RTL) {
-            childBox.x1 = Math.max(
-                allocWidth - Math.min(Math.floor(sideWidth), leftNaturalWidth),
-                0);
-            childBox.x2 = allocWidth;
-        } else {
-            childBox.x1 = 0;
-            childBox.x2 = Math.min(Math.floor(sideWidth), leftNaturalWidth);
+        let x = content.x1;
+        for (const sectionBox of boxes) {
+            const [, natural] = sectionBox.get_preferred_width(content.get_height());
+            const width = Math.max(0, Math.min(natural, content.x2 - x));
+            childBox.set_origin(x, content.y1);
+            childBox.set_size(width, content.get_height());
+            sectionBox.allocate(childBox);
+            x += width + SECTION_SPACING;
         }
-        this._leftBox.allocate(childBox);
-
-        childBox.x1 = Math.ceil(sideWidth);
-        childBox.y1 = 0;
-        childBox.x2 = childBox.x1 + centerWidth;
-        childBox.y2 = allocHeight;
-        this._centerBox.allocate(childBox);
-
-        childBox.y1 = 0;
-        childBox.y2 = allocHeight;
-        if (this.get_text_direction() === Clutter.TextDirection.RTL) {
-            childBox.x1 = 0;
-            childBox.x2 = Math.min(Math.floor(sideWidth), rightNaturalWidth);
-        } else {
-            childBox.x1 = Math.max(
-                allocWidth - Math.min(Math.floor(sideWidth), rightNaturalWidth),
-                0);
-            childBox.x2 = allocWidth;
-        }
-        this._rightBox.allocate(childBox);
-    }
-
-    _tryDragWindow(event) {
-        if (Main.modalCount > 0)
-            return Clutter.EVENT_PROPAGATE;
-
-        const targetActor = global.stage.get_event_actor(event);
-        if (targetActor !== this)
-            return Clutter.EVENT_PROPAGATE;
-
-        const [x, y] = event.get_coords();
-        let dragWindow = this._getDraggableWindowForPosition(x);
-
-        if (!dragWindow)
-            return Clutter.EVENT_PROPAGATE;
-
-        const positionHint = new Graphene.Point({x, y});
-        return dragWindow.begin_grab_op(
-            Meta.GrabOp.MOVING,
-            event.get_device(),
-            event.get_event_sequence(),
-            event.get_time(),
-            positionHint) ? Clutter.EVENT_STOP : Clutter.EVENT_PROPAGATE;
-    }
-
-    _onButtonPress(actor, event) {
-        if (event.get_button() !== Clutter.BUTTON_PRIMARY)
-            return Clutter.EVENT_PROPAGATE;
-
-        return this._tryDragWindow(event);
-    }
-
-    _onTouchEvent(actor, event) {
-        if (event.type() !== Clutter.EventType.TOUCH_BEGIN)
-            return Clutter.EVENT_PROPAGATE;
-
-        return this._tryDragWindow(event);
     }
 
     vfunc_key_press_event(event) {
@@ -863,13 +817,9 @@ class Panel extends St.Widget {
         this._updateBox(panel.center, this._centerBox);
         this._updateBox(panel.right, this._rightBox);
 
-        if (panel.left.includes('dateMenu'))
-            Main.messageTray.bannerAlignment = Clutter.ActorAlign.START;
-        else if (panel.right.includes('dateMenu'))
-            Main.messageTray.bannerAlignment = Clutter.ActorAlign.END;
-        // Default to center if there is no dateMenu
-        else
-            Main.messageTray.bannerAlignment = Clutter.ActorAlign.CENTER;
+        // Bannerlar, saatin hangi tarafta durduğundan bağımsız olarak ortalı olan
+        // adanın üzerinden yükselir.
+        Main.messageTray.bannerAlignment = Clutter.ActorAlign.CENTER;
 
         if (this._sessionStyle)
             this.remove_style_class_name(this._sessionStyle);
@@ -960,34 +910,9 @@ class Panel extends St.Widget {
         this.menuManager.addMenu(indicator.menu);
 
         indicator.menu._openChangedConnected = true;
+        // Her panel menüsü adadan yukarı doğru, tam bannerların göründüğü yerde açılır;
+        // bu yüzden açık herhangi bir menü bannerları geri tutar.
         indicator.menu.connectObject('open-state-changed',
-            (menu, isOpen) => {
-                let boxAlignment;
-                if (this._leftBox.contains(indicator.container))
-                    boxAlignment = Clutter.ActorAlign.START;
-                else if (this._centerBox.contains(indicator.container))
-                    boxAlignment = Clutter.ActorAlign.CENTER;
-                else if (this._rightBox.contains(indicator.container))
-                    boxAlignment = Clutter.ActorAlign.END;
-
-                if (boxAlignment === Main.messageTray.bannerAlignment)
-                    Main.messageTray.bannerBlocked = isOpen;
-            }, this);
-    }
-
-    _getDraggableWindowForPosition(stageX) {
-        let workspaceManager = global.workspace_manager;
-        const windows = workspaceManager.get_active_workspace().list_windows();
-        const allWindowsByStacking =
-            global.display.sort_windows_by_stacking(windows).reverse();
-
-        return allWindowsByStacking.find(metaWindow => {
-            let rect = metaWindow.get_frame_rect();
-            return metaWindow.is_on_primary_monitor() &&
-                   metaWindow.showing_on_its_workspace() &&
-                   metaWindow.get_window_type() !== Meta.WindowType.DESKTOP &&
-                   metaWindow.maximized_vertically &&
-                   stageX > rect.x && stageX < rect.x + rect.width;
-        });
+            (menu, isOpen) => (Main.messageTray.bannerBlocked = isOpen), this);
     }
 });

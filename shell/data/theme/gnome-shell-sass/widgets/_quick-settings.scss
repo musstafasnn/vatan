@@ -1,6 +1,6 @@
 .quick-settings {
   padding: $base_padding * 3;
-  border-radius: $modal_radius * 2.25;
+  border-radius: $modal_radius;
 
   .icon-button, .button {
     padding: $base_padding * 1.75;
@@ -13,15 +13,28 @@
 }
 
 .quick-toggle, .quick-toggle-has-menu {
-  border-radius: $forced_circular_radius;
+  border-radius: $base_border_radius;
   min-width: 12em;
   max-width: 12em;
   min-height: $scalable_icon_size * 3; // use icon size so the button scales
 }
 
+// İşaretli toggle'lar vurgu rengi yerine yüzey üstünde mürekkep rengine döner;
+// hover ve aktif durum yüzey rengine doğru adım atar, böylece her iki varyantta
+// da okunaklı kalır.
+$quick_toggle_checked_hover_bg_color: mix($fg_color, $bg_color, 88%);
+$quick_toggle_checked_active_bg_color: mix($fg_color, $bg_color, 76%);
+
+@mixin quick_toggle_checked($c) {
+  @include button(normal, $c: $c, $tc: $bg_color, $style: default);
+  &:focus { @include button(focus, $c: $c, $tc: $bg_color, $style: default);}
+  &:hover { @include button(hover, $c: $c, $tc: $bg_color, $style: default); background-color: $quick_toggle_checked_hover_bg_color;}
+  &:active { @include button(active, $c: $c, $tc: $bg_color, $style: default); background-color: $quick_toggle_checked_active_bg_color; &:hover { background-color: mix($fg_color, $bg_color, 70%); }}
+}
+
 // standalone toggle button
 .quick-toggle {
-  &:checked { @extend %default_button;}
+  &:checked { @include quick_toggle_checked($fg_color);}
 
   & > StBoxLayout { spacing: $base_padding * 1.5; }
 
@@ -54,27 +67,27 @@
     max-width: auto;
 
     &:ltr {
-      border-radius: $forced_circular_radius 0 0 $forced_circular_radius;
+      border-radius: $base_border_radius 0 0 $base_border_radius;
       > StBoxLayout { padding-right: $scaled_padding * 1.5; }
     }
 
     &:rtl {
-      border-radius: 0 $forced_circular_radius $forced_circular_radius 0;
+      border-radius: 0 $base_border_radius $base_border_radius 0;
       > StBoxLayout { padding-left: $scaled_padding * 1.5; }
     }
 
-    &:ltr:last-child { border-radius: $forced_circular_radius; }
-    &:rtl:last-child { border-radius: $forced_circular_radius; }
+    &:ltr:last-child { border-radius: $base_border_radius; }
+    &:rtl:last-child { border-radius: $base_border_radius; }
   }
 
   & .quick-toggle-menu-button {
     padding: $scaled_padding $scaled_padding * 1.75;
 
     &:ltr {
-      border-radius: 0 $forced_circular_radius $forced_circular_radius 0;
+      border-radius: 0 $base_border_radius $base_border_radius 0;
     }
     &:rtl {
-      border-radius: $forced_circular_radius 0 0 $forced_circular_radius;
+      border-radius: $base_border_radius 0 0 $base_border_radius;
     }
   }
 
@@ -93,10 +106,7 @@ $quick_toggle_menubutton_bg_color: if(
   $contrast == 'high', lighten($bg_color, 22%),
   if($variant == 'light', darken($bg_color, 5%), lighten($bg_color, 8%))
 );
-$quick_toggle_menubutton_checked_bg_color: if(
-  $contrast == 'high', st-mix(-st-accent-color, $fg_color, 75%),
-  if($variant == 'light', st-mix(-st-accent-color, $fg_color, 92%), st-mix(-st-accent-color, $fg_color, 85%))
-);
+$quick_toggle_menubutton_checked_bg_color: mix($fg_color, $bg_color, 92%);
 
 // separator colors
 $quick_toggle_separator_color: if(
@@ -106,7 +116,7 @@ $quick_toggle_separator_color: if(
 
 $quick_toggle_checked_separator_color: if(
   $contrast == 'high', transparent,
-  if($variant == 'light', st-mix(-st-accent-fg-color, -st-accent-color, 20%), st-mix(-st-accent-fg-color, -st-accent-color, 30%),)
+  transparentize($bg_color, .7)
 );
 
 .quick-toggle-has-menu {
@@ -116,12 +126,7 @@ $quick_toggle_checked_separator_color: if(
     &:hover { @include button(hover, $c: $quick_toggle_menubutton_bg_color);}
     &:active { @include button(active, $c: $quick_toggle_menubutton_bg_color);}
 
-    &:checked {
-      @include button(normal, $c: $quick_toggle_menubutton_checked_bg_color, $tc:-st-accent-fg-color, $style: default);
-      &:focus { @include button(focus, $c: $quick_toggle_menubutton_checked_bg_color, $tc:-st-accent-fg-color, $style: default);}
-      &:hover { @include button(hover, $c: $quick_toggle_menubutton_checked_bg_color, $tc:-st-accent-fg-color, $style: default);}
-      &:active { @include button(active, $c: $quick_toggle_menubutton_checked_bg_color, $tc:-st-accent-fg-color, $style: default);}
-    }
+    &:checked { @include quick_toggle_checked($quick_toggle_menubutton_checked_bg_color); }
   }
 
   &:checked {
@@ -155,7 +160,7 @@ $quick_toggle_checked_separator_color: if(
     @include button(normal);
   }
 
-  border-radius: $base_border_radius * 3;
+  border-radius: $base_border_radius;
 
   margin: $base_padding * 2 $base_padding * 3 0;
 

@@ -1,0 +1,107 @@
+/* Komut */
+// Ada'dan büyüyen komut çubuğu. Ada ile aynı yüzey, kenarlık ve yarıçap, böylece
+// geçiş tek bir nesnenin şekil değiştirmesi gibi okunur.
+
+$komut_row_height: 48px;
+$komut_visible_rows: 7;
+.vatan-komut {
+  padding: 10px;
+  border-radius: $ada_radius;
+  @include ada_surface();
+  // Gradient varken St bu uzun yüzeyin gölgesini sert bir dikdörtgen olarak çizer.
+  background-gradient-direction: none;
+  background-color: mix($ada_surface_top, $ada_surface_bottom, 50%);
+  color: $panel_fg_color;
+}
+
+.vatan-komut-content {
+  spacing: 4px;
+}
+
+// Upstream StEntry kuralları (tip artı pseudo class) çıplak bir class'ı geçer;
+// bu yüzden entry, alan görünümünü kaldırmak için Komut yüzeyinin altında
+// kapsamlanır.
+.vatan-komut StEntry.vatan-komut-entry,
+.vatan-komut StEntry.vatan-komut-entry:hover,
+.vatan-komut StEntry.vatan-komut-entry:focus {
+  min-height: 34px;
+  padding: 8px 12px;
+  border: none;
+  border-radius: $ada_control_radius;
+  background-color: transparent;
+  box-shadow: none;
+  color: $fg_color;
+  selection-background-color: st-transparentize(-st-accent-color, .7);
+  @include fontsize($base_font_size * 1.25);
+
+  StIcon.primary {
+    padding-right: 10px;
+    color: $insensitive_fg_color;
+  }
+
+  .hint-text {
+    color: $insensitive_fg_color;
+  }
+}
+
+.vatan-komut-header {
+  padding: 4px 12px;
+  color: $insensitive_fg_color;
+  font-size: 9pt;
+  font-weight: bold;
+  letter-spacing: 1px;
+}
+
+.vatan-komut-scroll {
+  max-height: $komut_row_height * $komut_visible_rows;
+}
+
+.vatan-komut-row {
+  min-height: $komut_row_height;
+  // İki satırlı satırlar (başlık artı açıklama) üstte ve altta nefes alanı ister.
+  padding: 6px 10px;
+  border-radius: $ada_control_radius;
+
+  StBoxLayout {
+    spacing: 12px;
+  }
+
+  &:selected {
+    background-color: transparentize($fg_color, .94);
+
+    .vatan-komut-row-icon {
+      background-color: -st-accent-color;
+      color: -st-accent-fg-color;
+    }
+  }
+}
+
+.vatan-komut-row-icon {
+  width: 32px;
+  height: 32px;
+  border-radius: 9px;
+  background-color: transparentize($fg_color, .95);
+}
+
+.vatan-komut-row-title {
+  font-weight: 500;
+}
+
+.vatan-komut-row-description,
+.vatan-komut-row-kind,
+.vatan-komut-empty {
+  color: $insensitive_fg_color;
+  font-size: 9pt;
+}
+
+.vatan-komut-empty {
+  padding: 16px 12px;
+}
+
+.vatan-komut-footer {
+  margin-top: 6px;
+  padding: 10px 12px 4px;
+  border-top: 1px solid $borders_color;
+  color: $insensitive_fg_color;
+  font-size: 9pt;
+}

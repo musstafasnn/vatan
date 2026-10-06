@@ -22,7 +22,13 @@ const _modes = {
     'restrictive': {
         parentMode: null,
         stylesheetName: 'gnome-shell.css',
-        colorScheme: 'prefer-dark',
+        // VATAN uygulama renk şemasını izler: 'default' kabuk için de açık demektir;
+        // böylece koyu mod düğmesi ve Komut kabuğu ve uygulamaları birlikte çevirir,
+        // açık uygulamaların üzerinde koyu bir kabuk bırakmaz. Kilit ve giriş
+        // ekranları bunu bilerek devralır: çekirdekleri her zaman koyu sistem
+        // token'larını kullanır ve orada koyuyu zorlamak her kilitlemede
+        // stylesheet'i yeniden yüklerdi.
+        colorScheme: 'prefer-light',
         themeResourceName: 'gnome-shell-theme.gresource',
         hasOverview: false,
         showCalendarEvents: false,
@@ -58,7 +64,7 @@ const _modes = {
             : ['polkitAgent'],
         panel: {
             left: [],
-            center: ['dateMenu'],
+            center: [],
             right: ['dwellClick', 'a11y', 'keyboard', 'quickSettings'],
         },
         panelStyle: 'login-screen',
@@ -92,9 +98,9 @@ const _modes = {
         unlockDialog: UnlockDialog,
         components: USER_SESSION_COMPONENTS,
         panel: {
-            left: ['activities'],
-            center: ['dateMenu'],
-            right: ['screenRecording', 'screenSharing', 'dwellClick', 'a11y', 'keyboard', 'quickSettings'],
+            left: ['vatanDock'],
+            center: ['vatanKomut', 'vatanTimer', 'vatanMedia'],
+            right: ['vatanWorkspace', 'screenRecording', 'screenSharing', 'dwellClick', 'a11y', 'keyboard', 'quickSettings', 'dateMenu'],
         },
     },
 };

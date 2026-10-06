@@ -48,6 +48,7 @@
 
 /* Tiled window previews */
 .tile-preview {
-  background-color: st-transparentize(-st-accent-color,0.5);
-  border: 1px solid -st-accent-color;
+  background-color: st-transparentize(-st-accent-color, .87);
+  border: 1.5px solid -st-accent-color;
+  border-radius: $modal_radius;
 }

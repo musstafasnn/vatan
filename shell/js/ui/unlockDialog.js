@@ -27,9 +27,32 @@ const HINT_TIMEOUT = 4;
 const CROSSFADE_TIME = 300;
 const FADE_OUT_TRANSLATION = 200;
 const FADE_OUT_SCALE = 0.3;
+export const CLOCK_SCREEN_MARGIN = 48;
 
-const BLUR_BRIGHTNESS = 0.65;
-const BLUR_RADIUS = 90;
+// Kilit saati ve greeter sütunu tek bir alt kenarı paylaşır: ekranın altı,
+// yalnızca x aralıkları altından geçecekse adanın üstüne kaldırılır. Tüm
+// argümanlar birincil monitör koordinatlarındadır.
+export function bottomEdgeClearOfIsland(x1, x2, screenBottom, margin) {
+    const bottom = screenBottom - margin;
+    const monitor = Main.layoutManager.primaryMonitor;
+    // Dönüştürülmemiş: greeter panelBox'ı translation_y ile içeri kaydırır, bu da
+    // aksi halde ekranın altında bir ada gibi okunurdu.
+    const {panelBox} = Main.layoutManager;
+    const panelWidth = Main.panel.width;
+    const islandX1 = panelBox.x + Main.panel.x - monitor.x;
+    const islandTop = panelBox.y + Main.panel.y - monitor.y;
+
+    if (panelWidth <= 0 || x2 <= islandX1 || x1 >= islandX1 + panelWidth)
+        return bottom;
+    return Math.min(bottom, islandTop - margin);
+}
+
+// Fiilen blur yok, böylece kontur duvar kâğıdı keskin kalır. 0 değil: sıfır
+// yarıçap Shell.BlurEffect'in parlaklık geçişini de atlamasına yol açar. Karartma,
+// açık kilit metninin duvar kâğıdının açık varyantında okunaklı kalacağı kadar
+// güçlüdür.
+const BLUR_BRIGHTNESS = 0.45;
+const BLUR_RADIUS = 1;
 
 const NotificationsBox = GObject.registerClass({
     Signals: {'wake-up-screen': {}},
@@ -334,20 +357,20 @@ class UnlockDialogClock extends St.BoxLayout {
 
         this._time = new St.Label({
             style_class: 'unlock-dialog-clock-time',
-            x_align: Clutter.ActorAlign.CENTER,
+            x_align: Clutter.ActorAlign.START,
         });
         this._date = new St.Label({
             style_class: 'unlock-dialog-clock-date',
-            x_align: Clutter.ActorAlign.CENTER,
+            x_align: Clutter.ActorAlign.START,
         });
         this._hint = new St.Label({
             style_class: 'unlock-dialog-clock-hint',
-            x_align: Clutter.ActorAlign.CENTER,
+            x_align: Clutter.ActorAlign.START,
             opacity: 0,
         });
 
-        this.add_child(this._time);
         this.add_child(this._date);
+        this.add_child(this._time);
         this.add_child(this._hint);
 
         this._wallClock = new GnomeDesktop.WallClock({time_only: true});
@@ -401,10 +424,11 @@ class UnlockDialogClock extends St.BoxLayout {
 
 const UnlockDialogLayout = GObject.registerClass(
 class UnlockDialogLayout extends Clutter.LayoutManager {
-    _init(stack, notifications, switchUserButton) {
+    _init(stack, clock, notifications, switchUserButton) {
         super._init();
 
         this._stack = stack;
+        this._clock = clock;
         this._notifications = notifications;
         this._switchUserButton = switchUserButton;
     }
@@ -439,17 +463,23 @@ class UnlockDialogLayout extends Clutter.LayoutManager {
             notificationsHeight,
             height - tenthOfHeight - stackHeight);
 
+        // Ortalı sütun tam adanın üzerinde durur; üstünde tut.
+        const notificationsBottom = bottomEdgeClearOfIsland(
+            columnX1, columnX1 + columnWidth, height, 0);
+        maxNotificationsHeight = Math.max(0, Math.min(
+            maxNotificationsHeight, notificationsBottom - tenthOfHeight - stackHeight));
+
         actorBox.x1 = columnX1;
-        actorBox.y1 = height - maxNotificationsHeight;
+        actorBox.y1 = notificationsBottom - maxNotificationsHeight;
         actorBox.x2 = columnX1 + columnWidth;
-        actorBox.y2 = actorBox.y1 + maxNotificationsHeight;
+        actorBox.y2 = notificationsBottom;
 
         this._notifications.allocate(actorBox);
 
         // Authentication Box
         let stackY = Math.min(
             thirdOfHeight,
-            height - stackHeight - maxNotificationsHeight);
+            notificationsBottom - stackHeight - maxNotificationsHeight);
 
         actorBox.x1 = columnX1;
         actorBox.y1 = stackY;
@@ -457,6 +487,28 @@ class UnlockDialogLayout extends Clutter.LayoutManager {
         actorBox.y2 = stackY + stackHeight;
 
         this._stack.allocate(actorBox);
+
+        // Saat sol alt köşede, ortalı istemden ayrı durur.
+        const {scaleFactor} = St.ThemeContext.get_for_stage(global.stage);
+        const clockMargin = CLOCK_SCREEN_MARGIN * scaleFactor;
+        const [, , naturalClockWidth, clockHeight] = this._clock.get_preferred_size();
+        const clockWidth = Math.min(naturalClockWidth, width - 2 * clockMargin);
+        if (this._clock.get_text_direction() === Clutter.TextDirection.RTL)
+            actorBox.x1 = box.x2 - clockMargin - clockWidth;
+        else
+            actorBox.x1 = box.x1 + clockMargin;
+        actorBox.x2 = actorBox.x1 + clockWidth;
+
+        // Dar ekranlarda köşe saati ortalı bildirim sütununa ulaşır; üst üste binmek
+        // yerine onların üstüne kaldır.
+        let clockBottom = bottomEdgeClearOfIsland(actorBox.x1, actorBox.x2, box.y2, clockMargin);
+        const overlapsNotifications = maxNotificationsHeight > 0 &&
+            actorBox.x1 < columnX1 + columnWidth && actorBox.x2 > columnX1;
+        if (overlapsNotifications)
+            clockBottom = Math.min(clockBottom, notificationsBottom - maxNotificationsHeight - clockMargin);
+        actorBox.y1 = clockBottom - clockHeight;
+        actorBox.y2 = clockBottom;
+        this._clock.allocate(actorBox);
 
         // Switch User button
         if (this._switchUserButton.visible) {
@@ -568,8 +620,8 @@ export const UnlockDialog = GObject.registerClass({
         this._stack.add_child(this._promptBox);
 
         this._clock = new Clock();
-        this._clock.set_pivot_point(0.5, 0.5);
-        this._stack.add_child(this._clock);
+        // Saatin sabitlendiği köşeye doğru ölçekle.
+        this._clock.set_pivot_point(0, 1);
         this._showClock();
 
         this.allowCancel = false;
@@ -614,10 +666,12 @@ export const UnlockDialog = GObject.registerClass({
         let mainBox = new St.Widget();
         mainBox.add_constraint(new Layout.MonitorConstraint({primary: true}));
         mainBox.add_child(this._stack);
+        mainBox.add_child(this._clock);
         mainBox.add_child(this._notificationsBox);
         mainBox.add_child(this._otherUserButton);
         mainBox.layout_manager = new UnlockDialogLayout(
             this._stack,
+            this._clock,
             this._notificationsBox,
             this._otherUserButton);
         this.add_child(mainBox);
@@ -830,7 +884,9 @@ export const UnlockDialog = GObject.registerClass({
         this._ensureAuthPrompt();
 
         let progress = this._adjustment.value;
-        tracker.confirmSwipe(this._stack.height,
+        // Yığın artık yalnızca saat gösterilirken gizli olan istemi tutar; ekranın
+        // üçte biri kaydırma mesafesini anlamlı tutar.
+        tracker.confirmSwipe(this.height / 3,
             [0, 1],
             progress,
             Math.round(progress));

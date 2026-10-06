@@ -85,12 +85,6 @@ $_gdm_dialog_width: 25em;
   min-height: 2.75em;
 }
 
-.login-dialog-user-selection-box {
-  // padding to ensure the box doesn't overlap the panel
-  padding-top: 4em;
-  padding-bottom: 8em;
-}
-
 .login-dialog-not-listed-label {
   @extend %heading;
   padding: $base_padding;
@@ -132,7 +126,7 @@ $_gdm_dialog_width: 25em;
     &:hover { @include button(hover, $tc:$_gdm_fg, $c:$system_base_color, $always_dark: true);}
     &:active { @include button(active, $tc:$_gdm_fg, $c:$system_base_color, $always_dark: true);}
 
-    border-radius: $modal_radius * 0.6;
+    border-radius: $base_border_radius;
     padding: $base_padding * 1.2;
   }
 }
@@ -141,7 +135,7 @@ $_gdm_dialog_width: 25em;
   .login-dialog-auth-list-item {
     @extend %lockscreen_button;
 
-    border-radius: $modal_radius * 0.6;
+    border-radius: $base_border_radius;
     padding: $base_padding * 1.2;
   }
 }
@@ -225,23 +219,27 @@ $_gdm_dialog_width: 25em;
 // Clock
 .unlock-dialog-clock {
   color: $_gdm_fg;
-  spacing: 2em;
+  spacing: 0;
 
+  // Instrument Serif VATAN font paketiyle gelir; jenerik serif yedeği,
+  // o olmadan da saati okunaklı tutar.
   .unlock-dialog-clock-time {
-    @extend %numeric;
-    @include fontsize(72pt);
-    font-weight: 800;
+    font-family: "Instrument Serif", serif;
+    font-size: 150pt;
+    font-weight: 400;
+    letter-spacing: -6px;
   }
 
   .unlock-dialog-clock-date {
-    @extend %title_1;
+    @include fontsize(13pt);
     font-weight: 400;
+    color: transparentize($_gdm_fg, .35);
   }
 
   .unlock-dialog-clock-hint {
     margin-top: 2em;
     padding: $base_padding $base_padding * 3;
-    border-radius: $base_border_radius * 2;
+    border-radius: $base_border_radius;
     font-weight: bold;
   }
 }

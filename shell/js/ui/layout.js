@@ -206,7 +206,6 @@ export const LayoutManager = GObject.registerClass({
         this.hotCorners = [];
 
         this._keyboardIndex = -1;
-        this._rightPanelBarrier = null;
 
         this._inOverview = false;
         this._updateRegionIdle = 0;
@@ -241,7 +240,6 @@ export const LayoutManager = GObject.registerClass({
             }
 
             this._destroyHotCorners();
-            this._destroyPanelBarrier();
             this.uiGroup.destroy();
         });
 
@@ -279,12 +277,18 @@ export const LayoutManager = GObject.registerClass({
             name: 'panelBox',
             orientation: Clutter.Orientation.VERTICAL,
         });
+        // Kutu yalnızca strut'u ayırmak için alt kenarın tamamına yayılır;
+        // içindeki ada kendi giriş bölgesini izler (bkz. Panel), bu yüzden X11'de
+        // adanın yanındaki boş şerit hâlâ alttaki pencerelere ulaşır.
         this.addChrome(this.panelBox, {
             affectsStruts: true,
+            affectsInputRegion: false,
             trackFullscreen: true,
         });
         this.panelBox.connect('notify::allocation',
             this._panelBoxChanged.bind(this));
+        this.panelBox.connect('notify::height',
+            () => this._updateBoxes());
 
         this.modalDialogGroup = new St.Widget({
             name: 'modalDialogGroup',
@@ -558,45 +562,21 @@ export const LayoutManager = GObject.registerClass({
         if (!this.primaryMonitor)
             return;
 
-        this.panelBox.set_position(this.primaryMonitor.x, this.primaryMonitor.y);
-        this.panelBox.set_size(this.primaryMonitor.width, -1);
+        // Panel kutusu, Mutter alt strut ayırsın diye alt kenara yayılır;
+        // ada kendisi bunun içinde ortalanmıştır.
+        const {x, y, width, height} = this.primaryMonitor;
+        this.panelBox.set_size(width, -1);
+        this.panelBox.set_position(x, y + height - this.panelBox.height);
 
         this.keyboardIndex = this.primaryIndex;
     }
 
     _panelBoxChanged() {
-        this._updatePanelBarrier();
-
         let size = this.panelBox.height;
         this.hotCorners.forEach(corner => {
             if (corner)
                 corner.setBarrierSize(size);
         });
-    }
-
-    _destroyPanelBarrier() {
-        if (this._rightPanelBarrier) {
-            this._rightPanelBarrier.destroy();
-            this._rightPanelBarrier = null;
-        }
-    }
-
-    _updatePanelBarrier() {
-        this._destroyPanelBarrier();
-
-        if (!this.primaryMonitor)
-            return;
-
-        if (this.panelBox.height) {
-            let primary = this.primaryMonitor;
-
-            this._rightPanelBarrier = new Meta.Barrier({
-                backend: global.backend,
-                x1: primary.x + primary.width, y1: primary.y,
-                x2: primary.x + primary.width, y2: primary.y + this.panelBox.height,
-                directions: Meta.BarrierDirection.NEGATIVE_X,
-            });
-        }
     }
 
     _monitorsChanged() {
@@ -733,22 +713,22 @@ export const LayoutManager = GObject.registerClass({
         if (Meta.is_restart()) {
             // On restart, we don't do an animation.
         } else if (Main.sessionMode.isGreeter) {
-            this.panelBox.translation_y = -this.panelBox.height;
+            this.panelBox.translation_y = this.panelBox.height;
         } else {
             this.keyboardBox.hide();
 
             let monitor = this.primaryMonitor;
 
-            if (!Main.sessionMode.hasOverview) {
-                const x = monitor.x + monitor.width / 2.0;
-                const y = monitor.y + monitor.height / 2.0;
+            // Upstream overview'a giriş yapar; VATAN masaüstüne giriş yapar, bu
+            // yüzden oturum her zaman yakınlaşma (zoom-in) yolunu izler.
+            const x = monitor.x + monitor.width / 2.0;
+            const y = monitor.y + monitor.height / 2.0;
 
-                this.uiGroup.set_pivot_point(
-                    x / global.screen_width,
-                    y / global.screen_height);
-                this.uiGroup.scale_x = this.uiGroup.scale_y = 0.75;
-                this.uiGroup.opacity = 0;
-            }
+            this.uiGroup.set_pivot_point(
+                x / global.screen_width,
+                y / global.screen_height);
+            this.uiGroup.scale_x = this.uiGroup.scale_y = 0.75;
+            this.uiGroup.opacity = 0;
 
             global.window_group.set_clip(monitor.x, monitor.y, monitor.width, monitor.height);
 
@@ -790,20 +770,16 @@ export const LayoutManager = GObject.registerClass({
     }
 
     async _startupAnimationSession() {
-        if (Main.sessionMode.hasOverview) {
-            await Main.overview.runStartupAnimation();
-        } else {
-            await new Promise(resolve => {
-                this.uiGroup.ease({
-                    scale_x: 1,
-                    scale_y: 1,
-                    opacity: 255,
-                    duration: STARTUP_ANIMATION_TIME,
-                    mode: Clutter.AnimationMode.EASE_OUT_QUAD,
-                    onStopped: () => resolve(),
-                });
+        await new Promise(resolve => {
+            this.uiGroup.ease({
+                scale_x: 1,
+                scale_y: 1,
+                opacity: 255,
+                duration: STARTUP_ANIMATION_TIME,
+                mode: Clutter.AnimationMode.EASE_OUT_QUAD,
+                onStopped: () => resolve(),
             });
-        }
+        });
     }
 
     _startupAnimationComplete() {

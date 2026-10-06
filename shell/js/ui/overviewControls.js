@@ -161,24 +161,30 @@ class ControlsManagerLayout extends Clutter.LayoutManager {
         let availableHeight = height;
 
         // Search entry
-        let [searchHeight] = this._searchEntry.get_preferred_height(width);
-        childBox.set_origin(0, startY);
-        childBox.set_size(width, searchHeight);
-        this._searchEntry.allocate(childBox);
+        let searchHeight = 0;
+        if (this._searchEntry.visible) {
+            [searchHeight] = this._searchEntry.get_preferred_height(width);
+            childBox.set_origin(0, startY);
+            childBox.set_size(width, searchHeight);
+            this._searchEntry.allocate(childBox);
 
-        availableHeight -= searchHeight + spacing;
+            availableHeight -= searchHeight + spacing;
+        }
 
         // Dash
         const maxDashHeight = Math.round(box.get_height() * DASH_MAX_HEIGHT_RATIO);
         this._dash.setMaxSize(width, maxDashHeight);
 
-        let [, dashHeight] = this._dash.get_preferred_height(width);
-        dashHeight = Math.min(dashHeight, maxDashHeight);
-        childBox.set_origin(0, startY + height - dashHeight);
-        childBox.set_size(width, dashHeight);
-        this._dash.allocate(childBox);
+        let dashHeight = 0;
+        if (this._dash.visible) {
+            [, dashHeight] = this._dash.get_preferred_height(width);
+            dashHeight = Math.min(dashHeight, maxDashHeight);
+            childBox.set_origin(0, startY + height - dashHeight);
+            childBox.set_size(width, dashHeight);
+            this._dash.allocate(childBox);
 
-        availableHeight -= dashHeight + spacing;
+            availableHeight -= dashHeight + spacing;
+        }
 
         // Workspace Thumbnails
         let thumbnailsHeight = 0;
@@ -334,9 +340,13 @@ class ControlsManager extends St.Widget {
         this._searchEntryBin = new St.Bin({
             child: this._searchEntry,
             x_align: Clutter.ActorAlign.CENTER,
+            visible: false,
         });
 
+        // Başka kod Main.overview.dash'i okur, bu yüzden actor kalır; VATAN
+        // uygulamaları bunun yerine Ada'dan ve komut paletinden başlatır.
         this.dash = new Dash.Dash();
+        this.dash.visible = false;
 
         this._workspaceAdjustment = Main.createWorkspacesAdjustment(this);
 
@@ -420,6 +430,12 @@ class ControlsManager extends St.Widget {
             if (this._a11ySettings.get_boolean('stickykeys-enable'))
                 return;
 
+            if (Main.actionMode === Shell.ActionMode.POPUP) {
+                if (Main.vatanKomut?.isOpen)
+                    Main.vatanKomut.close();
+                return;
+            }
+
             const {initialState, finalState, transitioning} =
                 this._stateAdjustment.getStateTransitionParams();
 
@@ -431,10 +447,14 @@ class ControlsManager extends St.Widget {
                 ? transitioning && finalState > initialState
                 : Main.overview.visible && timeDiff < Overview.ANIMATION_TIME;
 
+            // Masaüstünde Super Komut'u açar; overview içinde yine de overview'dan
+            // çıkar, böylece tuş kullanıcıyı orada hapsetmez.
             if (shouldShift)
                 this._shiftState(Meta.MotionDirection.UP);
-            else
+            else if (Main.overview.visible || !Main.vatanKomut)
                 Main.overview.toggle();
+            else
+                Main.vatanKomut.toggle();
         }, this);
 
         // connect_after to give search controller first dibs on the event

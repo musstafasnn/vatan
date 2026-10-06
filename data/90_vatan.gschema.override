@@ -1,0 +1,28 @@
+# VATAN varsayılanları. Her grup ":VATAN" ile kapsamlanmıştır; bu yüzden
+# yalnızca VATAN oturumunda (XDG_CURRENT_DESKTOP içinde VATAN geçer) uygulanır
+# ve Pardus'un stok GNOME oturumuna dokunmaz. 90_ öneki, Pardus'un
+# 20_pardus-gnome-settings override dosyasından sonra sıralanır.
+
+[org.gnome.desktop.interface:VATAN]
+accent-color='red'
+icon-theme='VATAN'
+cursor-theme='VATAN'
+color-scheme='default'
+enable-hot-corners=false
+font-name='Geist 11'
+document-font-name='Geist 11'
+monospace-font-name='Geist Mono 11'
+
+[org.gnome.desktop.wm.preferences:VATAN]
+button-layout=':minimize,maximize,close'
+
+[org.gnome.desktop.background:VATAN]
+picture-uri='file:///usr/share/backgrounds/vatan/vatan-light.png'
+picture-uri-dark='file:///usr/share/backgrounds/vatan/vatan-dark.png'
+picture-options='zoom'
+
+[org.gnome.desktop.screensaver:VATAN]
+picture-uri='file:///usr/share/backgrounds/vatan/vatan-light.png'
+
+[org.gnome.shell:VATAN]
+favorite-apps=['firefox-esr.desktop', 'org.gnome.Nautilus.desktop', 'org.gnome.Console.desktop', 'libreoffice-writer.desktop', 'tr.org.pardus.software.desktop', 'vatan-nsosyal.desktop']

@@ -61,7 +61,7 @@ $default_key_bg_color: if($variant=='light', darken($key_bg_color, 11%), darken(
 
 // long press on a key popup
 .keyboard-subkeys-boxpointer {
-  -arrow-border-radius: $base_border_radius * 2 + $base_padding;
+  -arrow-border-radius: $modal_radius;
   -arrow-background-color: $osd_bg_color;
   -arrow-border-width: 1px;
   -arrow-border-color: lighten($osd_bg_color, 9%);
@@ -69,7 +69,7 @@ $default_key_bg_color: if($variant=='light', darken($key_bg_color, 11%), darken(
   -arrow-rise: 10px;
   -boxpointer-gap: $base_margin;
 
-  border-radius: $base_border_radius * 2 + $base_padding;
+  border-radius: $modal_radius;
   box-shadow: 0 0 12px 0 rgba(0,0,0,0.1);
 
   .key-container {

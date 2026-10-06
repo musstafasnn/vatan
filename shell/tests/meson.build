@@ -44,7 +44,14 @@ unit_tests = {
     # run in UTC
     'env': { 'TZ': 'UTC' },
   },
+  'turkishText': {},
   'url': {},
+  'vatanActions': {},
+  'vatanConvert': {},
+  'vatanFeed': {},
+  'vatanFocus': {},
+  'vatanTiling': {},
+  'vatanTimer': {},
   'versionCompare': {},
 }
 

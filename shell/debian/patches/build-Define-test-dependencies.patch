@@ -1,0 +1,127 @@
+From: =?utf-8?b?Ik1hcmNvIFRyZXZpc2FuIChUcmV2acOxbyki?= <mail@3v1n0.net>
+Date: Thu, 11 Sep 2025 13:29:31 +0200
+Subject: build: Define test dependencies
+
+Ideally meson tests should just work without any pre-requisite build,
+instead, we only need a configured build folder to work, but this does
+not go as expected in gnome shell at the moment.
+
+Since tests require generated files and compiled typelibs they don't
+depend on, so just using `meson test -C build <test-name>` does not work
+as expected.
+
+So add test dependencies on test cases. We do not need to have per-test
+dependencies right now since most of them share just the same
+requirements, and this makes it easier to maintain
+
+Applied-upstream: 49.0, commit:e014efcab228812ef0751e4706d648c19add1ab1
+---
+ data/meson.build   |  7 ++++---
+ src/meson.build    |  4 ++--
+ src/st/meson.build |  1 +
+ tests/meson.build  | 15 +++++++++++++++
+ 4 files changed, 22 insertions(+), 5 deletions(-)
+
+diff --git a/data/meson.build b/data/meson.build
+index 114dd20..76a32ca 100644
+--- a/data/meson.build
++++ b/data/meson.build
+@@ -70,11 +70,12 @@ data_resources = [
+   {'name': 'osk-layouts'},
+   {'name': 'theme', 'deps': theme_deps}
+ ]
++data_resources_targets = []
+ foreach resource : data_resources
+   name = resource.get('name')
+   deps = resource.get('deps', [])
+ 
+-  gnome.compile_resources(
++  data_resources_targets += gnome.compile_resources(
+     'gnome-shell-' + name,
+     'gnome-shell-@0@.gresource.xml'.format(name),
+     source_dir: name,
+@@ -161,8 +162,8 @@ if have_systemd
+ endif
+ 
+ # for unit tests - gnome.compile_schemas() only looks in srcdir
+-custom_target('compile-schemas',
++compiled_schemas = custom_target('compile-schemas',
+   input: schema,
+   output: 'gschemas.compiled',
+   command: [find_program('glib-compile-schemas'), '--strict', data_builddir],
+-  build_by_default: true)
++)
+diff --git a/src/meson.build b/src/meson.build
+index 9691ef8..1099204 100644
+--- a/src/meson.build
++++ b/src/meson.build
+@@ -280,7 +280,7 @@ libshell_gir = gnome.generate_gir(libshell,
+   kwargs: introspection_common,
+ )
+ 
+-executable('gnome-shell', 'main.c',
++gnome_shell_binary = executable('gnome-shell', 'main.c',
+   c_args: gnome_shell_cflags + typelib_cflags,
+   dependencies: gnome_shell_deps + [libshell_dep, libst_dep, mutter_dep],
+   include_directories: [conf_inc],
+@@ -300,7 +300,7 @@ if have_portal_helper
+   )
+ endif
+ 
+-executable('gnome-shell-perf-helper', 'shell-perf-helper.c', js_resources,
++gnome_shell_perf_helper = executable('gnome-shell-perf-helper', 'shell-perf-helper.c', js_resources,
+   dependencies: [gtk_dep, gio_dep, m_dep],
+   include_directories: [conf_inc],
+   install_dir: libexecdir,
+diff --git a/src/st/meson.build b/src/st/meson.build
+index 5279455..22be0e0 100644
+--- a/src/st/meson.build
++++ b/src/st/meson.build
+@@ -223,6 +223,7 @@ if get_option('tests') and have_x11_client
+ 
+   test('css-styling', test_theme,
+     suite: 'st',
++    depends: compiled_schemas,
+     workdir: meson.current_source_dir(),
+   )
+ endif
+diff --git a/tests/meson.build b/tests/meson.build
+index a12cf2f..06174c4 100644
+--- a/tests/meson.build
++++ b/tests/meson.build
+@@ -13,6 +13,15 @@ gvc_typelib_path = fs.parent(libgvc.get_variable('libgvc_gir')[1].full_path())
+ shell_typelib_path = fs.parent(libshell_gir[1].full_path())
+ st_typelib_path = fs.parent(libst_gir[1].full_path())
+ 
++# Shared tests dependencies.
++tests_dependencies = [
++  compiled_schemas,
++  data_resources_targets,
++  libst_gir[1],
++  libshell_gir[1],
++  libgvc_gir[1],
++]
++
+ unit_testenv = environment()
+ unit_testenv.set('GNOME_SHELL_DATADIR', data_builddir)
+ unit_testenv.append('GI_TYPELIB_PATH', gvc_typelib_path, separator: ':')
+@@ -54,6 +63,7 @@ foreach test, extra_args : unit_tests
+       'unit/@0@.js'.format(test),
+     ],
+     suite: 'unit',
++    depends: tests_dependencies,
+     env: local_test_env,
+     protocol: 'tap',
+     workdir: meson.current_source_dir())
+@@ -101,6 +111,11 @@ foreach shell_test : shell_tests
+       options,
+       '@0@/shell/@1@.js'.format(meson.current_source_dir(), test_name),
+     ],
++    depends: [
++      gnome_shell_binary,
++      gnome_shell_perf_helper,
++      tests_dependencies,
++    ],
+     is_parallel: false,
+     env: shell_testenv,
+   )

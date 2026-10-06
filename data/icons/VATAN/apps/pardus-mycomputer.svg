@@ -1,0 +1,57 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="128" height="128" viewBox="0 0 128 128">
+<defs>
+<linearGradient id="base" x1=".15" y1="0" x2=".85" y2="1">
+<stop offset="0" stop-color="#fffefa"/>
+<stop offset="1" stop-color="#ddd5c4"/>
+</linearGradient>
+<linearGradient id="rim" x1="0" y1="0" x2="0" y2="1">
+<stop offset="0" stop-color="#fff" stop-opacity="0.9"/>
+<stop offset=".3" stop-color="#fff" stop-opacity="0"/>
+<stop offset=".72" stop-color="#000" stop-opacity="0"/>
+<stop offset="1" stop-color="#000" stop-opacity="0.14"/>
+</linearGradient>
+<radialGradient id="sheen" cx=".2" cy=".1" r=".9">
+<stop offset="0" stop-color="#fff" stop-opacity="0"/>
+<stop offset="1" stop-color="#fff" stop-opacity="0"/>
+</radialGradient>
+<clipPath id="inside">
+<path d="M50 8H78C112.44 8 120 15.56 120 50V78C120 112.44 112.44 120 78 120H50C15.56 120 8 112.44 8 78V50C8 15.56 15.56 8 50 8Z"/>
+</clipPath>
+<filter id="drop" x="-20%" y="-20%" width="140%" height="140%">
+<feGaussianBlur stdDeviation="2.4"/>
+</filter>
+<filter id="lift" x="-20%" y="-20%" width="140%" height="140%">
+<feGaussianBlur in="SourceAlpha" stdDeviation="1.3"/>
+<feOffset dx=".7" dy="1.8"/>
+<feComponentTransfer>
+<feFuncA type="linear" slope="0.16"/>
+</feComponentTransfer>
+<feMerge>
+<feMergeNode/>
+<feMergeNode in="SourceGraphic"/>
+</feMerge>
+</filter>
+<linearGradient id="p-slate" x1="0" y1="0" x2="0" y2="1">
+<stop offset="0" stop-color="#3a414e"/>
+<stop offset="1" stop-color="#1b1f27"/>
+</linearGradient>
+<linearGradient id="p-screen" x1="0" y1="0" x2="0" y2="1">
+<stop offset="0" stop-color="#eef1f5"/>
+<stop offset="1" stop-color="#cdd4de"/>
+</linearGradient>
+</defs>
+<path d="M50 8H78C112.44 8 120 15.56 120 50V78C120 112.44 112.44 120 78 120H50C15.56 120 8 112.44 8 78V50C8 15.56 15.56 8 50 8Z" fill="#000" opacity=".3" transform="translate(0 2.6)" filter="url(#drop)"/>
+<path d="M50 8H78C112.44 8 120 15.56 120 50V78C120 112.44 112.44 120 78 120H50C15.56 120 8 112.44 8 78V50C8 15.56 15.56 8 50 8Z" fill="#000" opacity=".18" transform="translate(0 .8)"/>
+<path d="M50 8H78C112.44 8 120 15.56 120 50V78C120 112.44 112.44 120 78 120H50C15.56 120 8 112.44 8 78V50C8 15.56 15.56 8 50 8Z" fill="url(#base)"/>
+<path d="M50 8H78C112.44 8 120 15.56 120 50V78C120 112.44 112.44 120 78 120H50C15.56 120 8 112.44 8 78V50C8 15.56 15.56 8 50 8Z" fill="url(#sheen)"/>
+<g filter="url(#lift)">
+<path d="M24 20H104A8 8 0 0 1 112 28V80A8 8 0 0 1 104 88H24A8 8 0 0 1 16 80V28A8 8 0 0 1 24 20Z" fill="url(#p-slate)"/>
+<path d="M25 26H103A3 3 0 0 1 106 29V77A3 3 0 0 1 103 80H25A3 3 0 0 1 22 77V29A3 3 0 0 1 25 26Z" fill="url(#p-screen)"/>
+<path d="M30 60C40 48 52 66 62 52S86 46 98 54M34 70C46 60 60 74 72 62S90 60 100 66M44 44C54 38 64 46 76 40" fill="none" stroke="#1b1f27" stroke-width="1" opacity=".22"/>
+<circle cx="54" cy="47" r="6" fill="#e62d42" opacity=".18"/>
+<circle cx="54" cy="47" r="2.6" fill="#e62d42"/>
+<path d="M56 88H72L74 99H54Z" fill="url(#p-slate)"/>
+<path d="M43.5 98H84.5A3.5 3.5 0 0 1 88 101.5V101.5A3.5 3.5 0 0 1 84.5 105H43.5A3.5 3.5 0 0 1 40 101.5V101.5A3.5 3.5 0 0 1 43.5 98Z" fill="url(#p-slate)"/>
+</g>
+<path d="M50 8H78C112.44 8 120 15.56 120 50V78C120 112.44 112.44 120 78 120H50C15.56 120 8 112.44 8 78V50C8 15.56 15.56 8 50 8Z" fill="none" stroke="url(#rim)" stroke-width="2.4" clip-path="url(#inside)"/>
+</svg>

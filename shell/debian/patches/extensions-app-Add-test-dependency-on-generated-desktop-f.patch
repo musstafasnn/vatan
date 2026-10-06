@@ -1,0 +1,48 @@
+From: =?utf-8?b?Ik1hcmNvIFRyZXZpc2FuIChUcmV2acOxbyki?= <mail@3v1n0.net>
+Date: Thu, 11 Sep 2025 14:12:02 +0200
+Subject: extensions-app: Add test dependency on generated desktop file
+
+Applied-upstream: 49.0, commit:8e6e76a62b20430d02cea20656ab988345a9e271
+---
+ subprojects/extensions-app/data/meson.build | 10 +++++-----
+ 1 file changed, 5 insertions(+), 5 deletions(-)
+
+diff --git a/subprojects/extensions-app/data/meson.build b/subprojects/extensions-app/data/meson.build
+index 920d578..138cab5 100644
+--- a/subprojects/extensions-app/data/meson.build
++++ b/subprojects/extensions-app/data/meson.build
+@@ -18,7 +18,7 @@ gnome.compile_resources(
+   install_dir: pkgdatadir
+ )
+ 
+-desktop_file = app_id + '.desktop'
++desktop_id = app_id + '.desktop'
+ desktopconf = configuration_data()
+ # We substitute in bindir so it works as an autostart
+ # file when built in a non-system prefix
+@@ -26,13 +26,13 @@ desktopconf.set('bindir', bindir)
+ desktopconf.set('app_id', app_id)
+ desktopconf.set('prgname', prgname)
+ 
+-i18n.merge_file(
++desktop_file = i18n.merge_file(
+   input: configure_file(
+     input: base_id + '.desktop.in.in',
+-    output: desktop_file + '.in',
++    output: desktop_id + '.in',
+     configuration: desktopconf
+   ),
+-  output: desktop_file,
++  output: desktop_id,
+   po_dir: po_dir,
+   install: true,
+   install_dir: desktopdir,
+@@ -40,7 +40,7 @@ i18n.merge_file(
+ )
+ 
+ if (desktop_file_validate.found())
+-  test('Validating ' + desktop_file,
++  test('Validating ' + desktop_id,
+     desktop_file_validate,
+     args: [desktop_file],
+     workdir: meson.current_build_dir()

@@ -153,7 +153,7 @@ export const SearchController = GObject.registerClass({
             else
                 Main.overview.hide();
             return Clutter.EVENT_STOP;
-        } else if (this._shouldTriggerSearch(symbol)) {
+        } else if (this.searchAvailable && this._shouldTriggerSearch(symbol)) {
             this.startSearch(event);
         }
         return Clutter.EVENT_PROPAGATE;
@@ -242,6 +242,9 @@ export const SearchController = GObject.registerClass({
     }
 
     _onTextChanged() {
+        if (!this.searchAvailable)
+            return;
+
         let terms = getTermsForSearchString(this._entry.get_text());
 
         const searchActive = terms.length > 0;
@@ -344,6 +347,11 @@ export const SearchController = GObject.registerClass({
      */
     removeProvider(provider) {
         this._searchResults._unregisterProvider(provider);
+    }
+
+    // VATAN entry bin'i gizler; hiçbir şey onun üzerinden arama başlatmamalı.
+    get searchAvailable() {
+        return this._entry.get_parent().visible;
     }
 
     get searchActive() {

@@ -1,0 +1,9 @@
+[Desktop Entry]
+Name=VATAN
+Comment=VATAN masaüstü oturumu
+Comment[en]=VATAN desktop session
+Exec=/usr/bin/gnome-session --session=vatan
+TryExec=/usr/lib/vatan-shell/bin/gnome-shell
+Type=Application
+DesktopNames=VATAN;GNOME;
+X-GDM-SessionRegisters=true

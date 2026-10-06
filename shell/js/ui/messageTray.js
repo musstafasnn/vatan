@@ -719,7 +719,7 @@ export const MessageTray = GObject.registerClass({
             name: 'notification-container',
             reactive: true,
             track_hover: true,
-            y_align: Clutter.ActorAlign.START,
+            y_align: Clutter.ActorAlign.END,
             x_align: Clutter.ActorAlign.CENTER,
             y_expand: true,
             x_expand: true,
@@ -919,6 +919,10 @@ export const MessageTray = GObject.registerClass({
             return;
 
         if (!notification.source.policy.showBanners && notification.urgency !== Urgency.CRITICAL)
+            return;
+
+        // VATAN zamanlı odağı: bildirim listede birikir, balon çıkmaz.
+        if (Main.vatanFocus?.active && notification.urgency !== Urgency.CRITICAL)
             return;
 
         if (this._notification === notification) {
@@ -1127,7 +1131,7 @@ export const MessageTray = GObject.registerClass({
         this._bannerBin.add_child(this._banner);
 
         this._bannerBin.opacity = 0;
-        this._bannerBin.y = -this._banner.height;
+        this._bannerBin.y = this._banner.height;
         this.show();
 
         global.compositor.disable_unredirect();
@@ -1181,7 +1185,7 @@ export const MessageTray = GObject.registerClass({
         this._bannerBin.ease({
             y: 0,
             duration: ANIMATION_TIME,
-            mode: Clutter.AnimationMode.EASE_OUT_BACK,
+            mode: Clutter.AnimationMode.EASE_OUT_QUINT,
             onComplete: () => {
                 this._notificationState = State.SHOWN;
                 this._showNotificationCompleted();
@@ -1248,9 +1252,9 @@ export const MessageTray = GObject.registerClass({
             mode: Clutter.AnimationMode.EASE_OUT_BACK,
         });
         this._bannerBin.ease({
-            y: -this._bannerBin.height,
+            y: this._bannerBin.height,
             duration,
-            mode: Clutter.AnimationMode.EASE_OUT_BACK,
+            mode: Clutter.AnimationMode.EASE_OUT_QUINT,
             onStopped: () => {
                 this._notificationState = State.HIDDEN;
                 this._hideNotificationCompleted();

@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE wallpapers SYSTEM "gnome-wp-list.dtd">
+<wallpapers>
+  <wallpaper deleted="false">
+    <name>VATAN</name>
+    <filename>/usr/share/backgrounds/vatan/vatan-light.png</filename>
+    <filename-dark>/usr/share/backgrounds/vatan/vatan-dark.png</filename-dark>
+    <options>zoom</options>
+    <shade_type>solid</shade_type>
+    <pcolor>#E7E9EC</pcolor>
+    <scolor>#0B0D11</scolor>
+  </wallpaper>
+  <wallpaper deleted="false">
+    <name>Ege</name>
+    <filename>/usr/share/backgrounds/vatan/ege-light.png</filename>
+    <filename-dark>/usr/share/backgrounds/vatan/ege-dark.png</filename-dark>
+    <options>zoom</options>
+    <shade_type>solid</shade_type>
+    <pcolor>#DFE6EB</pcolor>
+    <scolor>#202C38</scolor>
+  </wallpaper>
+  <wallpaper deleted="false">
+    <name>Kapadokya</name>
+    <filename>/usr/share/backgrounds/vatan/kapadokya-light.png</filename>
+    <filename-dark>/usr/share/backgrounds/vatan/kapadokya-dark.png</filename-dark>
+    <options>zoom</options>
+    <shade_type>solid</shade_type>
+    <pcolor>#E8D9CA</pcolor>
+    <scolor>#5F4131</scolor>
+  </wallpaper>
+  <wallpaper deleted="false">
+    <name>Bozkır</name>
+    <filename>/usr/share/backgrounds/vatan/bozkir-light.png</filename>
+    <filename-dark>/usr/share/backgrounds/vatan/bozkir-dark.png</filename-dark>
+    <options>zoom</options>
+    <shade_type>solid</shade_type>
+    <pcolor>#EBE5D7</pcolor>
+    <scolor>#4C4232</scolor>
+  </wallpaper>
+  <wallpaper deleted="false">
+    <name>Karadeniz</name>
+    <filename>/usr/share/backgrounds/vatan/karadeniz-light.png</filename>
+    <filename-dark>/usr/share/backgrounds/vatan/karadeniz-dark.png</filename-dark>
+    <options>zoom</options>
+    <shade_type>solid</shade_type>
+    <pcolor>#D4E1DC</pcolor>
+    <scolor>#253F33</scolor>
+  </wallpaper>
+  <wallpaper deleted="false">
+    <name>Selçuklu</name>
+    <filename>/usr/share/backgrounds/vatan/selcuklu-light.png</filename>
+    <filename-dark>/usr/share/backgrounds/vatan/selcuklu-dark.png</filename-dark>
+    <options>zoom</options>
+    <shade_type>solid</shade_type>
+    <pcolor>#DAD4C9</pcolor>
+    <scolor>#2D2F33</scolor>
+  </wallpaper>
+  <wallpaper deleted="false">
+    <name>Gece</name>
+    <filename>/usr/share/backgrounds/vatan/gece-light.png</filename>
+    <filename-dark>/usr/share/backgrounds/vatan/gece-dark.png</filename-dark>
+    <options>zoom</options>
+    <shade_type>solid</shade_type>
+    <pcolor>#5A647A</pcolor>
+    <scolor>#0D1018</scolor>
+  </wallpaper>
+</wallpapers>

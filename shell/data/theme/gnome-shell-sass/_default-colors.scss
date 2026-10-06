@@ -1,8 +1,8 @@
 // Named Colors
 
 // base colors
-$_base_color_dark: #222226;
-$_base_color_light: #fafafb;
+$_base_color_dark: #14171d;
+$_base_color_light: #f2f3f5;
 
 // accent colors
 $accent_color: if($variant== 'light', -st-accent-color, st-mix(-st-accent-color, $light_1, 60%));

@@ -1,0 +1,101 @@
+name: Paket
+
+on:
+  push:
+    branches: [main]
+    tags: ['v*']
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  deb:
+    name: deb (${{ matrix.arch }})
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - arch: amd64
+            runner: ubuntu-24.04
+          - arch: arm64
+            runner: ubuntu-24.04-arm
+    runs-on: ${{ matrix.runner }}
+# Pardus 25, Debian 13 üzerine kuruludur; trixie konteynerinde derlemek, paketin
+# çalışma anında karşılaşacağı GNOME 48 kütüphanelerine bağlanmayı sağlar.
+    container: debian:trixie
+    timeout-minutes: 60
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Derleme bağımlılıkları
+        run: |
+          apt-get update
+          apt-get install -y --no-install-recommends build-essential devscripts equivs
+          mk-build-deps --install --remove \
+            --tool 'apt-get -y --no-install-recommends' debian/control
+
+      - name: Paketi derle
+        run: dpkg-buildpackage -us -uc -b
+
+      - name: Posta birim testleri
+        run: gjs -m posta/tests/test-mail-format.js
+
+      - name: Paketi topla
+        run: |
+          mkdir -p out
+          cp ../vatan_*.deb out/
+
+# Döngüde henüz amd64 Pardus makinesi yok; bu yüzden her derleme en azından
+# paketi kurar ve kabuğu kendi mimarisinde başsız (headless) açar.
+      - name: Kabuğu ekransız çalıştır
+        run: |
+          apt-get install -y --no-install-recommends ./out/vatan_*.deb dbus
+          # Konteynerde systemd ve logind yok, ama systemd paketi
+          # /run/systemd/seats'i bırakıyor; kabuk bu klasörü görünce logind'i
+          # arıyor ve açılışta düşüyor. Klasör kalkınca kabuk logind'siz
+          # sistemler için olan kendi yoluna geçer.
+          rm -rf /run/systemd/seats
+          mkdir -p /run/dbus
+          dbus-daemon --system --fork
+          useradd -m deneme
+          su deneme -c 'XDG_RUNTIME_DIR=$(mktemp -d) XDG_CURRENT_DESKTOP=VATAN:GNOME \
+            dbus-run-session -- timeout 40 /usr/lib/vatan-shell/bin/gnome-shell \
+            --headless --virtual-monitor 1280x800 --wayland --no-x11 > /tmp/kabuk.log 2>&1 || true'
+          cat /tmp/kabuk.log
+          grep -q "GNOME Shell started" /tmp/kabuk.log
+          if grep -E "JS ERROR|TypeError|ReferenceError|SyntaxError" /tmp/kabuk.log; then exit 1; fi
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: vatan-${{ matrix.arch }}
+          path: out/*.deb
+          if-no-files-found: error
+
+  release:
+    if: startsWith(github.ref, 'refs/tags/v')
+    needs: deb
+    runs-on: ubuntu-24.04
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/download-artifact@v4
+        with:
+          path: dist
+          merge-multiple: true
+
+      - name: Sürümü yayınla
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          cd dist
+          sha256sum *.deb > SHA256SUMS
+          # 0.x sürümleri gerçek donanımda henüz yaygın denenmedi; ön sürüm olarak çıkar.
+          prerelease=""
+          case "$GITHUB_REF_NAME" in v0.*) prerelease="--prerelease" ;; esac
+          gh release create "$GITHUB_REF_NAME" ./*.deb SHA256SUMS $prerelease \
+            --repo "$GITHUB_REPOSITORY" \
+            --title "VATAN ${GITHUB_REF_NAME#v}" \
+            --notes-file ../docs/surum-notlari/"$GITHUB_REF_NAME".md

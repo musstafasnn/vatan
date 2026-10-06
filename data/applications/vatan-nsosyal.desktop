@@ -1,0 +1,10 @@
+[Desktop Entry]
+Type=Application
+Name=NSosyal
+Comment=Open NSosyal in the web browser
+Comment[tr]=NSosyal'ı web tarayıcısında aç
+Exec=xdg-open https://nsosyal.com
+Icon=vatan-nsosyal
+Categories=Network;
+Keywords=nsosyal;sosyal;social;
+OnlyShowIn=VATAN;

@@ -1,0 +1,49 @@
+#!/bin/sh
+# VATAN'ın GDM giriş ekranını çizmesini sağlar ya da ekranı GNOME'a geri verir.
+#
+# GDM, greeter kabuğunu org.gnome.Shell.desktop dosyasından başlatır ve bu dosyayı
+# önce greeter kullanıcısının kendi veri dizininde arar. O dizine bu dosyanın bir
+# gölgesini koymak yalnızca greeter'ı değiştirir; hiçbir GNOME dosyasına
+# dokunulmaz ve "disable" gölgeyi yeniden kaldırır.
+set -eu
+
+GDM_USER=Debian-gdm
+SHELL_BIN=/usr/lib/vatan-shell/bin/gnome-shell
+SYSTEM_DESKTOP=/usr/share/applications/org.gnome.Shell.desktop
+
+# Greeter'ın ana dizini yalnızca ona açıktır; bu yüzden "status" bile root ister.
+[ "$(id -u)" -eq 0 ] || { echo "vatan-login-screen: run as root (sudo)" >&2; exit 1; }
+
+home=$(getent passwd "$GDM_USER" | cut -d: -f6)
+[ -n "$home" ] || { echo "vatan-login-screen: no $GDM_USER user" >&2; exit 1; }
+override="$home/.local/share/applications/org.gnome.Shell.desktop"
+
+case "${1:-status}" in
+    enable)
+        [ -x "$SHELL_BIN" ] || { echo "vatan-login-screen: $SHELL_BIN missing" >&2; exit 1; }
+        # Hedef dizin greeter kullanıcısına ait; root orada yazarsa, ele
+        # geçirilmiş bir greeter'ın koyduğu bir sembolik bağ root'u herhangi bir
+        # sistem dosyasına yazdırabilir. Yazma işini greeter kullanıcısı yapar.
+        sed -e "s|^Exec=.*|Exec=$SHELL_BIN|" -e "s|^TryExec=.*|TryExec=$SHELL_BIN|" "$SYSTEM_DESKTOP" |
+            runuser -u "$GDM_USER" -- sh -c 'set -eu
+                mkdir -p "$(dirname "$1")"
+                cat > "$1.tmp"
+                mv -f "$1.tmp" "$1"' sh "$override"
+        echo "VATAN draws the login screen after the next GDM restart or reboot."
+        ;;
+    disable)
+        runuser -u "$GDM_USER" -- rm -f "$override"
+        echo "GNOME draws the login screen after the next GDM restart or reboot."
+        ;;
+    status)
+        if [ -f "$override" ] && grep -q "^Exec=$SHELL_BIN" "$override"; then
+            echo enabled
+        else
+            echo disabled
+        fi
+        ;;
+    *)
+        echo "usage: vatan-login-screen enable|disable|status" >&2
+        exit 2
+        ;;
+esac

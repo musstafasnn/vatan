@@ -37,10 +37,10 @@ $base_border_radius: 8px;   // radii on all elements
 $forced_circular_radius: 999px;
 
 // radii of things that display over other things, e.g. popovers
-$modal_radius: $base_border_radius * 2;
+$modal_radius: 14px;
 
 // radii of dialogs
-$alert_radius: 18px;
+$alert_radius: $modal_radius;
 
 // Chroma key to flag when a background-color is always occluded, not visible.
 // This allows any box-shadow behind it to be rendered more efficiently by
@@ -82,7 +82,7 @@ stage {
 
 // icon tiles
 %tile {
-  border-radius: $base_border_radius * 2;
+  border-radius: $base_border_radius;
   padding: $base_padding;
   spacing: $base_padding;
   text-align: center;
@@ -137,7 +137,7 @@ stage {
 
 // common style for card elements
 %card_common {
-  border-radius: $base_border_radius * 1.5;
+  border-radius: $base_border_radius;
   padding: $scaled_padding * 2;
   margin: $base_margin;
   background-color: $card_bg_color;
@@ -211,7 +211,7 @@ stage {
 %dialog_button {
   font-weight: bold;
   padding: $base_padding * 2;
-  border-radius: $base_border_radius * 1.5;
+  border-radius: $base_border_radius;
 
   @include button(normal, $style: dialog);
   &:focus { @include button(focus, $style: dialog);}
@@ -292,7 +292,7 @@ stage {
   color: $osd_fg_color;
   background-color: $osd_bg_color;
   border: 1px solid $osd_outer_borders_color;
-  border-radius: $forced_circular_radius;
+  border-radius: $modal_radius;
   padding: $base_padding * 2;
   @if $contrast == 'high' {
     @include draw_hc_inset($width: 2px,$border: true);

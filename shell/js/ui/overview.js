@@ -428,7 +428,8 @@ export class Overview extends Signals.EventEmitter {
 
     focusSearch() {
         this.show();
-        this._overview.searchEntry.grab_key_focus();
+        if (this.searchController.searchAvailable)
+            this._overview.searchEntry.grab_key_focus();
     }
 
     // Checks if the Activities button is currently sensitive to
