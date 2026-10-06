@@ -51,6 +51,10 @@ jobs:
       - name: Kabuğu ekransız çalıştır
         run: |
           apt-get install -y --no-install-recommends ./out/vatan_*.deb dbus
+          # Konteynerde systemd yok ama /run/systemd/seats var; kabuk logind'i
+          # sistem veriyolunda arar, veriyolu yoksa açılışta düşer.
+          mkdir -p /run/dbus
+          dbus-daemon --system --fork
           useradd -m deneme
           su deneme -c 'XDG_RUNTIME_DIR=$(mktemp -d) XDG_CURRENT_DESKTOP=VATAN:GNOME \
             dbus-run-session -- timeout 40 /usr/lib/vatan-shell/bin/gnome-shell \
