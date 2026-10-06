@@ -1,16 +1,16 @@
 Format: https://www.debian.org/doc/packaging-manuals/copyright-format/1.0/
 Upstream-Name: vatan
-Upstream-Contact: Mustafa <musstafasnn@gmail.com>
+Upstream-Contact: Mustafa Şan <info@mustafasan.com>
 Source: https://github.com/musstafasnn/vatan
 
 Files: *
-Copyright: 2026 Mustafa <musstafasnn@gmail.com>
+Copyright: 2026 Mustafa Şan <info@mustafasan.com>
 License: GPL-2+
 
 Files: shell/*
 Copyright: 2008-2025 The GNOME Shell authors
            2025-2026 The Pardus developers
-           2026 Mustafa <musstafasnn@gmail.com>
+           2026 Mustafa Şan <info@mustafasan.com>
 Comment: Fork of the Pardus gnome-shell 48.7-0+deb13u2pardus1 source
  package. The full list of upstream copyright holders is in
  shell/debian/copyright.
@@ -25,17 +25,17 @@ Copyright: 2022 The Instrument Serif Project Authors (https://github.com/Instrum
 License: OFL-1.1
 
 Files: tools/wallpaper/* data/backgrounds/*
-Copyright: 2026 Mustafa <musstafasnn@gmail.com>
+Copyright: 2026 Mustafa Şan <info@mustafasan.com>
 Comment: The outline of Turkey is from Natural Earth 1:50m and the Aegean and
  Black Sea coasts from Natural Earth 1:10m (both public domain).
 License: GPL-2+
 
 Files: tools/icons/recolor.mjs
-Copyright: 2026 Mustafa <musstafasnn@gmail.com>
+Copyright: 2026 Mustafa Şan <info@mustafasan.com>
 License: GPL-2+
 
 Files: data/icons/VATAN/apps/* tools/icons/apps/* settings/* posta/* data/cursors/* tools/cursors/* data/templates/* tools/templates/* data/plymouth/* tools/plymouth/*
-Copyright: 2026 Mustafa <musstafasnn@gmail.com>
+Copyright: 2026 Mustafa Şan <info@mustafasan.com>
 License: GPL-2+
 
 Files: data/icons/VATAN/places/*

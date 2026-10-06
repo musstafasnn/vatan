@@ -475,7 +475,27 @@ class VatanSettingsWindow extends Adw.ApplicationWindow {
         licenses.connect('activated', () => this._showAboutDialog());
         about.add(licenses);
         page.add(about);
+        page.add(this._developerGroup());
         return page;
+    }
+
+    // Geliştirici bilgisi yalnızca burada durur; paket, README ve hakkında
+    // penceresi bunu tekrar etmez.
+    _developerGroup() {
+        const group = new Adw.PreferencesGroup({
+            title: 'Geliştirici',
+            description: 'VATAN, Pardus topluluğuna katkı olsun diye Mustafa Şan tarafından gönüllü olarak geliştiriliyor.',
+        });
+        for (const [title, label, uri] of [
+            ['Web', 'mustafasan.com', 'https://mustafasan.com'],
+            ['E-posta', 'info@mustafasan.com', 'mailto:info@mustafasan.com'],
+        ]) {
+            const row = new Adw.ActionRow({title, subtitle: label, activatable: true, css_classes: ['property']});
+            row.add_suffix(new Gtk.Image({icon_name: 'adw-external-link-symbolic'}));
+            row.connect('activated', () => Gtk.show_uri(this, uri, 0));
+            group.add(row);
+        }
+        return group;
     }
 
     _showAboutDialog() {
@@ -486,7 +506,6 @@ class VatanSettingsWindow extends Adw.ApplicationWindow {
             comments: 'Pardus 25 için masaüstü oturumu.',
             website: 'https://github.com/musstafasnn/vatan',
             license_type: Gtk.License.GPL_2_0,
-            developers: ['Mustafa'],
         }).present(this);
     }
 });
