@@ -2,7 +2,7 @@
 <schemalist gettext-domain="vatan">
   <schema id="org.vatan.shell" path="/org/vatan/shell/">
     <key name="show-news" type="b">
-      <default>true</default>
+      <default>false</default>
       <summary>Show the news card on the desktop</summary>
       <description>The card fetches the feed below every 15 minutes while it is shown; turning it off stops all requests.</description>
     </key>
